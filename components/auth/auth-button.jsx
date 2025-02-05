@@ -13,7 +13,6 @@ import { useAuth } from "@/contexts/auth"
 // githubName
 const AuthButton = memo(function AuthButton() {
   const { loading, user, login, logout } = useAuth()
-  console.log("user", user)
 
   if (loading) {
     return (
