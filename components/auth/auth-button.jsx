@@ -35,7 +35,7 @@ const AuthButton = memo(function AuthButton() {
           Dashboard
         </Link>
         <Menu>
-          <MenuButton className="flex py-1 px-2 hover:bg-gray-200 rounded-md items-center gap-1">
+          <MenuButton className="cursor-pointer flex py-1 px-2 hover:bg-gray-200 rounded-md items-center gap-1">
             <span
               className="text-sm flex items-center gap-2  font-medium subpixel-antialiased contrast-more:text-gray-700 contrast-more:dark:text-gray-100"
               aria-current="true"
@@ -86,7 +86,7 @@ const AuthButton = memo(function AuthButton() {
             >
               <button
                 onClick={logout}
-                className="text-sm  py-1 px-2 underline data-[focus]:bg-blue-100
+                className="text-sm cursor-pointer py-1 px-2 underline data-[focus]:bg-blue-100
                 contrast-more:text-gray-700 contrast-more:dark:text-gray-100
                 max-md:hidden whitespace-nowrap subpixel-antialiased
                 hover:underline rounded-md transition-all"

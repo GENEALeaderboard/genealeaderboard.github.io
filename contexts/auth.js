@@ -37,9 +37,9 @@ export function AuthProvider({ children }) {
   //         })
 
   //         if (res.ok) {
-  //           const data = await res.json()
-  //           console.log("checkUser.data", data)
-  //           setUser(data.user.payload)
+  //           const resJSON = await res.json()
+  //           console.log("checkUser.resJSON", resJSON)
+  //           setUser(resJSON.user.payload)
   //         }
   //       }
   //     }
@@ -67,10 +67,10 @@ export function AuthProvider({ children }) {
       })
   
       if (res.ok) {
-        const data = await res.json()
-        console.log("data", data)
-        setUser(data.user)
-        localStorage.setItem('authUser', JSON.stringify(data.user)) // Cache user
+        const resJSON = await res.json()
+        console.log("resJSON", resJSON)
+        setUser(resJSON.data)
+        localStorage.setItem('authUser', JSON.stringify(resJSON.data)) // Cache user
       } else {
         localStorage.removeItem('authUser') // Remove cache if session is invalid
       }

@@ -1,6 +1,5 @@
 "use client"
 
-// import { getServerSession } from "next-auth"
 import Image from "next/image"
 import UploadNPY from "./uploadnpy"
 import { useEffect, useState } from "react"
