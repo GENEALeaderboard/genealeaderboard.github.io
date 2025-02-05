@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import Cookies from "js-cookie"
 
 const API_URL = process.env.NEXT_PUBLIC_WORKER_URL
 
@@ -22,30 +21,62 @@ export function AuthProvider({ children }) {
     checkUser()
   }, [])
 
+  // const checkUser = async () => {
+  //   try {
+  //     const user = Cookies.get("user")
+  //     if (user) {
+  //       setUser(JSON.parse(user))
+  //     } else {
+  //       const authToken = Cookies.get("auth-token")
+  //       if (authToken) {
+  //         const res = await fetch(`${API_URL}/auth/user`, {
+  //           headers: {
+  //             Authorization: `Bearer ${authToken}`,
+  //           },
+  //           credentials: "include", // Important for sending cookies
+  //         })
+
+  //         if (res.ok) {
+  //           const data = await res.json()
+  //           console.log("checkUser.data", data)
+  //           setUser(data.user.payload)
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log("Error checking user session:", error)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
   const checkUser = async () => {
     try {
-      const user = Cookies.get("user")
-      if (user) {
-        setUser(JSON.parse(user))
+      // Attempt to get the cached user from localStorage
+      const cachedUser = localStorage.getItem('authUser')
+      
+      if (cachedUser) {
+        setUser(JSON.parse(cachedUser))
+        setLoading(false)
+        return
+      }
+  
+      // Fetch from the API if no cached user
+      const res = await fetch(`${API_URL}/auth/user`, {
+        credentials: 'include', // Important for sending cookies
+      })
+  
+      if (res.ok) {
+        const data = await res.json()
+        console.log("data", data)
+        setUser(data.user)
+        localStorage.setItem('authUser', JSON.stringify(data.user)) // Cache user
       } else {
-        const authToken = Cookies.get("auth-token")
-        if (authToken) {
-          const res = await fetch(`${API_URL}/auth/user`, {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-            credentials: "include", // Important for sending cookies
-          })
-
-          if (res.ok) {
-            const data = await res.json()
-            console.log("checkUser.data", data)
-            setUser(data.user.payload)
-          }
-        }
+        localStorage.removeItem('authUser') // Remove cache if session is invalid
       }
     } catch (error) {
-      console.log("Error checking user session:", error)
+      console.error('Error checking user session:', error)
+      localStorage.removeItem('authUser')
     } finally {
       setLoading(false)
     }
