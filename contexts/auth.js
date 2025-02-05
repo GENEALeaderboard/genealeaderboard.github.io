@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie"
 
 const API_URL = process.env.NEXT_PUBLIC_WORKER_URL
 
@@ -52,7 +52,11 @@ export function AuthProvider({ children }) {
   }
 
   const login = () => {
-    window.location.href = `${API_URL}/auth/github`
+    const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
+    const REDIRECT_URI = process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI
+
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=read:user user:email`
+    window.location.href = githubAuthUrl
   }
 
   const logout = async () => {

@@ -161,7 +161,7 @@ const AuthButton = memo(function AuthButton() {
       // className={`${
       //   loading ? "bg-gray-200 border-gray-300" : ""
       // } w-36 h-8 py-1 text-white hover:text-black border rounded-md text-sm transition-all`}
-      className="bg-black text-center hover:bg-white border-black w-36 h-8 py-1 text-white hover:text-black border rounded-md text-sm transition-all"
+      className="cursor-pointer bg-black text-center hover:bg-white border-black w-36 h-8 py-1 text-white hover:text-black border rounded-md text-sm transition-all"
     >
       Log in with GitHub
       {/* {loading ? <Loading color="gray" /> : } */}
