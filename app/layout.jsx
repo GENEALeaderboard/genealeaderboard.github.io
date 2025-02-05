@@ -1,16 +1,13 @@
 import "./globals.css"
 // import "./index.css"
 // import "../styles/custom.css"
-
-
 import { ThemeProvider } from "next-themes"
 import Body from "@/components/body"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import { SessionProvider } from "next-auth/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react"
+import { AuthProvider } from "@/contexts/auth"
 // import { NextAuthProviders } from "@/components/auth/auth-provider"
 // import { AuthProvider } from "@/contexts/auth"
 // import { useThemeConfig } from "@/contexts/theme";
@@ -42,18 +39,14 @@ The GENEA Leaderboard is the evolution of the GENEA challenge, which was held at
       </head>
       <body className="nextra-banner-hidden">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {/* <NextAuthProviders> */}
-          {/* <AuthProvider> */}
+          <AuthProvider>
           <div dir="ltr">
             <Header />
             {children}
             <Footer />
           </div>
-          {/* </AuthProvider> */}
-          {/* </NextAuthProviders> */}
+          </AuthProvider>
         </ThemeProvider>
-        <SpeedInsights />
-        <Analytics />
       </body>
     </html>
   )

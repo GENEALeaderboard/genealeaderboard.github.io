@@ -7,41 +7,14 @@ import Image from "next/image"
 import { clsx as cn } from "clsx"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { ArrowRightIcon } from "@/nextra/icons"
-import { useAuth } from "@/contexts/auth"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth"
 
+// githubName
 const AuthButton = memo(function AuthButton() {
-  const {
-    isLoading,
-    sessionToken,
-    expires,
-    email,
-    avatar,
-    name: githubName,
-    isSignedIn,
-    handleSignIn,
-    handleSignOut,
-  } = useAuth()
-  // const { data: session, status } = useSession()
-  // const [sessionStorage, setSessionStorage] = useState("")
-  // const [email, setEmail] = useState("")
-  // const [avatar, setAvatar] = useState("")
-  // const [githubName, setGithubName] = useState("")
-  // const [userid, setUserID] = useState(localStorage.getItem("userid"))
+  const { loading, user, login, logout } = useAuth()
 
-  // const [loading, setLoading] = useState(true)
-
-  // useEffect(() => {
-  //   if (sessionStorage) {
-  //     // const session = JSON.parse(sessionStorage)
-  //     setSessionStorage(localStorage.getItem("github-auth-session"))
-  //     setGithubName(localStorage.getItem("name"))
-  //     setAvatar(localStorage.getItem("avatar"))
-  //     setEmail(localStorage.getItem("email"))
-  //   }
-  // }, [])
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center ">
         <Loading />
@@ -50,7 +23,7 @@ const AuthButton = memo(function AuthButton() {
   }
 
   // if (session?.user) {
-  if (isSignedIn) {
+  if (user) {
     return (
       <div className="flex items-center gap-2">
         <Link
@@ -68,7 +41,7 @@ const AuthButton = memo(function AuthButton() {
               aria-current="true"
             >
               {/* {session.user.name || "User"} */}
-              {githubName || "User"}
+              {user.name || "User"}
               {/* {session?.user ? (
                 <Image
                   src={session.user.image}
@@ -81,7 +54,7 @@ const AuthButton = memo(function AuthButton() {
                 ""
               )} */}
               <Image
-                src={avatar}
+                src={user.avatar}
                 width={26}
                 height={26}
                 className="rounded-full border"
@@ -112,7 +85,7 @@ const AuthButton = memo(function AuthButton() {
               )}
             >
               <button
-                onClick={handleSignOut}
+                onClick={logout}
                 className="text-sm  py-1 px-2 underline data-[focus]:bg-blue-100
                 contrast-more:text-gray-700 contrast-more:dark:text-gray-100
                 max-md:hidden whitespace-nowrap subpixel-antialiased
@@ -179,7 +152,7 @@ const AuthButton = memo(function AuthButton() {
 
   return (
     <button
-      onClick={handleSignIn}
+      onClick={login}
       // disabled={loading}
       // onClick={() => {
       //   setLoading(true)

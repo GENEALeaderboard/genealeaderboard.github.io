@@ -1,98 +1,83 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import { signIn, signOut } from "next-auth/react"
+import React, { createContext, useContext, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+
+const API_URL = process.env.NEXT_PUBLIC_WORKER_URL
 
 const AuthContext = createContext({
-  isLoading: false,
-  sessionToken: null,
-  expires: null,
-  email: null,
-  name: null,
-  username: null,
-  avatar: null,
-  userId: null,
-  handleSignIn: () => {},
-  handleSignOut: () => {},
+  user: null,
+  loading: false,
+  login: () => {},
+  logout: () => {},
 })
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    checkUser()
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const user = Cookies.get("user")
+      if (user) {
+        setUser(JSON.parse(user))
+      } else {
+        const authToken = Cookies.get("auth-token")
+        if (authToken) {
+          const res = await fetch(`${API_URL}/auth/user`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+            credentials: "include", // Important for sending cookies
+          })
+
+          if (res.ok) {
+            const data = await res.json()
+            console.log("checkUser.data", data)
+            setUser(data.user.payload)
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Error checking user session:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const login = () => {
+    window.location.href = `${API_URL}/auth/github`
+  }
+
+  const logout = async () => {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      })
+      setUser(null)
+      router.push("/")
+    } catch (error) {
+      console.error("Error during logout:", error)
+    }
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error("useUser must be used within a UserProvider")
+    throw new Error("useAuth must be used within an AuthProvider")
   }
   return context
-}
-
-export function AuthProvider({ children }) {
-  const { data: session, status } = useSession()
-
-  const userData = useMemo(() => {
-    if (status === "authenticated") {
-      return {
-        isLoading: false,
-        sessionToken: session.sessionToken || null,
-        expires: session.expires || null,
-        email: session.email || null,
-        avatar: session.user?.image || null,
-        name: session.name || null,
-        username: session.username || null,
-        userId: session.id || null,
-        isSignedIn: true,
-      }
-    } else if (status === "loading") {
-      return {
-        isLoading: true,
-        sessionToken: null,
-        expires: null,
-        email: null,
-        avatar: null,
-        name: null,
-        username: null,
-        userId: null,
-        isSignedIn: false,
-      }
-    } else {
-      return {
-        isLoading: false,
-        sessionToken: null,
-        expires: null,
-        email: null,
-        avatar: null,
-        name: null,
-        username: null,
-        userId: null,
-        isSignedIn: false,
-      }
-    }
-  }, [session, status])
-
-  const handleSignIn = async () => {
-    await signIn("github", { callbackUrl: "/getting-started" }) // Replace 'github' with your preferred provider
-  }
-
-  const handleSignOut = async () => {
-    await signOut()
-  }
-
-  return (
-    <AuthContext.Provider
-      value={{
-        isLoading: userData.isLoading,
-        sessionToken: userData.sessionToken,
-        expires: userData.expires,
-        email: userData.email,
-        name: userData.name,
-        username: userData.username,
-        avatar: userData.avatar,
-        userId: userData.userId,
-        isSignedIn: userData.isSignedIn,
-        handleSignIn,
-        handleSignOut,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  )
 }
