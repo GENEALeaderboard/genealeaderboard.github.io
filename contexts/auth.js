@@ -2,7 +2,11 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AUTH_API_ENDPOINT } from "@/config/constants"
+import {
+  AUTH_API_ENDPOINT,
+  GITHUB_CLIENT_ID,
+  GITHUB_REDIRECT_URI,
+} from "@/config/constants"
 
 const AuthContext = createContext({
   user: null,
@@ -23,41 +27,38 @@ export function AuthProvider({ children }) {
   const checkUser = async () => {
     try {
       // Attempt to get the cached user from localStorage
-      const cachedUser = localStorage.getItem('authUser')
-      
+      const cachedUser = localStorage.getItem("authUser")
+
       if (cachedUser) {
         setUser(JSON.parse(cachedUser))
         setLoading(false)
         return
       }
-      
+
       console.log("AUTH_API_ENDPOINT", `${AUTH_API_ENDPOINT}/auth/user`)
       // Fetch from the API if no cached user
       const res = await fetch(`${AUTH_API_ENDPOINT}/auth/user`, {
-        credentials: 'include', // Important for sending cookies
+        credentials: "include", // Important for sending cookies
       })
-  
+
       if (res.ok) {
         const resJSON = await res.json()
         console.log("resJSON", resJSON)
         setUser(resJSON.data)
-        localStorage.setItem('authUser', JSON.stringify(resJSON.data)) // Cache user
+        localStorage.setItem("authUser", JSON.stringify(resJSON.data)) // Cache user
       } else {
-        localStorage.removeItem('authUser') // Remove cache if session is invalid
+        localStorage.removeItem("authUser") // Remove cache if session is invalid
       }
     } catch (error) {
-      console.error('Error checking user session:', error)
-      localStorage.removeItem('authUser')
+      console.error("Error checking user session:", error)
+      localStorage.removeItem("authUser")
     } finally {
       setLoading(false)
     }
   }
 
   const login = () => {
-    const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
-    const REDIRECT_URI = process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI
-
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=read:user user:email`
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=read:user user:email`
     window.location.href = githubAuthUrl
   }
 
