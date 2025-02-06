@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-
-const API_URL = process.env.NEXT_PUBLIC_WORKER_URL
+import { AUTH_API_ENDPOINT } from "@/config/constants"
 
 const AuthContext = createContext({
   user: null,
@@ -31,9 +30,10 @@ export function AuthProvider({ children }) {
         setLoading(false)
         return
       }
-  
+      
+      console.log("AUTH_API_ENDPOINT", `${AUTH_API_ENDPOINT}/auth/user`)
       // Fetch from the API if no cached user
-      const res = await fetch(`${API_URL}/auth/user`, {
+      const res = await fetch(`${AUTH_API_ENDPOINT}/auth/user`, {
         credentials: 'include', // Important for sending cookies
       })
   
@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch(`${API_URL}/auth/logout`, {
+      await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
         method: "POST",
         credentials: "include",
       })

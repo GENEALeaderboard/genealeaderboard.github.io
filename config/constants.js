@@ -7,7 +7,7 @@ export const DEFAULT_THEME = {
 
 export const ERROR_ROUTES = new Set(["/404", "/500"])
 
-export const NEXT_PUBLIC_WORKER_URL = `${process.env.NEXT_PUBLIC_WORKER_URL}`
+export const AUTH_API_ENDPOINT = `${process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT}`
 
 // ************************ NPY ************************
 // https://submission.hemvip.workers.dev/api/start-upload
