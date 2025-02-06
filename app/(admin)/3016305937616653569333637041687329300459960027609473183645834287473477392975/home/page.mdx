@@ -1,0 +1,157 @@
+import { Steps } from "@/nextra"
+import Image from "next/image"
+import AllStage from "@/components/AllStage"
+
+# Admin Home
+
+## System naming convention
+
+- natural mocap data (ground truth): `NA`
+- submitted systems: `SA`, `SB`, ..., `SZ`
+- baseline systems: `BA`, `BB`, `BC`, ...
+
+## Filename format of test-set motion clips
+
+- 12_zhao_2_2_2_segment1_sample1
+- 12_zhao_2_17_17_segment_2_sample2
+
+## Evaluation Process
+
+<AllStage style={{ width: "100%", height: "auto" }} />
+
+<Steps>
+### Download `submission_inputs.csv` file
+
+```text
+input_code, video_file
+234083450345, 234083450345.npy
+346643424234, 346643424234.npy
+443646423423, 443646423423.npy
+```
+
+### Run your model inference
+
+Run your model inference to get all video file output.
+
+```text
+234083450345.npy
+346643424234.npy
+443646423423.npy
+```
+
+### Submission your model `.npy` output
+
+Go to `/submission` and upload all video of your model
+
+### Convert & Split to Video
+
+We will convert all `.npy` file to `.npy` video and split to mutiple segment video.
+
+### Generate all study pairwise compare screen
+
+`emotion mismatching studies.csv`,
+`speech appropriateness studies.csv`,
+`pairwise emotion studies.csv`,
+`pairwise human-likeness studies.csv`
+
+#### Example csv structure for pairwise human-likeness studies
+
+```csv
+clip_name, system_1, system_2,
+12_zhao_2_2_2_segment_3, SA, SB
+12_zhao_2_17_17_segment_2, SC, NA
+13_lu_2_13_13_segment_2, SG, BA
+```
+
+#### Example csv structure for pairwise emotion studies
+
+```csv
+clip_name, system_1, system_2, emotion
+12_zhao_2_2_2_segment_3, SA, SB, anger
+12_zhao_2_17_17_segment_2, SC, NA, happy
+13_lu_2_13_13_segment_2, SG, BA, sad
+```
+
+#### Example csv structure for speech appropriateness studies
+
+```csv
+clip_name, system, mismatch_type, mismatch_data
+12_zhao_2_2_2_segment_3, SA, speech, 13_lu_2_13_13_segment_2
+12_zhao_2_17_17_segment_2, BB, speech, 13_lu_2_13_13_segment_2
+13_lu_2_13_13_segment_2, NA, speech, 12_zhao_2_17_17_segment_2
+```
+
+#### Example csv structure for emotion mismatching studies
+
+```csv
+clip_name, system, mismatch_type, mismatch_data
+12_zhao_2_2_2_segment_3, SA, emotion, sad
+12_zhao_2_17_17_segment_2, BB, emotion, bored
+13_lu_2_13_13_segment_2, NA, emotion, happy
+```
+
+Sample study screen
+
+<Image
+  src="/study_screen.png"
+  alt="study_screen"
+  width={0}
+  height={0}
+  sizes="100vw"
+  style={{ width: "100%", height: "auto" }}
+/>
+
+- You can visit `/study` to get information about each study screen.
+- You can visit `/user` to follow all user participation our study.
+
+### Recruit partipation on Prolific to study
+
+Each Prolific partipation will be study for
+
+<Image
+  src="/prolific.png"
+  alt="prolific"
+  width={0}
+  height={0}
+  sizes="100vw"
+  style={{ width: "100%", height: "auto" }}
+/>
+
+**When partipation study, we record all action and final result**
+
+**Selection Result**
+
+<Image
+  src="/selection_result.png"
+  alt="selection_result"
+  width={0}
+  height={0}
+  sizes="100vw"
+  style={{ width: "80%", height: "auto" }}
+/>
+
+**Actions Record**
+
+<Image
+  src="/actions_record.png"
+  alt="actions_record"
+  width={0}
+  height={0}
+  sizes="100vw"
+  style={{ width: "80%", height: "auto" }}
+/>
+
+### Evalution final result
+
+Sample evalution result
+
+<Image
+  src="/eval_result.png"
+  alt="eval_result"
+  width={0}
+  height={0}
+  sizes="100vw"
+  style={{ width: "80%", height: "auto" }}
+/>
+
+</Steps>

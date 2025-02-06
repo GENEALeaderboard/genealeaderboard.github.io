@@ -1,0 +1,69 @@
+# Backblaze Structure
+
+## Blackblaze directory:
+
+### Motions
+
+```directory
+/motions
+/motions/<github_username>/<motion_file>.npy
+```
+
+Example
+
+```directory
+/motions/username1/<submitted_systems_1_motion_1>.npy
+/motions/username2/<submitted_systems_2_motion_2>.npy
+```
+
+### Video
+
+#### Video for systems
+
+```directory
+/videos
+
+/videos/systems
+
+/videos/systems/<system_name>/<video_segment_name>.mp4
+```
+
+Example
+
+```directory
+/videos/systems/SA/<video_segment_1>.mp4
+/videos/systems/SA/<video_segment_2>.mp4
+/videos/systems/SB/<video_segment_1>.mp4
+/videos/systems/SB/<video_segment_2>.mp4
+/videos/systems/SC/<video_segment_1>.mp4
+/videos/systems/SC/<video_segment_2>.mp4
+/videos/systems/BA/<video_segment_1>.mp4
+/videos/systems/BB/<video_segment_1>.mp4
+```
+
+#### Video for mismatched
+
+```directory
+/videos/mismatched
+
+/videos/mismatched/speech
+/videos/mismatched/emotion
+
+/videos/mismatched/<study_type>/<system_name>/<video_segment_name>.mp4
+```
+
+Example
+
+```directory
+/videos/mismatched/speech/NA/<video_segment_1>.mp4
+/videos/mismatched/speech/BA/<video_segment_1>.mp4
+/videos/mismatched/speech/SA/<video_segment_1>.mp4
+/videos/mismatched/speech/SB/<video_segment_1>.mp4
+```
+
+```directory
+/videos/mismatched/emotion/NA/<video_segment_1>.mp4
+/videos/mismatched/emotion/BA/<video_segment_1>.mp4
+/videos/mismatched/emotion/SA/<video_segment_1>.mp4
+/videos/mismatched/emotion/SB/<video_segment_1>.mp4
+```
