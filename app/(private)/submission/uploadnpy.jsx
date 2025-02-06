@@ -21,14 +21,7 @@ export default function UploadNPY({ codes }) {
     user,
     loading,
   } = useAuth()
-  const { email, name: teamname, login:username, userId, isSignedIn } = user
-  // email,
-  //   name: teamname,
-  //   username,
-  //   userId,
-  //   isSignedIn,
-  // const user: null,
-  // loading: false,
+  const { email, name: teamname, username, userid } = user
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [errorMsg, setErrorMsg] = useState("")
@@ -316,7 +309,7 @@ export default function UploadNPY({ codes }) {
     )
   }
 
-  if (!isSignedIn) {
+  if (!user) {
     return <Callout type="error">Please login with github</Callout>
   }
 
