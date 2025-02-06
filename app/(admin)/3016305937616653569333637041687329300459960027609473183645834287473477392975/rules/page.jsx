@@ -5,11 +5,11 @@ import React, { useEffect, useState } from "react"
 import { generateUUID } from "@/utils/generateUUID"
 // import { fetchInputCodes, updateGeneratedCode } from "./actions"
 import { calculateCombinations } from "./utils"
-import { useSession } from "next-auth/react"
 // import { Loading } from "@/components/loading/loading"
 
 export default function Page() {
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
+  const [session, status] = [{}, "loading"]
   const [submission, setSubmission] = useState("")
   const [studies, setStudies] = useState("")
   const [codes, setCodes] = useState([])
