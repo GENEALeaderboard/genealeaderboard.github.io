@@ -77,15 +77,28 @@ jobs:
           echo "NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT=${{ vars.NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT }}"
           echo "NEXT_PUBLIC_AUTH_API_ENDPOINT=${{ vars.NEXT_PUBLIC_AUTH_API_ENDPOINT }}"
           echo "NEXT_PUBLIC_API_ENDPOINT=${{ vars.NEXT_PUBLIC_API_ENDPOINT }}"
-
-      - name: Build with Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next build
+          echo "sdfsdsdf"
+          echo "NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}"
+          echo "NEXT_PUBLIC_UPLOAD_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_UPLOAD_API_ENDPOINT }}"
+          echo "NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT }}"
+          echo "NEXT_PUBLIC_AUTH_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_AUTH_API_ENDPOINT }}"
+          echo "NEXT_PUBLIC_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}"
         env:
           NEXT_PUBLIC_GITHUB_CLIENT_ID: ${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
           NEXT_PUBLIC_UPLOAD_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
           NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
           NEXT_PUBLIC_AUTH_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
           NEXT_PUBLIC_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+
+      - name: Build with Next.js
+        run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        env:
+          NEXT_PUBLIC_GITHUB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+          NEXT_PUBLIC_UPLOAD_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+          NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+          NEXT_PUBLIC_AUTH_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+          NEXT_PUBLIC_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
