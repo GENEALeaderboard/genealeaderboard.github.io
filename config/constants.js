@@ -1,5 +1,4 @@
 import { isValidElement } from "react"
-
 export const DEFAULT_THEME = {
   darkMode: true,
   direction: "ltr",

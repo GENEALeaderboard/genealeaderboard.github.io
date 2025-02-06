@@ -6,22 +6,17 @@ import { Callout } from "@/nextra"
 import { Loading } from "@/components/loading/loading"
 import axios from "axios"
 import BVHFile from "@/icons/bvhfile"
-import {
-  COMPLETE_UPLOAD_API_ENDPOINT,
-  START_UPLOAD_API_ENDPOINT,
-  UPLOAD_API_ENDPOINT,
-  UPLOAD_PART_API_ENDPOINT,
-} from "@/config/constants"
+import { COMPLETE_UPLOAD_API_ENDPOINT, START_UPLOAD_API_ENDPOINT, UPLOAD_API_ENDPOINT, UPLOAD_PART_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 
-export default function UploadNPY({ codes }) {
-  const {
-    user,
-    loading,
-  } = useAuth()
-  const { email, name: teamname, username, userid } = user
+export default function UploadNPY({ codes, user }) {
+  const [email, setEmail] = useState(user.email ? user.email : "")
+  const [teamname, setTeamName] = useState(user.name ? user.name : "")
+  const [username, setUsername] = useState(user.username ? user.username : "")
+  const [userId, setUserId] = useState(user.userid ? user.userid : "")
+
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [errorMsg, setErrorMsg] = useState("")
@@ -134,26 +129,18 @@ export default function UploadNPY({ codes }) {
         formData.append("fileSize", fileSize)
         formData.append("chunkSize", chunk.size)
 
-        const uploadChunkResp = await axios.post(
-          UPLOAD_PART_API_ENDPOINT,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              "Content-Length": chunk.size,
-            },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / (progressEvent.total ?? 1)
-              )
-              const overallProgress = Math.round(
-                ((i - 1 + percentCompleted / 100) * 100) / totalChunks
-              )
+        const uploadChunkResp = await axios.post(UPLOAD_PART_API_ENDPOINT, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Content-Length": chunk.size,
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
+            const overallProgress = Math.round(((i - 1 + percentCompleted / 100) * 100) / totalChunks)
 
-              updateUploadProgress(fileName, overallProgress, "uploading")
-            },
-          }
-        )
+            updateUploadProgress(fileName, overallProgress, "uploading")
+          },
+        })
         // uploadChunkResp.push(result)
         parts.push({
           PartNumber: parts.length + 1,
@@ -238,12 +225,12 @@ export default function UploadNPY({ codes }) {
       return
     }
 
-    if (!email) {
+    if (!user.email) {
       setErrorMsg("Please add email address")
       return
     }
 
-    if (!teamname) {
+    if (!user.name) {
       setErrorMsg("Please add your team name")
       return
     }
@@ -269,18 +256,16 @@ export default function UploadNPY({ codes }) {
       if (allSuccessful) {
         //~~~~~~~~  Update submission info to database ~~~~~~~~
         const formData = new FormData()
-        formData.append("userId", userId)
-        formData.append("email", email)
-        formData.append("teamid", teamid)
-        formData.append("teamname", teamname)
+        formData.append("userId", user.userid)
+        formData.append("email", user.email)
+        formData.append("teamid", user.username)
+        formData.append("teamname", user.name)
         const res = await axios.post("/api/submission", formData)
         console.log("res", res)
 
         if (!res.data.success) {
           console.log(res.data)
-          setErrorMsg(
-            "Duplicated submission, only submit once, please contact support"
-          )
+          setErrorMsg("Duplicated submission, only submit once, please contact support")
         }
 
         setSuccessMsg("Your submission are successfully.")
@@ -292,25 +277,11 @@ export default function UploadNPY({ codes }) {
       }
     } catch (error) {
       console.log(error)
-      setErrorMsg(
-        "EXCEPTION: Error with uploading your submission, please contact support"
-      )
+      setErrorMsg("EXCEPTION: Error with uploading your submission, please contact support")
       console.log("Exception", error)
     } finally {
       // setUploading("")
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex w-full p-32 justify-center">
-        <Loading />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return <Callout type="error">Please login with github</Callout>
   }
 
   if (successMsg) {
@@ -341,10 +312,7 @@ export default function UploadNPY({ codes }) {
                 <div className="w-48">
                   <div className="overflow-hidden mx-auto max-w-72 h-[0.375rem] text-xs flex rounded-3xl min-w-20 bg-blue-200">
                     {progress[file.name] && progress[file.name].percent ? (
-                      <div
-                        style={{ width: `${progress[file.name].percent}%` }}
-                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-                      >
+                      <div style={{ width: `${progress[file.name].percent}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500">
                         <span className="relative left-0 right-0 w-full text-center text-blue-800"></span>
                       </div>
                     ) : (
@@ -352,13 +320,9 @@ export default function UploadNPY({ codes }) {
                     )}
                   </div>
                 </div>
-                <span className="text-xs w-12 text-center bg-gray-200 px-2 rounded-xl">
-                  {`${progress[file.name].percent || 0}%`}
-                </span>
+                <span className="text-xs w-12 text-center bg-gray-200 px-2 rounded-xl">{`${progress[file.name].percent || 0}%`}</span>
 
-                {progress[file.name] && progress[file.name].status && (
-                  <UploadStatus type={progress[file.name].status} />
-                )}
+                {progress[file.name] && progress[file.name].status && <UploadStatus type={progress[file.name].status} />}
               </div>
             )
           })}
@@ -403,7 +367,7 @@ export default function UploadNPY({ codes }) {
           id="email-address"
           type="email"
           name="email-address"
-          value={email}
+          value={user.email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
@@ -445,13 +409,7 @@ export default function UploadNPY({ codes }) {
           style={{ border: "2px dashed #666666" }}
           className="w-[80%] p-4 cursor-pointer rounded-lg min-h-36 flex flex-col items-center justify-center text-center appearance-none border border-[#666666] bg-white text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
         >
-          <input
-            id="upload"
-            {...getInputProps()}
-            type="file"
-            accept=".npy"
-            multiple={true}
-          />
+          <input id="upload" {...getInputProps()} type="file" accept=".npy" multiple={true} />
           {previews.length > 0 && (
             <>
               <ul className="w-full flex flex-wrap gap-2 justify-center">
@@ -469,11 +427,7 @@ export default function UploadNPY({ codes }) {
               </ul>
             </>
           )}
-          {isDragActive ? (
-            <p>Drop the files here...</p>
-          ) : (
-            <p>Drag and drop some files here, or click to select files</p>
-          )}
+          {isDragActive ? <p>Drop the files here...</p> : <p>Drag and drop some files here, or click to select files</p>}
         </div>
       </div>
 

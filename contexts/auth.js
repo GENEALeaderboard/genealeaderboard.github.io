@@ -47,13 +47,12 @@ export function AuthProvider({ children }) {
         setUser(resJSON.data)
         localStorage.setItem("authUser", JSON.stringify(resJSON.data)) // Cache user
       } else {
-        console.error("Login failed")
-        router.push("/question")
-        // localStorage.removeItem("authUser") // Remove cache if session is invalid
+        console.log("Login failed")
+        localStorage.removeItem("authUser") // Remove cache if session is invalid
       }
     } catch (error) {
       console.error("Error checking user session:", error)
-      // localStorage.removeItem("authUser")
+      localStorage.removeItem("authUser")
     } finally {
       setLoading(false)
     }
