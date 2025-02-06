@@ -18,11 +18,7 @@ import { remarkMdxFrontMatter } from "./plugins/remark-mdx-frontmatter.mjs"
 // import { remarkMdxTitle } from './plugins/remark-mdx-title.mjs'
 import { remarkStaticImage } from "./plugins/remark-static-image.mjs"
 import { remarkStructurize } from "./plugins/remark-structurize.mjs"
-import {
-  DEFAULT_REHYPE_PRETTY_CODE_OPTIONS,
-  rehypeAttachCodeMeta,
-  rehypeParseCodeMeta,
-} from "./plugins/rehype.mjs"
+import { DEFAULT_REHYPE_PRETTY_CODE_OPTIONS, rehypeAttachCodeMeta, rehypeParseCodeMeta } from "./plugins/rehype.mjs"
 import { rehypeExtractTocContent } from "./plugins/rehype-extract-toc-content.mjs"
 import { rehypeIcon } from "./plugins/rehype-icon.mjs"
 // import { recmaRewriteJsx } from './plugins/recma-rewrite-jsx.mjs'
@@ -141,6 +137,14 @@ export default withMDX({
   output: "export",
   images: { unoptimized: true },
   reactStrictMode: true,
+  env: {
+    NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
+    NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+    NEXT_PUBLIC_UPLOAD_API_ENDPOINT: process.env.NEXT_PUBLIC_UPLOAD_API_ENDPOINT,
+    NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT: process.env.NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT,
+    NEXT_PUBLIC_AUTH_API_ENDPOINT: process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT,
+    NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
+  },
   // images: {
   //   remotePatterns: [
   //     {
