@@ -72,9 +72,11 @@ jobs:
 
       - name: Echo environment variables before build
         run: |
-          echo "NEXT_PUBLIC_AUTH_API_ENDPOINT=${{ vars.NEXT_PUBLIC_AUTH_API_ENDPOINT }}"
-          echo "NEXT_PUBLIC_AUTH_API_KEY=${{ vars.NEXT_PUBLIC_AUTH_API_KEY }}"
+          echo "NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}"
           echo "NEXT_PUBLIC_UPLOAD_API_ENDPOINT=${{ vars.NEXT_PUBLIC_UPLOAD_API_ENDPOINT }}"
+          echo "NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT=${{ vars.NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT }}"
+          echo "NEXT_PUBLIC_AUTH_API_ENDPOINT=${{ vars.NEXT_PUBLIC_AUTH_API_ENDPOINT }}"
+          echo "NEXT_PUBLIC_API_ENDPOINT=${{ vars.NEXT_PUBLIC_API_ENDPOINT }}"
 
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
