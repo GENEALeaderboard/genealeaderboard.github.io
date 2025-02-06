@@ -6,31 +6,16 @@ import { useEffect, useState } from "react"
 import InputCode from "./inputcode"
 import axios from "axios"
 import { Loading } from "@/components"
+import useSWR from "swr"
+import { apiFetcher } from "@/utils/fetcher"
 // import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 export default function Page() {
-  const [codes, setCodes] = useState([])
-  const [loading, setLoading] = useState(false)
+  // const [codes, setCodes] = useState([])
+  // const [loading, setLoading] = useState(false)
+  const { data: codes, error, isLoading } = useSWR("/api/inputcode", apiFetcher)
 
-  async function fetchInputCodes() {
-    const res = await axios.get("/api/inputcode")
-    console.log("res", res.data.codes)
-    if (res.data.success) {
-      setCodes(res.data.codes)
-    } else {
-      console.error(res.error)
-    }
-  }
-
-  // console.log("codes", codes)
-
-  useEffect(() => {
-    setLoading(true)
-    fetchInputCodes()
-    setLoading(false)
-  }, [])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center ">
         <Loading />

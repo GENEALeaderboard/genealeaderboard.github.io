@@ -21,35 +21,6 @@ export function AuthProvider({ children }) {
     checkUser()
   }, [])
 
-  // const checkUser = async () => {
-  //   try {
-  //     const user = Cookies.get("user")
-  //     if (user) {
-  //       setUser(JSON.parse(user))
-  //     } else {
-  //       const authToken = Cookies.get("auth-token")
-  //       if (authToken) {
-  //         const res = await fetch(`${API_URL}/auth/user`, {
-  //           headers: {
-  //             Authorization: `Bearer ${authToken}`,
-  //           },
-  //           credentials: "include", // Important for sending cookies
-  //         })
-
-  //         if (res.ok) {
-  //           const resJSON = await res.json()
-  //           console.log("checkUser.resJSON", resJSON)
-  //           setUser(resJSON.user.payload)
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log("Error checking user session:", error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
   const checkUser = async () => {
     try {
       // Attempt to get the cached user from localStorage

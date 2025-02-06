@@ -18,13 +18,17 @@ import NPYIcon from "@/icons/npy"
 
 export default function UploadNPY({ codes }) {
   const {
-    email,
-    name: teamname,
-    username,
-    userId,
-    isSignedIn,
-    isLoading,
+    user,
+    loading,
   } = useAuth()
+  const { email, name: teamname, login:username, userId, isSignedIn } = user
+  // email,
+  //   name: teamname,
+  //   username,
+  //   userId,
+  //   isSignedIn,
+  // const user: null,
+  // loading: false,
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [errorMsg, setErrorMsg] = useState("")
@@ -304,7 +308,7 @@ export default function UploadNPY({ codes }) {
     }
   }
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex w-full p-32 justify-center">
         <Loading />
