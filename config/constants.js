@@ -12,10 +12,6 @@ export const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
 export const AUTH_API_ENDPOINT = process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT
 export const GITHUB_REDIRECT_URI = `${process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT}/auth/callback/github`
 
-console.log("process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID", process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID)
-console.log("process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT", process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT)
-console.log("GITHUB_REDIRECT_URI", GITHUB_REDIRECT_URI)
-
 // ************************ NPY ************************
 // https://submission.hemvip.workers.dev/api/start-upload
 export const UPLOAD_API_ENDPOINT = `${process.env.NEXT_PUBLIC_UPLOAD_API_ENDPOINT}/upload`
