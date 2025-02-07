@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
 
   const login = () => {
     const redirectURI = encodeURIComponent(GITHUB_REDIRECT_URI)
+    console.log("redirectURI", redirectURI)
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectURI}&scope=read:user user:email`
     window.location.href = githubAuthUrl
   }
