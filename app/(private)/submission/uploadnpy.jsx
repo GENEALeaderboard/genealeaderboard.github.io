@@ -11,7 +11,7 @@ import { UploadStatus } from "@/components/UploadStatus"
 import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 
-export default function UploadNPY({ codes, user }) {
+export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user.email ? user.email : "")
   const [teamname, setTeamName] = useState(user.name ? user.name : "")
   const [username, setUsername] = useState(user.username ? user.username : "")
@@ -43,9 +43,9 @@ export default function UploadNPY({ codes, user }) {
 
       const missing = []
       codes.map((code) => {
-        const found = acceptedFiles.find((file) => file.name === `${code.code}.npy`)
+        const found = acceptedFiles.find((file) => file.name === `${code}.npy`)
         if (!found) {
-          missing.push(`${code.code}.npy`)
+          missing.push(`${code}.npy`)
         }
       })
       setMissingList(missing)
@@ -284,6 +284,17 @@ export default function UploadNPY({ codes, user }) {
     }
   }
 
+  if (status === "loading") {
+    return <></>
+  }
+  if (status === "unauthenticated" || !user) {
+    return <Callout type="error">Please login with github</Callout>
+  }
+  console.log("codes", codes)
+  if (!codes || codes.length <= 0) {
+    return <Callout type="error">Failed get codes, please contact for support</Callout>
+  }
+
   if (successMsg) {
     return (
       <div className="w-full p-12 justify-center ">
@@ -312,7 +323,10 @@ export default function UploadNPY({ codes, user }) {
                 <div className="w-48">
                   <div className="overflow-hidden mx-auto max-w-72 h-[0.375rem] text-xs flex rounded-3xl min-w-20 bg-blue-200">
                     {progress[file.name] && progress[file.name].percent ? (
-                      <div style={{ width: `${progress[file.name].percent}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500">
+                      <div
+                        style={{ width: `${progress[file.name].percent}%` }}
+                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
+                      >
                         <span className="relative left-0 right-0 w-full text-center text-blue-800"></span>
                       </div>
                     ) : (

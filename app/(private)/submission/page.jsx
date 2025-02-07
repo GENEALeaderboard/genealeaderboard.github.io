@@ -11,56 +11,54 @@ import { apiFetcher } from "@/utils/fetcher"
 import { useAuth } from "@/contexts/auth"
 import { Callout } from "@/nextra"
 import { API_ENDPOINT } from "@/config/constants"
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import CircleLoading from "@/icons/circleloading"
 
 export default function Page() {
-  const [codes, setCodes] = useState([])
-  const [loading, setLoading] = useState(false)
-  // const { data: codes, error, isLoading } = useSWR("/api/inputcode", apiFetcher)
   const { user, status } = useAuth()
-  console.log("codes", codes)
-  const [error, setError] = useState(null)
+  const {
+    data: codes,
+    error,
+    isLoading: loading,
+  } = useSWR("/api/inputcode", apiFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
 
-  useEffect(() => {
-    const fetchCodes = async () => {
-      setLoading(true)
-      try {
-        console.log(`${API_ENDPOINT}/api/inputcode`)
-        const res = await fetch(`${API_ENDPOINT}/api/inputcode`, {
-          credentials: "include", // Important for sending cookies
-        })
+  // useEffect(() => {
+  //   const fetchCodes = async () => {
+  //     setLoading(true)
+  //     try {
+  //       console.log(`${API_ENDPOINT}/api/inputcode`)
 
-        if (!res.ok) {
-          setError("Failed to fetch")
-        }
+  //       const res = await fetch(`${API_ENDPOINT}/api/inputcode`, {
+  //         credentials: "include", // Important for sending cookies
+  //       })
 
-        const { data } = await res.json()
+  //       if (!res.ok) {
+  //         setError("Failed to fetch")
+  //       }
 
-        // const { data } = await axios.get(`${API_ENDPOINT}/api/inputcode`, { withCredentials: true })
-        console.log("data", data)
-        if (data) {
-          setCodes(data.codes)
-        }
-        setLoading(false)
-      } catch (error) {
-        console.error("Error fetching codes", error)
-        setLoading(false)
-      }
-    }
-    fetchCodes()
-  }, [])
+  //       const { data } = await res.json()
 
-  if (loading) {
-    return (
-      <div className="flex justify-center ">
-        <Loading />
-      </div>
-    )
-  }
+  //       // const { data } = await axios.get(`${API_ENDPOINT}/api/inputcode`, { withCredentials: true })
+  //       console.log("data", data)
+  //       if (data) {
+  //         setCodes(data.codes)
+  //       }
+  //       setLoading(false)
+  //     } catch (error) {
+  //       console.error("Error fetching codes", error)
+  //       setLoading(false)
+  //     }
+  //   }
+  //   fetchCodes()
+  // }, [])
 
   if (error) {
     return <Callout type="error">Failed to connect, please contact support</Callout>
   }
+
   return (
     <>
       <h1 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Submission</h1>
@@ -91,13 +89,24 @@ export default function Page() {
       </h2>
       <div className="mt-6 mb-32">
         {/* <p className="mt-3 leading-7 first:mt-0">Github information</p> */}
-        {status === "unauthenticated" ? (
+        {/* {status === "unauthenticated" ? (
           <Callout type="error">Please login with github</Callout>
         ) : status === "authenticated" && user ? (
-          <UploadNPY codes={codes} user={user} />
+          
         ) : (
           <Loading />
+        )} */}
+        {loading ? (
+          <div className="w-full px-12  justify-center">
+            <p className="flex justify-center p-4 gap-2">
+              <CircleLoading />
+              Loading codes...
+            </p>
+          </div>
+        ) : (
+          <UploadNPY codes={codes} user={user} status={status} />
         )}
+
         {/* {user ? <UploadNPY codes={codes} user={user} /> : loading ? <></> : <Callout type="error">Please login with github</Callout>} */}
       </div>
     </>
