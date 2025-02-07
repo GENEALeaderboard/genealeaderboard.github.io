@@ -2,11 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import {
-  AUTH_API_ENDPOINT,
-  GITHUB_CLIENT_ID,
-  GITHUB_REDIRECT_URI,
-} from "@/config/constants"
+import { AUTH_API_ENDPOINT, GITHUB_CLIENT_ID, GITHUB_REDIRECT_URI } from "@/config/constants"
 
 const AuthContext = createContext({
   user: null,
@@ -67,20 +63,18 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       const res = await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
-        method: "POST"
+        method: "POST",
       })
+      console.log("logout", res)
       setUser(null)
       router.push("/")
     } catch (error) {
+      setUser(null)
       console.error("Error during logout:", error)
     }
   }
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {
