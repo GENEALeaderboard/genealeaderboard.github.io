@@ -65,12 +65,12 @@ export function AuthProvider({ children }) {
       const res = await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
         method: "POST",
       })
-      console.log("logout", res)
-      setUser(null)
-      router.push("/")
     } catch (error) {
-      setUser(null)
       console.error("Error during logout:", error)
+    } finally {
+      setUser(null)
+      localStorage.removeItem("authUser")
+      router.push("/")
     }
   }
 
