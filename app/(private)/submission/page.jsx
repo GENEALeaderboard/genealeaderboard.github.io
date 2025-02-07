@@ -24,7 +24,12 @@ export default function Page() {
     const fetchCodes = async () => {
       setLoading(true)
       try {
-        const { data } = await axios.get(`${API_ENDPOINT}/api/inputcode`, { withCredentials: true })
+        const res = await fetch(`${API_ENDPOINT}/api/inputcode`, {
+          credentials: "include", // Important for sending cookies
+        })
+        const { data } = await res.json()
+
+        // const { data } = await axios.get(`${API_ENDPOINT}/api/inputcode`, { withCredentials: true })
         console.log("data", data)
         setCodes(data)
         setLoading(false)
