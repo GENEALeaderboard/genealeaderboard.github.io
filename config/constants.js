@@ -8,8 +8,7 @@ export const ERROR_ROUTES = new Set(["/404", "/500"])
 
 export const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT
 export const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
-export const AUTH_API_ENDPOINT = process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT
-export const GITHUB_REDIRECT_URI = `${process.env.NEXT_PUBLIC_AUTH_API_ENDPOINT}/auth/callback/github`
+export const GITHUB_REDIRECT_URI = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/callback/github`
 
 // ************************ NPY ************************
 // https://submission.hemvip.workers.dev/api/start-upload

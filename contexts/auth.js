@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AUTH_API_ENDPOINT, GITHUB_CLIENT_ID, GITHUB_REDIRECT_URI } from "@/config/constants"
+import { API_ENDPOINT, GITHUB_CLIENT_ID, GITHUB_REDIRECT_URI } from "@/config/constants"
 
 const AuthContext = createContext({
   user: null,
@@ -31,9 +31,9 @@ export function AuthProvider({ children }) {
         return
       }
 
-      console.log("AUTH_API_ENDPOINT", `${AUTH_API_ENDPOINT}/auth/user`)
+      console.log("API_ENDPOINT", `${API_ENDPOINT}/auth/user`)
       // Fetch from the API if no cached user
-      const res = await fetch(`${AUTH_API_ENDPOINT}/auth/user`, {
+      const res = await fetch(`${API_ENDPOINT}/auth/user`, {
         credentials: "include", // Important for sending cookies
       })
 
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      const res = await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
+      const res = await fetch(`${API_ENDPOINT}/auth/logout`, {
         method: "POST",
         credentials: "include",
       })
