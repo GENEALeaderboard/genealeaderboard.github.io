@@ -36,10 +36,7 @@ const AuthButton = memo(function AuthButton() {
         </Link>
         <Menu>
           <MenuButton className="cursor-pointer flex py-1 px-2 hover:bg-gray-200 rounded-md items-center gap-1">
-            <span
-              className="text-sm flex items-center gap-2  font-medium subpixel-antialiased contrast-more:text-gray-700 contrast-more:dark:text-gray-100"
-              aria-current="true"
-            >
+            <span className="text-sm flex items-center gap-2  font-medium subpixel-antialiased contrast-more:text-gray-700 contrast-more:dark:text-gray-100" aria-current="true">
               {/* {session.user.name || "User"} */}
               {user.name || "User"}
               {/* {session?.user ? (
@@ -53,13 +50,7 @@ const AuthButton = memo(function AuthButton() {
               ) : (
                 ""
               )} */}
-              <Image
-                src={user.avatar}
-                width={26}
-                height={26}
-                className="rounded-full border"
-                alt="User avatar"
-              />
+              <Image src={user.avatar} width={26} height={26} className="rounded-full border" alt="User avatar" />
             </span>
             <ArrowRightIcon className="*:origin-center *:transition-transform *:rotate-90 h-4" />
           </MenuButton>
@@ -69,7 +60,7 @@ const AuthButton = memo(function AuthButton() {
             transition="true"
             className={cn(
               "focus-visible:nextra-focus",
-              "w-48 px-2 py-1",
+              "px-2 py-1",
               "nextra-scrollbar transition-opacity motion-reduce:transition-none",
               "border border-black/5 dark:border-white/20",
               "backdrop-blur-md bg-nextra-bg/70",
@@ -77,23 +68,16 @@ const AuthButton = memo(function AuthButton() {
               "max-h-[min(calc(100vh-5rem),256px)]!"
             )}
           >
-            <MenuItem
-              as="div"
-              className={cn(
-                "block py-1.5 transition-colors ps-3 pe-9",
-                "text-gray-600 dark:text-gray-400"
-              )}
-            >
-              <button
-                onClick={logout}
-                className="text-sm cursor-pointer py-1 px-2 underline data-[focus]:bg-blue-100
+            <MenuItem as="button" onClick={logout} className={cn("cursor-pointer w-48  block py-1.5 transition-colors ps-3 pe-9", "text-gray-600 dark:text-gray-400")}>
+              <div
+                  className="text-sm text-left cursor-pointer py-1 underline data-[focus]:bg-blue-100
                 contrast-more:text-gray-700 contrast-more:dark:text-gray-100
                 max-md:hidden whitespace-nowrap subpixel-antialiased
                 hover:underline rounded-md transition-all"
                 aria-current="true"
               >
                 Logout
-              </button>
+              </div>
             </MenuItem>
             {/* <MenuItem
           as="div"

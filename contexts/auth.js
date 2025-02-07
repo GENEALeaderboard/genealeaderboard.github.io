@@ -64,6 +64,7 @@ export function AuthProvider({ children }) {
     try {
       const res = await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
         method: "POST",
+        credentials: "include",
       })
     } catch (error) {
       console.error("Error during logout:", error)
