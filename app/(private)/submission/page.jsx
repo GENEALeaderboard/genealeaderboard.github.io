@@ -19,6 +19,7 @@ export default function Page() {
   // const { data: codes, error, isLoading } = useSWR("/api/inputcode", apiFetcher)
   const { user, status } = useAuth()
   console.log("codes", codes)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchCodes = async () => {
@@ -28,11 +29,18 @@ export default function Page() {
         const res = await fetch(`${API_ENDPOINT}/api/inputcode`, {
           credentials: "include", // Important for sending cookies
         })
+
+        if (!res.ok) {
+          setError("Failed to fetch")
+        }
+
         const { data } = await res.json()
 
         // const { data } = await axios.get(`${API_ENDPOINT}/api/inputcode`, { withCredentials: true })
         console.log("data", data)
-        setCodes(data.codes)
+        if (data) {
+          setCodes(data.codes)
+        }
         setLoading(false)
       } catch (error) {
         console.error("Error fetching codes", error)
@@ -49,8 +57,10 @@ export default function Page() {
       </div>
     )
   }
-  console.log("status", status)
 
+  if (error) {
+    return <Callout type="error">Failed to connect, please contact support</Callout>
+  }
   return (
     <>
       <h1 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Submission</h1>

@@ -210,7 +210,7 @@ export default function UploadNPY({ codes, user }) {
   const handleUpload = async (e) => {
     e.preventDefault()
 
-    if (isSignedIn === false) {
+    if (!user) {
       setErrorMsg("Please login with github")
       return
     }
@@ -455,7 +455,7 @@ export default function UploadNPY({ codes, user }) {
       <div className="flex flex-col items-center">
         <div className="pl-[20%] flex justify-start">
           <button
-            className="font-bold flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+            className="cursor-pointer font-bold flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
             onClick={handleUpload}
           >
             Submission
