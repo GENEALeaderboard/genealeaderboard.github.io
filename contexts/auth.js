@@ -66,9 +66,8 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
+      const res = await fetch(`${AUTH_API_ENDPOINT}/auth/logout`, {
+        method: "POST"
       })
       setUser(null)
       router.push("/")
