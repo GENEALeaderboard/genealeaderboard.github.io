@@ -5,51 +5,50 @@ import React, { useEffect, useState } from "react"
 import { generateUUID } from "@/utils/generateUUID"
 import { calculateCombinations } from "./utils"
 import { Loading } from "@/components"
+import useSWR from "swr"
+import { apiFetcher, apiUpdate, apiUpdateBody } from "@/utils/fetcher"
+import { Callout } from "@/nextra"
 // import { Loading } from "@/components/loading/loading"
 
 export default function Page() {
-  const [codes, setCodes] = useState([])
-  const [loading, setLoading] = useState(false)
+  const {
+    data: codes,
+    error,
+    isLoading: loading,
+  } = useSWR("/api/inputcode", apiFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const [inputCodes, setInputCodes] = useState("")
+  const [state, setState] = useState({ type: "", message: null })
 
-  async function fetchData() {
-    try {
-      const [resInput, resSubmission, resStudies] = await Promise.all([axios.get("/api/inputcode")])
-
-      setCodes(resInput.data.codes.join(",\n"))
-    } catch (error) {
-      console.error(error)
-    }
-  }
   useEffect(() => {
-    setLoading(true)
-    fetchData()
-    setLoading(false)
-  }, [])
+    if (codes) {
+      console.log("data", codes)
+      setInputCodes(codes.join(",\n"))
+    }
+  }, [codes])
 
   const handleChangeCodes = async () => {
-    let inputcodes = codes
-      .split(",")
-      .map((item) => item.trim())
-      .sort()
-    // const res = await updateInputCode(inputcodes)
-    const res = await axios.get(  "/api/inputcode")
+    const codeList = inputCodes.replace(/\n/g, "")
+    const res = await apiUpdateBody("/api/inputcode", { codes: codeList })
 
     if (res.success) {
-      console.log("Insert new inputs code success", res)
+      setState({ message: res.msg, type: "info" })
+      // console.log("Insert new inputs code success", res)
     } else {
+      setState({ message: res.msg, type: "error" })
       console.log("Insert new inputs code failed", res)
     }
   }
 
-  // if (status === "loading") {
-  //   return <Loading></Loading>
-  // }
-
-  // if (status === "loading" || status === "unauthenticated") {
-  //   return <div>Unauthenticated</div>
-  // }
   if (loading) {
     return <Loading></Loading>
+  }
+
+  if (state.message) {
+    return <Callout type={state.type}>{state.message}</Callout>
   }
 
   return (
@@ -58,14 +57,14 @@ export default function Page() {
 
       <div className="mt-3 text-center flex gap-2 justify-center items-center">
         <button
-          className="text-sm py-2 px-4 border border-blue-500 bg-blue-500 text-white contrast-more:text-gray-700 contrast-more:dark:text-gray-100 max-md:hidden whitespace-nowrap subpixel-antialiased hover:underline rounded-md transition-all"
+          className="cursor-pointer text-sm py-2 px-4 border border-blue-500 bg-blue-500 text-white contrast-more:text-gray-700 contrast-more:dark:text-gray-100 max-md:hidden whitespace-nowrap subpixel-antialiased hover:underline rounded-md transition-all"
           aria-current="true"
           onClick={handleChangeCodes}
         >
           Update Database
         </button>
       </div>
-      {codes && (
+      {inputCodes && (
         <div className="flex flex-row items-center gap-4">
           <label htmlFor="codes" className="flex justify-end w-[15%]">
             Inputs Codes
@@ -75,8 +74,8 @@ export default function Page() {
             id="codes"
             rows="7"
             name="codes"
-            value={codes}
-            onChange={(e) => setCodes(e.target.value)}
+            value={inputCodes}
+            onChange={(e) => setInputCodes(e.target.value)}
           />
         </div>
       )}

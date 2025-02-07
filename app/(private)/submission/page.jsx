@@ -25,36 +25,6 @@ export default function Page() {
     revalidateOnReconnect: false,
   })
 
-  // useEffect(() => {
-  //   const fetchCodes = async () => {
-  //     setLoading(true)
-  //     try {
-  //       console.log(`${API_ENDPOINT}/api/inputcode`)
-
-  //       const res = await fetch(`${API_ENDPOINT}/api/inputcode`, {
-  //         credentials: "include", // Important for sending cookies
-  //       })
-
-  //       if (!res.ok) {
-  //         setError("Failed to fetch")
-  //       }
-
-  //       const { data } = await res.json()
-
-  //       // const { data } = await axios.get(`${API_ENDPOINT}/api/inputcode`, { withCredentials: true })
-  //       console.log("data", data)
-  //       if (data) {
-  //         setCodes(data.codes)
-  //       }
-  //       setLoading(false)
-  //     } catch (error) {
-  //       console.error("Error fetching codes", error)
-  //       setLoading(false)
-  //     }
-  //   }
-  //   fetchCodes()
-  // }, [])
-
   if (error) {
     return <Callout type="error">Failed to connect, please contact support</Callout>
   }
