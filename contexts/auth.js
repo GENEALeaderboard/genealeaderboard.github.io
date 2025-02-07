@@ -6,6 +6,7 @@ import { API_ENDPOINT, GITHUB_CLIENT_ID, GITHUB_REDIRECT_URI } from "@/config/co
 
 const AuthContext = createContext({
   user: null,
+  status: "loading",
   loading: false,
   login: () => {},
   logout: () => {},
@@ -13,6 +14,7 @@ const AuthContext = createContext({
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [authStatus, setAuthStatus] = useState("loading")
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -26,6 +28,7 @@ export function AuthProvider({ children }) {
       const cachedUser = localStorage.getItem("authUser")
 
       if (cachedUser) {
+        setAuthStatus("authenticated")
         setUser(JSON.parse(cachedUser))
         setLoading(false)
         return
@@ -42,13 +45,16 @@ export function AuthProvider({ children }) {
         console.log("resJSON", resJSON)
         setUser(resJSON.data)
         localStorage.setItem("authUser", JSON.stringify(resJSON.data)) // Cache user
+        setAuthStatus("authenticated")
       } else {
         console.log("Login failed")
         localStorage.removeItem("authUser") // Remove cache if session is invalid
+        setAuthStatus("unauthenticated")
       }
     } catch (error) {
       console.error("Error checking user session:", error)
       localStorage.removeItem("authUser")
+      setAuthStatus("unauthenticated")
     } finally {
       setLoading(false)
     }
@@ -76,7 +82,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loading, status:authStatus, login, logout }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {
