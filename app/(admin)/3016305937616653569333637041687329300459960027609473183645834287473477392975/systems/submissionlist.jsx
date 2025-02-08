@@ -24,7 +24,7 @@ export default function SubmissionList({ systemType, teams, setTeamID }) {
           {({ focus, hover }) => (
             <>
               {teams.map((team, index) => {
-                const submittedDate = new Date(team.submittedAt).toISOString().split("T")[0]
+                const submittedDate = new Date(team.createdat).toISOString().split("T")[0]
                 return (
                   <option
                     key={index}

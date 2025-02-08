@@ -43,16 +43,6 @@ export default function Page() {
   })
   const [teamID, setTeamID] = useState("")
 
-  // async function fetchSubmission() {
-  //   const res = await axios.get("/api/submission")
-  //   if (res.data.success) {
-  //     setSubmissionList(res.data.submissions)
-  //     setTeamID(res.data.submissions[0].userId)
-  //   } else {
-  //     console.error(res.error)
-  //   }
-  // }
-
   const submission = useMemo(() => submissions, [submissions])
 
   if (submissionError || systemsError) {
@@ -109,13 +99,6 @@ export default function Page() {
     createSystem(data)
   }
 
-  // if (status === "loading") {
-  //   return <Loading></Loading>
-  // }
-
-  // if (status === "loading" || status === "unauthenticated") {
-  //   return <div>Unauthenticated</div>
-  // }
 
   // {submissionLoading ? (
   //   <div className="w-full px-12  justify-center">
@@ -176,7 +159,7 @@ export default function Page() {
             </div>
           </div>
           {/* ********************************************************************************** */}
-          {/* <SubmissionList systemType={systemType} teams={submission} setTeamID={setTeamID} /> */}
+          <SubmissionList systemType={systemType} teams={submission} setTeamID={setTeamID} />
 
           {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
