@@ -2,12 +2,12 @@ import { Description, Field, Label, Select } from "@headlessui/react"
 import { Fragment, useState } from "react"
 import { clsx as cn } from "clsx"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
+import { Callout } from "@/nextra"
 
-export default function SystemList({
-  systemList,
-  selectedIndex,
-  setSelectedIndex,
-}) {
+export default function SystemList({ systemList, selectedIndex, setSelectedIndex }) {
+  if (!systemList) {
+    return <Callout type="error">Failed to connect, please contact support</Callout>
+  }
   return (
     <div className="relative items-center align-middle flex-grow">
       <Select
@@ -31,10 +31,7 @@ export default function SystemList({
           </>
         )}
       </Select>
-      <ArrowLeftIcon
-        className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90"
-        aria-hidden="true"
-      />
+      <ArrowLeftIcon className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90" aria-hidden="true" />
     </div>
   )
 }

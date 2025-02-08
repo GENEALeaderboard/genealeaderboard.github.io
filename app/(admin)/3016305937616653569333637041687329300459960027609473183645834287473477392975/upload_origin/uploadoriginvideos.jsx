@@ -9,18 +9,13 @@ import clsx from "clsx"
 import BVHFile from "@/icons/bvhfile"
 import { Select } from "@headlessui/react"
 import SystemList from "./systemlist"
-import {
-  VIDEO_START_UPLOAD_API_ENDPOINT,
-  VIDEO_UPLOAD_PART_API_ENDPOINT,
-  VIDEO_COMPLETE_UPLOAD_API_ENDPOINT,
-  VIDEO_UPLOAD_API_ENDPOINT,
-} from "@/config/constants"
+import { VIDEO_START_UPLOAD_API_ENDPOINT, VIDEO_UPLOAD_PART_API_ENDPOINT, VIDEO_COMPLETE_UPLOAD_API_ENDPOINT, VIDEO_UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
 import Mp4Icon from "@/icons/mp4"
 import UploadPreviewer from "./UploadPreviewer"
 
-export default function UploadOriginVideos({ systemList }) {
+export default function UploadOriginVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   // const [systemID, setSystemID] = useState("")
   const [files, setFiles] = useState([])
@@ -78,13 +73,15 @@ export default function UploadOriginVideos({ systemList }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
   useEffect(() => {
-    console.log("selectedIndex", selectedIndex, systemList)
-    setDescription(systemList[selectedIndex].description)
-  }, [selectedIndex, systemList])
+    console.log("selectedIndex", selectedIndex, systems)
+    if (systems && systems.length > 0) {
+      setDescription(systems[selectedIndex].description)
+    }
+  }, [selectedIndex, systems])
 
   useEffect(() => {
     setSelectedIndex(0)
-  }, [systemList])
+  }, [systems])
 
   const updateUploadProgress = useCallback((fileName, percent, status) => {
     setProgress((prevProgress) => {
@@ -107,10 +104,7 @@ export default function UploadOriginVideos({ systemList }) {
       // *************** START UPLOAD ***************
       updateUploadProgress(fileName, 0, "uploading")
 
-      console.log(
-        "VIDEO_START_UPLOAD_API_ENDPOINT",
-        VIDEO_START_UPLOAD_API_ENDPOINT
-      )
+      console.log("VIDEO_START_UPLOAD_API_ENDPOINT", VIDEO_START_UPLOAD_API_ENDPOINT)
 
       // Start multipart upload
       const startResp = await axios.post(
@@ -146,25 +140,17 @@ export default function UploadOriginVideos({ systemList }) {
         formData.append("totalSize", totalSize)
         formData.append("chunkSize", chunk.size)
 
-        const uploadChunkResp = await axios.post(
-          VIDEO_UPLOAD_PART_API_ENDPOINT,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / (progressEvent.total ?? 1)
-              )
-              const overallProgress = Math.round(
-                ((i - 1 + percentCompleted / 100) * 100) / totalChunks
-              )
+        const uploadChunkResp = await axios.post(VIDEO_UPLOAD_PART_API_ENDPOINT, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
+            const overallProgress = Math.round(((i - 1 + percentCompleted / 100) * 100) / totalChunks)
 
-              updateUploadProgress(fileName, overallProgress, "uploading")
-            },
-          }
-        )
+            updateUploadProgress(fileName, overallProgress, "uploading")
+          },
+        })
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         parts.push({
@@ -241,7 +227,7 @@ export default function UploadOriginVideos({ systemList }) {
       return
     }
 
-    const systemname = systemList[selectedIndex].name
+    const systemname = systems[selectedIndex].name
 
     if (!systemname) {
       setErrorMsg("System selected not found")
@@ -267,8 +253,8 @@ export default function UploadOriginVideos({ systemList }) {
         console.log("videoInfos.result", rs)
         return {
           url: rs.url,
-          systemid: systemList[selectedIndex]._id,
-          systemname: systemList[selectedIndex].name,
+          systemid: systems[selectedIndex]._id,
+          systemname: systems[selectedIndex].name,
           inputcode: rs.inputcode,
           path: rs.path,
         }
@@ -292,17 +278,26 @@ export default function UploadOriginVideos({ systemList }) {
       }
     } catch (error) {
       console.log("EXCEPTION ", error)
-      setErrorMsg(
-        "EXCEPTION: Error with uploading your videos, please contact support"
-      )
+      setErrorMsg("EXCEPTION: Error with uploading your videos, please contact support")
       console.log("Exception", error)
     } finally {
       setUploading("")
     }
   }
 
-  if (systemList.length <= 0) {
-    return <></>
+  if (videosLoading) {
+    return (
+      <div className="w-full px-12  justify-center">
+        <p className="flex justify-center p-4 gap-2">
+          <CircleLoading />
+          Loading ...
+        </p>
+      </div>
+    )
+  }
+
+  if (!systems || systems.length <= 0) {
+    return <Callout type="error">Failed to connect, please contact support</Callout>
   }
 
   if (successMsg) {
@@ -324,14 +319,7 @@ export default function UploadOriginVideos({ systemList }) {
         </p>
         <div className="flex flex-col gap-2">
           {files.map((file, index) => {
-            return (
-              <UploadPreviewer
-                file={file}
-                progress={progress}
-                index={index}
-                key={index}
-              />
-            )
+            return <UploadPreviewer file={file} progress={progress} index={index} key={index} />
           })}
         </div>
         <Callout type="warning" className="mt-0">
@@ -349,11 +337,7 @@ export default function UploadOriginVideos({ systemList }) {
           System Name
         </label>
         <div className="w-[80%] items-center align-middle flex-grow">
-          <SystemList
-            systemList={systemList}
-            selectedIndex={selectedIndex}
-            setSelectedIndex={setSelectedIndex}
-          />
+          <SystemList systemList={systems} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
         </div>
       </div>
 
@@ -391,30 +375,19 @@ export default function UploadOriginVideos({ systemList }) {
           {previews.length > 0 && (
             <ul className="w-full flex flex-wrap gap-2 justify-center">
               {previews.map(({ file, url }, index) => (
-                <li
-                  title={file.name}
-                  key={index}
-                  className="min-w-24 max-w-40  flex flex-col justify-center items-center gap-1 p-2 border rounded-md border-black"
-                >
+                <li title={file.name} key={index} className="min-w-24 max-w-40  flex flex-col justify-center items-center gap-1 p-2 border rounded-md border-black">
                   <video title={file.name} width={200} height={80} controls>
                     <source src={url} type={file.type} />
                     Your browser does not support the video tag.
                   </video>
-                  <p
-                    title={file.name}
-                    className="w-32 overflow-hidden text-ellipsis whitespace-nowrap"
-                  >
+                  <p title={file.name} className="w-32 overflow-hidden text-ellipsis whitespace-nowrap">
                     {file.name}
                   </p>
                 </li>
               ))}
             </ul>
           )}
-          {isDragActive ? (
-            <p>Drop the files here...</p>
-          ) : (
-            <p>Drag and drop some files here, or click to select files</p>
-          )}
+          {isDragActive ? <p>Drop the files here...</p> : <p>Drag and drop some files here, or click to select files</p>}
         </div>
       </div>
 

@@ -7,25 +7,19 @@ import { useEffect, useState } from "react"
 import InputCode from "./inputcode"
 import axios from "axios"
 import { Loading } from "@/components"
+import useSWR from "swr"
+import { apiFetcher } from "@/utils/fetcher"
 
 export default function Page() {
-  // const [codes, setCodes] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [systemList, setSystemList] = useState([])
-
-  async function fetchTeams() {
-    const res = await axios.get("/api/systems")
-    if (res.data.success) {
-      setSystemList(res.data.systems)
-    } else {
-      console.error(res.error)
-    }
-  }
-
-  useEffect(() => {
-    fetchTeams()
-    // fetchInputCodes()
-  }, [])
+  const {
+    data: systems,
+    error: systemsError,
+    isLoading: systemsLoading,
+  } = useSWR("/api/systems", apiFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
 
   return (
     <>
@@ -67,13 +61,7 @@ export default function Page() {
       </h4>
       <div className="mt-6 mb-32">
         {/* <p className="mt-3 leading-7 first:mt-0">Github information</p> */}
-        {loading && systemList.length > 0 ? (
-          <UploadOriginVideos systemList={systemList} />
-        ) : (
-          <div className="text-center">
-            <Loading />
-          </div>
-        )}
+        <UploadOriginVideos systems={systems} systemsLoading={systemsLoading} />
       </div>
     </>
   )
