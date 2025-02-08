@@ -98,6 +98,8 @@ export default function Page() {
       const result = await axios.post(url, {
         systemType: systemType,
         studiesCSV: studiesCSV,
+      }, {
+        withCredentials: true
       })
       console.log("result", result)
       const { success, message, error } = result.data

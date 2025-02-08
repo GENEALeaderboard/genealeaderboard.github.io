@@ -24,16 +24,15 @@ export default function UploadNPY({ codes, user, status }) {
   const [uploading, setUploading] = useState("")
   // const [uploadProgress, setUploadProgress] = useState({})
   const [progress, setProgress] = useState({})
-  const [successMsg, setSuccessMsg] = useState("")
-  const [errorMsg, setErrorMsg] = useState("")
+  const [validMsg, setValidMsg] = useState("")
+  const [uploadState, setUploadState] = useState({ type: "", message: "" })
 
   const [missingList, setMissingList] = useState([])
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      setErrorMsg("")
+      setValidMsg("")
       setUploading("")
-      setSuccessMsg("")
 
       const missing = []
       codes.map((code) => {
@@ -100,11 +99,11 @@ export default function UploadNPY({ codes, user, status }) {
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
-            const overallProgress = Math.round(percentCompleted * 100)
 
-            updateUploadProgress(fileName, overallProgress, "uploading")
+            updateUploadProgress(fileName, percentCompleted, "uploading")
           },
         }
       )
@@ -114,7 +113,7 @@ export default function UploadNPY({ codes, user, status }) {
       return resp.data
     } catch (err) {
       console.error("Error uploading file:", err)
-      // setErrorMsg("Error uploading file")
+      setValidMsg("Error uploading file")
       updateUploadProgress(fileName, 0, "error")
       const { success, msg, error } = err.response.data
       return { success, msg, error }
@@ -125,27 +124,27 @@ export default function UploadNPY({ codes, user, status }) {
     e.preventDefault()
 
     if (!user) {
-      setErrorMsg("Please login with github")
+      setValidMsg("Please login with github")
       return
     }
 
     if (files.length <= 0) {
-      setErrorMsg("Please upload video")
+      setValidMsg("Please upload video")
       return
     }
 
     if (missingList.length > 0) {
-      setErrorMsg("Please upload missing files")
+      setValidMsg("Please upload missing files")
       return
     }
 
     if (!user.email) {
-      setErrorMsg("Please add email address")
+      setValidMsg("Please add email address")
       return
     }
 
     if (!user.name) {
-      setErrorMsg("Please add your team name")
+      setValidMsg("Please add your team name")
       return
     }
 
@@ -161,18 +160,24 @@ export default function UploadNPY({ codes, user, status }) {
       const submitid = res.data.submitid
 
       if (!res.success) {
-        console.log(res)
-        setErrorMsg(res.msg)
+        console.log("Reponse create submission", res)
+        setUploadState({ type: "error", message: "Error with your submission, please contact for support!" })
         return
       }
       setUploading("Uploading your submission, please waiting ...")
-      const teamid = String(username).toLowerCase()
+      const usernameid = String(username).toLowerCase()
 
       //~~~~~~~~  Upload all npy files ~~~~~~~~
-      console.log("files", files)
+      // console.log("files", files)
       const results = []
       for (let index = 0; index < files.length; index++) {
-        const result = await simpleUploadFile(files[index], index, teamid)
+        const result = await simpleUploadFile(files[index], index, usernameid)
+        console.log("result", result)
+
+        if (!result.success) {
+          setUploadState({ type: "error", message: result.msg })
+          return
+        }
         results.push(result)
       }
 
@@ -185,15 +190,15 @@ export default function UploadNPY({ codes, user, status }) {
           submitStatus: "success",
         })
         console.log("res", res)
-        setSuccessMsg("Your submission are successfully.")
+        setUploadState({ type: "info", message: "Your submission has been uploaded successfully" })
       } else {
         const failedResult = results.filter((result) => !result.success)[0]
         const { success, msg, error } = failedResult
-        setErrorMsg(msg)
+        setValidMsg(msg)
         console.log("Success", success, "msg", msg, "error", error)
       }
     } catch (error) {
-      setErrorMsg("EXCEPTION: Error with uploading your submission, please contact support")
+      setUploadState({ type: "error", message: "Error with your submission, please contact for support!" })
       console.log("Exception", error)
     } finally {
       // setUploading("")
@@ -208,11 +213,11 @@ export default function UploadNPY({ codes, user, status }) {
     return <Callout type="error">Failed get codes, please contact for support</Callout>
   }
 
-  if (successMsg) {
+  if (uploadState.message) {
     return (
       <div className="w-full p-12 justify-center ">
-        <Callout type="info" className="mt-0">
-          {successMsg}
+        <Callout type={uploadState.type} className="mt-0">
+          {uploadState.message}
         </Callout>
       </div>
     )
@@ -259,17 +264,9 @@ export default function UploadNPY({ codes, user, status }) {
             return <UploadPreviewer file={file} progress={progress} index={index} key={index} />
           })}
         </div>
-        {successMsg ? (
-          <div className="w-full p-12 justify-center ">
-            <Callout type="info" className="mt-0">
-              {successMsg}
-            </Callout>
-          </div>
-        ) : (
-          <Callout type="warning" className="mt-0">
-            {uploading}
-          </Callout>
-        )}
+        <Callout type="warning" className="mt-0">
+          {uploading}
+        </Callout>
       </div>
     )
   }
@@ -363,10 +360,10 @@ export default function UploadNPY({ codes, user, status }) {
         </div>
       </div>
 
-      {errorMsg && (
+      {validMsg && (
         <div className="w-full pl-[20%]">
           <Callout type="error" className="mt-0">
-            {errorMsg}
+            {validMsg}
           </Callout>
         </div>
       )}

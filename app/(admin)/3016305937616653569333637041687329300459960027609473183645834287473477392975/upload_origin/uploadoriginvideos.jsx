@@ -114,7 +114,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           fileName: fileName,
           totalSize: totalSize,
         },
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data" } , withCredentials: true}, 
       )
       const { uploadId } = startResp.data
       console.log("uploadId", uploadId)
