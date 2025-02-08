@@ -48,11 +48,7 @@ export default function Page() {
 
   const submission = useMemo(() => submissions, [submissions])
 
-  if (submissionError || systemsError) {
-    return <Callout type="error">Failed to connect, please contact support</Callout>
-  }
-
-  const updateSystemType = useCallback(function updateSystemType(type) {
+  const updateSystemType = function updateSystemType(type) {
     setSystemType(type)
     switch (type) {
       case "groundtruth":
@@ -70,11 +66,7 @@ export default function Page() {
       default:
         break
     }
-  }, [])
-
-  useEffect(() => {
-    updateSystemType(systemType)
-  }, [systemType, updateSystemType])
+  }
 
   async function onCreateSystem(e) {
     e.preventDefault()
@@ -98,16 +90,13 @@ export default function Page() {
     }
   }
 
-  // {submissionLoading ? (
-  //   <div className="w-full px-12  justify-center">
-  //     <p className="flex justify-center p-4 gap-2">
-  //       <CircleLoading />
-  //       Loading codes...
-  //     </p>
-  //   </div>
-  // ) : (
+  useEffect(() => {
+    updateSystemType(systemType)
+  }, [systemType])
 
-  // )}
+  if (submissionError || systemsError) {
+    return <Callout type="error">Failed to connect, please contact support</Callout>
+  }
 
   if (state.message) {
     return <Callout type={state.type}>{state.message}</Callout>
