@@ -17,7 +17,7 @@ export function UploadStatus({ type }) {
     },
     error: {
       label: "error",
-      color: "border-neutral-500 text-neutral-600 bg-neutral-100",
+      color: "border-neutral-400 text-neutral-600 bg-neutral-100",
     },
   }
   if (!type || !status[type]) {

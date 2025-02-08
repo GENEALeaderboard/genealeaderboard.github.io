@@ -18,7 +18,6 @@ export default function UploadNPY({ codes, user, status }) {
   const [teamname, setTeamName] = useState(user ? user.name : "")
   const [username, setUsername] = useState(user ? user.username : "")
   const [userid, setUserId] = useState(user ? user.userid : "")
-  console.log("Team Name", user ? user.name : "")
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [uploading, setUploading] = useState("")
@@ -162,31 +161,31 @@ export default function UploadNPY({ codes, user, status }) {
       }
 
       console.log("results.uploadFile", results)
-      const allSuccessful = results.every((result) => result.success)
-      if (allSuccessful) {
-        //~~~~~~~~  Update submission info to database ~~~~~~~~
-        const submissions = {
-          email: email,
-          teamname: teamname,
-          teamid: username,
-          status: "success",
-        }
-        const res = await apiInsertBody("/api/submission", { submissions: submissions })
-        console.log("res", res)
+      // const allSuccessful = results.every((result) => result.success)
+      // if (allSuccessful) {
+      //   //~~~~~~~~  Update submission info to database ~~~~~~~~
+      //   const submissions = {
+      //     email: email,
+      //     teamname: teamname,
+      //     teamid: username,
+      //     status: "success",
+      //   }
+      //   const res = await apiInsertBody("/api/submission", { submissions: submissions })
+      //   console.log("res", res)
 
-        if (!res.data.success) {
-          console.log(res.data)
-          setErrorMsg(res.data.msg)
-          // "Duplicated submission, only submit once, please contact support"
-        }
+      //   if (!res.data.success) {
+      //     console.log(res.data)
+      //     setErrorMsg(res.data.msg)
+      //     // "Duplicated submission, only submit once, please contact support"
+      //   }
 
-        setSuccessMsg("Your submission are successfully.")
-      } else {
-        const failedResult = results.filter((result) => !result.success)[0]
-        const { success, msg, error } = failedResult
-        setErrorMsg(msg)
-        console.log("Success", success, "msg", msg, "error", error)
-      }
+      //   setSuccessMsg("Your submission are successfully.")
+      // } else {
+      //   const failedResult = results.filter((result) => !result.success)[0]
+      //   const { success, msg, error } = failedResult
+      //   setErrorMsg(msg)
+      //   console.log("Success", success, "msg", msg, "error", error)
+      // }
     } catch (error) {
       console.log(error)
       setErrorMsg("EXCEPTION: Error with uploading your submission, please contact support")

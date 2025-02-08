@@ -156,7 +156,7 @@
 
   .animate-gradient {
     animation-name: indeterminate;
-    animation-duration: 3s;
+    animation-duration: 1s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
   }
