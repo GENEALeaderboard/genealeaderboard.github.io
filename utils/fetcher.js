@@ -6,7 +6,7 @@ export const apiFetcher = (...args) => fetch(`${API_ENDPOINT}${args[0]}`, { cred
 
 // export const apiFetcher = (endpoint, options = {}) => fetch(`${API_ENDPOINT}${args[0]}`, { credentials: "include", ...options }).then((res) => res.json().then((data) => data.data))
 
-export const apiUpdate = (endpoint, data, ...args) =>
+export const apiUpdateData = (endpoint, data, ...args) =>
   fetch(`${API_ENDPOINT}${endpoint}`, {
     method: "POST",
     headers: {
@@ -19,7 +19,7 @@ export const apiUpdate = (endpoint, data, ...args) =>
     .then((res) => res.json())
     .then((data) => data)
 
-export const apiUpdateBody = (endpoint, data, ...args) =>
+export const apiPatch = (endpoint, data, ...args) =>
   fetch(`${API_ENDPOINT}${endpoint}`, {
     method: "PATCH",
     headers: {
@@ -30,7 +30,7 @@ export const apiUpdateBody = (endpoint, data, ...args) =>
     ...args,
   }).then((res) => res.json())
 
-export const apiInsertBody = (endpoint, data, ...args) =>
+export const apiInsert = (endpoint, data, ...args) =>
   fetch(`${API_ENDPOINT}${endpoint}`, {
     method: "POST",
     headers: {

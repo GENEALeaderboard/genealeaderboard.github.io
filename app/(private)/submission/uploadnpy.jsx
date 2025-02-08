@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 import CircleLoading from "@/icons/circleloading"
 import UploadPreviewer from "./UploadPreviewer"
+import { apiInsert } from "@/utils/fetcher"
 
 export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user ? user.email : "")
@@ -149,37 +150,42 @@ export default function UploadNPY({ codes, user, status }) {
     }
 
     try {
-      setUploading("Uploading your submission, please waiting ...")
-      const teamid = String(username).toLowerCase()
-
-      //~~~~~~~~  Upload all npy files ~~~~~~~~
-      console.log("files", files)
-      const results = []
-      for (let index = 0; index < files.length; index++) {
-        const result = await simpleUploadFile(files[index], index, teamid)
-        results.push(result)
+      const submission = {
+        email: email,
+        teamname: teamname,
+        teamid: username,
+        status: "new",
       }
+      const res = await apiInsert("/api/submissions", { submission: submission })
+      console.log("res", res)
 
-      console.log("results.uploadFile", results)
+      if (!res.success) {
+        console.log(res)
+        setErrorMsg(res.msg)
+        // "Duplicated submission, only submit once, please contact support"
+      }
+      // setUploading("Uploading your submission, please waiting ...")
+      // const teamid = String(username).toLowerCase()
+
+      // //~~~~~~~~  Upload all npy files ~~~~~~~~
+      // console.log("files", files)
+      // const results = []
+      // for (let index = 0; index < files.length; index++) {
+      //   const result = await simpleUploadFile(files[index], index, teamid)
+      //   results.push(result)
+      // }
+
+      // console.log("results.uploadFile", results)
       // const allSuccessful = results.every((result) => result.success)
       // if (allSuccessful) {
-      //   //~~~~~~~~  Update submission info to database ~~~~~~~~
-      //   const submissions = {
-      //     email: email,
-      //     teamname: teamname,
-      //     teamid: username,
-      //     status: "success",
-      //   }
-      //   const res = await apiInsertBody("/api/submission", { submissions: submissions })
-      //   console.log("res", res)
-
-      //   if (!res.data.success) {
-      //     console.log(res.data)
-      //     setErrorMsg(res.data.msg)
-      //     // "Duplicated submission, only submit once, please contact support"
-      //   }
-
-      //   setSuccessMsg("Your submission are successfully.")
+      //~~~~~~~~  Update submission info to database ~~~~~~~~
+      const submission = {
+        submitid: submitid,
+        submitStatus: "success",
+      }
+      const res = await apiInsert("/api/submissions", { submission: submission })
+      console.log("res", res)
+      // setSuccessMsg("Your submission are successfully.")
       // } else {
       //   const failedResult = results.filter((result) => !result.success)[0]
       //   const { success, msg, error } = failedResult
@@ -187,7 +193,6 @@ export default function UploadNPY({ codes, user, status }) {
       //   console.log("Success", success, "msg", msg, "error", error)
       // }
     } catch (error) {
-      console.log(error)
       setErrorMsg("EXCEPTION: Error with uploading your submission, please contact support")
       console.log("Exception", error)
     } finally {

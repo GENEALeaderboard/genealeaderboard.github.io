@@ -6,7 +6,7 @@ import { generateUUID } from "@/utils/generateUUID"
 import { calculateCombinations } from "./utils"
 import { Loading } from "@/components"
 import useSWR from "swr"
-import { apiFetcher, apiUpdate, apiUpdateBody } from "@/utils/fetcher"
+import { apiFetcher, apiUpdateData, apiPatch } from "@/utils/fetcher"
 import { Callout } from "@/nextra"
 // import { Loading } from "@/components/loading/loading"
 
@@ -32,7 +32,7 @@ export default function Page() {
 
   const handleChangeCodes = async () => {
     const codeList = inputCodes.replace(/\n/g, "")
-    const res = await apiUpdateBody("/api/inputcode", { codes: codeList })
+    const res = await apiPatch("/api/inputcode", { codes: codeList })
 
     if (res.success) {
       setState({ message: res.msg, type: "info" })
