@@ -236,39 +236,6 @@ export default function UploadNPY({ codes, user, status }) {
   if (uploading) {
     return (
       <div className="w-full px-12  justify-center ">
-        {/* <div className="flex flex-col gap-2">
-          {files.map((file, idx) => {
-            // console.log("progress", progress)
-            return (
-              <div
-                className="mx-20 flex gap-2 rounded-md border items-center border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50 py-2 px-6 shadow"
-                key={idx}
-              >
-                <div className="">
-                  <NPYIcon className="h-5 w-5" />
-                </div>
-                <span className="flex-grow text-sm">{file.name}</span>
-                <div className="w-48">
-                  <div className="overflow-hidden mx-auto max-w-72 h-[0.375rem] text-xs flex rounded-3xl min-w-20 bg-blue-200">
-                    {progress[file.name] && progress[file.name].percent ? (
-                      <div
-                        style={{ width: `${progress[file.name].percent}%` }}
-                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-                      >
-                        <span className="relative left-0 right-0 w-full text-center text-blue-800"></span>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-                <span className="text-xs w-12 text-center bg-gray-200 px-2 rounded-xl">{`${progress[file.name].percent || 0}%`}</span>
-
-                {progress[file.name] && progress[file.name].status && <UploadStatus type={progress[file.name].status} />}
-              </div>
-            )
-          })}
-        </div> */}
         <div className="flex flex-col gap-2">
           {files.map((file, index) => {
             return <UploadPreviewer file={file} progress={progress} index={index} key={index} />
