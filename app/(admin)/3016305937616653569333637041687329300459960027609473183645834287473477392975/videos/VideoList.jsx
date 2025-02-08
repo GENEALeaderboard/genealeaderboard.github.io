@@ -1,6 +1,18 @@
+import CircleLoading from "@/icons/circleloading"
 import { memo } from "react"
 
-const VideoList = memo(function VideoList({ videos }) {
+const VideoList = memo(function VideoList({ videos, videosLoading }) {
+  if (videosLoading) {
+    return (
+      <div className="w-full px-12  justify-center">
+        <p className="flex justify-center p-4 gap-2">
+          <CircleLoading />
+          Loading ...
+        </p>
+      </div>
+    )
+  }
+
   return (
     <table className="w-full border-collapse text-sm">
       <thead>
@@ -16,10 +28,7 @@ const VideoList = memo(function VideoList({ videos }) {
       <tbody className="align-baseline text-gray-900 dark:text-gray-100">
         {videos &&
           videos.map((video, index) => (
-            <tr
-              key={index}
-              className="border-b border-gray-100 dark:border-neutral-700/50 align-middle"
-            >
+            <tr key={index} className="border-b border-gray-100 dark:border-neutral-700/50 align-middle">
               <td className="py-2 pl-4">{index + 1}</td>
               <td className="py-2 pl-4">
                 <div className="max-w-28">
@@ -38,9 +47,7 @@ const VideoList = memo(function VideoList({ videos }) {
               </td>
               <td className="py-2 pl-4 h-14">{video.systemname}</td>
               <td className="py-2 pl-4">
-                <p className="truncate w-20">
-                  {new Date(video.createdat).toLocaleString()}
-                </p>
+                <p className="truncate w-20">{new Date(video.createdat).toLocaleString()}</p>
               </td>
             </tr>
           ))}

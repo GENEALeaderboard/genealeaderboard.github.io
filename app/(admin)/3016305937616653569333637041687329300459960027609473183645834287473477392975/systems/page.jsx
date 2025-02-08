@@ -94,6 +94,17 @@ export default function Page() {
     updateSystemType(systemType)
   }, [systemType])
 
+  if (systemsLoading) {
+    return (
+      <div className="w-full px-12  justify-center">
+        <p className="flex justify-center p-4 gap-2">
+          <CircleLoading />
+          Loading ...
+        </p>
+      </div>
+    )
+  }
+
   if (submissionError || systemsError) {
     return <Callout type="error">Failed to connect, please contact support</Callout>
   }
