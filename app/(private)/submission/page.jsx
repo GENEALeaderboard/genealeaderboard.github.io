@@ -4,7 +4,6 @@ import Image from "next/image"
 import UploadNPY from "./uploadnpy"
 import { useEffect, useState } from "react"
 import InputCode from "./inputcode"
-import axios from "axios"
 import { Loading } from "@/components"
 import useSWR from "swr"
 import { apiFetcher } from "@/utils/fetcher"
@@ -18,7 +17,7 @@ export default function Page() {
   const {
     data: codes,
     error,
-    isLoading: loading,
+    isLoading,
   } = useSWR("/api/inputcode", apiFetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
@@ -58,15 +57,7 @@ export default function Page() {
         Upload NPY files
       </h2>
       <div className="mt-6 mb-32">
-        {/* <p className="mt-3 leading-7 first:mt-0">Github information</p> */}
-        {/* {status === "unauthenticated" ? (
-          <Callout type="error">Please login with github</Callout>
-        ) : status === "authenticated" && user ? (
-          
-        ) : (
-          <Loading />
-        )} */}
-        {loading ? (
+        {isLoading || status === "loading" ? (
           <div className="w-full px-12  justify-center">
             <p className="flex justify-center p-4 gap-2">
               <CircleLoading />
@@ -76,8 +67,6 @@ export default function Page() {
         ) : (
           <UploadNPY codes={codes} user={user} status={status} />
         )}
-
-        {/* {user ? <UploadNPY codes={codes} user={user} /> : loading ? <></> : <Callout type="error">Please login with github</Callout>} */}
       </div>
     </>
   )

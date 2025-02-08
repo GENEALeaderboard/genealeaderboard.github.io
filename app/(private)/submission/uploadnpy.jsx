@@ -10,13 +10,14 @@ import { COMPLETE_UPLOAD_API_ENDPOINT, START_UPLOAD_API_ENDPOINT, UPLOAD_API_END
 import { UploadStatus } from "@/components/UploadStatus"
 import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
+import CircleLoading from "@/icons/circleloading"
 
 export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user ? user.email : "")
   const [teamname, setTeamName] = useState(user ? user.name : "")
   const [username, setUsername] = useState(user ? user.username : "")
   const [userId, setUserId] = useState(user ? user.userid : "")
-
+  console.log("Team Name", user ? user.name : "")
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [errorMsg, setErrorMsg] = useState("")
@@ -275,13 +276,11 @@ export default function UploadNPY({ codes, user, status }) {
       // setUploading("")
     }
   }
-
-  if (status === "loading") {
-    return <></>
-  }
+  
   if (status === "unauthenticated" || !user) {
     return <Callout type="error">Please login with github</Callout>
   }
+
   if (!codes || codes.length <= 0) {
     return <Callout type="error">Failed get codes, please contact for support</Callout>
   }
