@@ -2,13 +2,7 @@
 
 import { clsx as cn } from "clsx"
 import axios from "axios"
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from "react"
 import { generateUUID } from "@/utils/generateUUID"
 import { calculateCombinations } from "./utils"
 import { Loading } from "@/components"
@@ -16,82 +10,79 @@ import SubmissionList from "./submissionlist"
 import { Description, Field, Label, Select } from "@headlessui/react"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
 import SystemList from "./SystemList"
+import { apiFetcher } from "@/utils/fetcher"
+import useSWR from "swr"
+import CircleLoading from "@/icons/circleloading"
 // import { Loading } from "@/components/loading/loading"
 
 const SYSTEM_TYPES = ["groundtruth", "system", "baseline"]
 
 export default function Page() {
-  const [systemList, setSystemList] = useState([])
-  const [loading, setLoading] = useState(false)
+  const {
+    data: systems,
+    error: systemsError,
+    isLoading: systemsLoading,
+  } = useSWR("/api/systems", apiFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [systemType, setSystemType] = useState("system")
   const [systemname, setSystemName] = useState("")
   const [description, setDescription] = useState("")
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const [submissionList, setSubmissionList] = useState([])
+  const {
+    data: submissions,
+    error: submissionError,
+    isLoading: submissionLoading,
+  } = useSWR("/api/submissions", apiFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   const [teamID, setTeamID] = useState("")
 
-  async function fetchData() {
-    try {
-      const res = await axios.get("/api/systems")
-      if (res.data.success) {
-        setSystemList(res.data.systems)
-      } else {
-        console.error(res.error)
-      }
-    } catch (error) {
-      console.error(error)
-    }
+  // async function fetchSubmission() {
+  //   const res = await axios.get("/api/submission")
+  //   if (res.data.success) {
+  //     setSubmissionList(res.data.submissions)
+  //     setTeamID(res.data.submissions[0].userId)
+  //   } else {
+  //     console.error(res.error)
+  //   }
+  // }
+
+  const submission = useMemo(() => submissions, [submissions])
+
+  if (submissionError || systemsError) {
+    return <Callout type="error">Failed to connect, please contact support</Callout>
   }
 
-  async function fetchSubmission() {
-    const res = await axios.get("/api/submission")
-    if (res.data.success) {
-      setSubmissionList(res.data.submissions)
-      setTeamID(res.data.submissions[0].userId)
-    } else {
-      console.error(res.error)
+  const updateSystemType = useCallback(function updateSystemType(type) {
+    setSystemType(type)
+    switch (type) {
+      case "groundtruth":
+        setSystemName("NA")
+        setDescription("Ground truth system")
+        break
+      case "baseline":
+        setSystemName("BA")
+        setDescription("Baseline System")
+        break
+      case "system":
+        setSystemName("SA")
+        setDescription("System")
+        break
+      default:
+        break
     }
-  }
-
-  const submission = useMemo(() => submissionList, [submissionList])
-
-  const updateSystemType = useCallback(
-    function updateSystemType(type) {
-      setSystemType(type)
-      switch (type) {
-        case "groundtruth":
-          setSystemName("NA")
-          setDescription("Ground truth system")
-          break
-        case "baseline":
-          setSystemName("BA")
-          setDescription("Baseline System")
-          break
-        case "system":
-          setSystemName("SA")
-          setDescription("System")
-          if (submissionList.length <= 0) {
-            fetchSubmission()
-          }
-          break
-        default:
-          break
-      }
-    },
-    [submissionList.length]
-  )
+  }, [])
 
   useEffect(() => {
     updateSystemType(systemType)
   }, [systemType, updateSystemType])
 
-  useEffect(() => {
-    setLoading(true)
-    fetchData()
-    setSystemType("system")
-    setLoading(false)
-  }, [])
 
   async function createSystem(data) {
     try {
@@ -126,9 +117,16 @@ export default function Page() {
   //   return <div>Unauthenticated</div>
   // }
 
-  if (loading) {
-    return <Loading></Loading>
-  }
+  // {submissionLoading ? (
+  //   <div className="w-full px-12  justify-center">
+  //     <p className="flex justify-center p-4 gap-2">
+  //       <CircleLoading />
+  //       Loading codes...
+  //     </p>
+  //   </div>
+  // ) : (
+
+  // )}
 
   return (
     <div className="flex flex-col gap-3">
@@ -136,22 +134,14 @@ export default function Page() {
         System List
       </h2>
 
-      <div
-        className={cn(
-          "-mx-6 mb-4 mt-6 overflow-x-auto overscroll-x-contain px-6 pb-4 ",
-          "mask-gradient"
-        )}
-      >
-        <SystemList systems={systemList} />
+      <div className={cn("-mx-6 mb-4 mt-6 overflow-x-auto overscroll-x-contain px-6 pb-4 ", "mask-gradient")}>
+        <SystemList systems={systems} />
       </div>
       <div className="">
         <h2 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-10 border-b pb-1 text-3xl border-neutral-200/70 contrast-more:border-neutral-400 dark:border-primary-100/10 contrast-more:dark:border-neutral-400">
           Create System
         </h2>
-        <form
-          className="mt-2 mb-6 flex flex-col px-4 gap-4"
-          onSubmit={onCreateSystem}
-        >
+        <form className="mt-2 mb-6 flex flex-col px-4 gap-4" onSubmit={onCreateSystem}>
           {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
             <label htmlFor="systemname" className="w-[20%] flex justify-end">
@@ -182,25 +172,11 @@ export default function Page() {
                   </Fragment>
                 )}
               </Select>
-              <ArrowLeftIcon
-                className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90"
-                aria-hidden="true"
-              />
+              <ArrowLeftIcon className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90" aria-hidden="true" />
             </div>
           </div>
           {/* ********************************************************************************** */}
-          {systemType === "system" && submissionList.length > 0 ? (
-            <div className="flex flex-row items-center gap-4">
-              <label htmlFor="name" className="w-[20%] flex justify-end">
-                Submission
-              </label>
-              <div className="relative items-center align-middle flex-grow">
-                <SubmissionList teams={submission} setTeamID={setTeamID} />
-              </div>
-            </div>
-          ) : (
-            <></>
-          )}
+          {/* <SubmissionList systemType={systemType} teams={submission} setTeamID={setTeamID} /> */}
 
           {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
