@@ -11,6 +11,7 @@ import { UploadStatus } from "@/components/UploadStatus"
 import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 import CircleLoading from "@/icons/circleloading"
+import UploadPreviewer from "./UploadPreviewer"
 
 export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user ? user.email : "")
@@ -80,94 +81,7 @@ export default function UploadNPY({ codes, user, status }) {
     })
   }, [])
 
-  const uploadFile = async (file, index, teamid) => {
-    const chunkSize = 5 * 1024 * 1024 // 5MB chunks
-    const totalChunks = Math.ceil(file.size / chunkSize)
-    console.log("totalChunks", totalChunks)
-    const fileName = file.name
-    const fileSize = file.size
-    console.log("uploadFile.userId", teamid)
-
-    try {
-      updateUploadProgress(fileName, 0, "uploading")
-
-      console.log("START_UPLOAD_API_ENDPOINT", START_UPLOAD_API_ENDPOINT)
-
-      // Start multipart upload
-      const startResp = await axios.post(
-        START_UPLOAD_API_ENDPOINT,
-        {
-          userId: teamid,
-          fileName: fileName,
-          fileSize: fileSize,
-        },
-        { headers: { "Content-Type": "multipart/form-data" } }
-      )
-      const { uploadId } = startResp.data
-
-      // Upload all parts
-      // const uploadChunkResp = await Promise.all(uploadPromises)
-      const parts = []
-      for (let i = 1; i <= totalChunks; i++) {
-        const start = (i - 1) * chunkSize
-        const end = Math.min(start + chunkSize, file.size)
-        const chunk = file.slice(start, end)
-
-        const formData = new FormData()
-        formData.append("userId", teamid)
-        formData.append("file", chunk, fileName)
-        formData.append("partNumber", i.toString())
-        formData.append("uploadId", uploadId)
-        formData.append("fileName", fileName)
-        formData.append("fileSize", fileSize)
-        formData.append("chunkSize", chunk.size)
-
-        const uploadChunkResp = await axios.post(UPLOAD_PART_API_ENDPOINT, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Content-Length": chunk.size,
-          },
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
-            const overallProgress = Math.round(((i - 1 + percentCompleted / 100) * 100) / totalChunks)
-
-            updateUploadProgress(fileName, overallProgress, "uploading")
-          },
-        })
-        // uploadChunkResp.push(result)
-        parts.push({
-          PartNumber: parts.length + 1,
-          ETag: uploadChunkResp.data.ETag.replace(/\"/g, ""),
-        })
-      }
-
-      // Complete multipart upload
-      console.log("parts", parts)
-      const completeUploadResp = await axios.post(
-        COMPLETE_UPLOAD_API_ENDPOINT,
-        {
-          userId: teamid,
-          uploadId: uploadId,
-          fileName: fileName,
-          fileSize: fileSize,
-          parts: JSON.stringify(parts),
-        },
-        { headers: { "Content-Type": "multipart/form-data" } }
-      )
-      updateUploadProgress(fileName, 100, "completed")
-
-      return completeUploadResp.data
-      // return partUploadResponse.data
-    } catch (err) {
-      console.error("Error uploading file:", err)
-      // setErrorMsg("Error uploading file")
-      updateUploadProgress(fileName, 0, "error")
-      const { success, msg, error } = err.response.data
-      return { success, msg, error }
-    }
-  }
-
-  const simpleUploadFile = async (file, index, teamid) => {
+  const simpleUploadFile = async (file, index, username) => {
     const fileName = file.name
     const fileSize = file.size
 
@@ -180,12 +94,19 @@ export default function UploadNPY({ codes, user, status }) {
       const resp = await axios.post(
         UPLOAD_URL,
         {
-          userId: teamid,
-          fileName: fileName,
-          fileSize: fileSize,
-          file: file,
+          username,
+          fileName,
+          file,
         },
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
+            const overallProgress = Math.round(percentCompleted * 100)
+
+            updateUploadProgress(fileName, overallProgress, "uploading")
+          },
+        }
       )
 
       updateUploadProgress(fileName, 100, "completed")
@@ -296,7 +217,7 @@ export default function UploadNPY({ codes, user, status }) {
   if (uploading) {
     return (
       <div className="w-full px-12  justify-center ">
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           {files.map((file, idx) => {
             // console.log("progress", progress)
             return (
@@ -327,6 +248,11 @@ export default function UploadNPY({ codes, user, status }) {
                 {progress[file.name] && progress[file.name].status && <UploadStatus type={progress[file.name].status} />}
               </div>
             )
+          })}
+        </div> */}
+        <div className="flex flex-col gap-2">
+          {files.map((file, index) => {
+            return <UploadPreviewer file={file} progress={progress} index={index} key={index} />
           })}
         </div>
         {successMsg ? (
