@@ -211,7 +211,7 @@ export default function UploadNPY({ codes, user, status }) {
       setUploadState({ type: "error", message: "Error with your submission, please contact for support!" })
       console.log("Exception", error)
     } finally {
-      // setUploading("")
+      setUploading("")
     }
   }
 

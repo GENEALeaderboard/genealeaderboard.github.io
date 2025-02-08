@@ -17,23 +17,33 @@ import UploadPreviewer from "./UploadPreviewer"
 
 export default function UploadOriginVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
-  // const [systemID, setSystemID] = useState("")
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
-  const [errorMsg, setErrorMsg] = useState("")
+  const [validMsg, setValidMsg] = useState("")
   const [uploading, setUploading] = useState("")
   // const [uploadProgress, setUploadProgress] = useState({})
   const [progress, setProgress] = useState({})
-  const [successMsg, setSuccessMsg] = useState("")
+  const [uploadState, setUploadState] = useState({ type: "", message: "" })
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [description, setDescription] = useState("")
   // const [missingList, setMissingList] = useState([])
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    setErrorMsg("")
+    setValidMsg("")
     setUploading("")
-    setSuccessMsg("")
+
+    for (let mp4File of acceptedFiles) {
+      if (!mp4File.name.endsWith(".mp4")) {
+        setValidMsg("Please upload only .mp4 files")
+        return
+      }
+
+      if (mp4File.size > 100 * 1024 * 1024) {
+        setValidMsg("File size is too large, please upload file less than 100MB")
+        return
+      }
+    }
 
     // const missing = []
     // codes.map((code) => {
@@ -99,11 +109,11 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     try {
       updateUploadProgress(fileName, 0, "uploading")
 
-      console.log("VIDEO_UPLOAD_API_ENDPOINT", VIDEO_UPLOAD_API_ENDPOINT)
+      console.log("UPLOAD_API_ENDPOINT", UPLOAD_API_ENDPOINT)
 
       // Start multipart upload
       const resp = await axios.post(
-        VIDEO_UPLOAD_API_ENDPOINT,
+        UPLOAD_API_ENDPOINT,
         {
           systemname: systemname,
           fileName: fileName,
@@ -129,14 +139,14 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     e.preventDefault()
 
     if (files.length <= 0) {
-      setErrorMsg("Please upload video")
+      setValidMsg("Please upload video")
       return
     }
 
     const systemname = systems[selectedIndex].name
 
     if (!systemname) {
-      setErrorMsg("System selected not found")
+      setValidMsg("System selected not found")
       return
     }
 
@@ -174,18 +184,17 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       const allSuccessful = results.every((result) => result.success)
       if (allSuccessful) {
         const { success, msg, error } = results.at(-1)
-        setSuccessMsg(msg)
+        setUploadState({ type: "info", message: "Your submission has been uploaded successfully" })
         console.log("Success", success, "msg", msg, "error", error)
       } else {
         const failedResult = results.filter((result) => !result.success)[0]
         const { success, msg, error } = failedResult
-        setErrorMsg(msg)
+        setUploadState({ type: "error", message: msg })
         console.log("Success", success, "msg", msg, "error", error)
       }
     } catch (error) {
-      console.log("EXCEPTION ", error)
-      setErrorMsg("EXCEPTION: Error with uploading your videos, please contact support")
-      console.log("Exception", error)
+      setUploadState({ type: "error", message: "Error with your upload video, please contact for support!" })
+      console.log("EXCEPTION", error)
     } finally {
       setUploading("")
     }
@@ -206,11 +215,11 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     return <Callout type="error">Failed to connect, please contact support</Callout>
   }
 
-  if (successMsg) {
+  if (uploadState.message) {
     return (
       <div className="w-full p-12 justify-center ">
-        <Callout type="info" className="mt-0">
-          {successMsg}
+        <Callout type={uploadState.type} className="mt-0">
+          {uploadState.message}
         </Callout>
       </div>
     )
@@ -297,10 +306,10 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
         </div>
       </div>
 
-      {errorMsg && (
+      {validMsg && (
         <div className="w-full pl-[20%]">
           <Callout type="error" className="mt-0">
-            {errorMsg}
+            {validMsg}
           </Callout>
         </div>
       )}
