@@ -12,10 +12,10 @@ import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 
 export default function UploadNPY({ codes, user, status }) {
-  const [email, setEmail] = useState(user.email ? user.email : "")
-  const [teamname, setTeamName] = useState(user.name ? user.name : "")
-  const [username, setUsername] = useState(user.username ? user.username : "")
-  const [userId, setUserId] = useState(user.userid ? user.userid : "")
+  const [email, setEmail] = useState(user ? user.email : "")
+  const [teamname, setTeamName] = useState(user ? user.name : "")
+  const [username, setUsername] = useState(user ? user.username : "")
+  const [userId, setUserId] = useState(user ? user.userid : "")
 
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
@@ -25,15 +25,7 @@ export default function UploadNPY({ codes, user, status }) {
   const [progress, setProgress] = useState({})
   const [successMsg, setSuccessMsg] = useState("")
 
-  // const [email, setEmail] = useState("")
-  // const [teamname, setTeamName] = useState("")
-
   const [missingList, setMissingList] = useState([])
-
-  // useEffect(() => {
-  //   setEmail(email)
-  //   setTeamName(name)
-  // }, [])
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
@@ -180,12 +172,12 @@ export default function UploadNPY({ codes, user, status }) {
 
     try {
       updateUploadProgress(fileName, 0, "uploading")
-
-      console.log("UPLOAD_API_ENDPOINT", UPLOAD_API_ENDPOINT)
+      const UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/npy`
+      console.log("UPLOAD_URL", UPLOAD_URL)
 
       // Start multipart upload
       const resp = await axios.post(
-        UPLOAD_API_ENDPOINT,
+        UPLOAD_URL,
         {
           userId: teamid,
           fileName: fileName,
@@ -290,7 +282,6 @@ export default function UploadNPY({ codes, user, status }) {
   if (status === "unauthenticated" || !user) {
     return <Callout type="error">Please login with github</Callout>
   }
-  console.log("codes", codes)
   if (!codes || codes.length <= 0) {
     return <Callout type="error">Failed get codes, please contact for support</Callout>
   }
