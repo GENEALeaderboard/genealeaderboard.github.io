@@ -21,6 +21,17 @@ export const apiUpdate = (endpoint, data, ...args) =>
 
 export const apiUpdateBody = (endpoint, data, ...args) =>
   fetch(`${API_ENDPOINT}${endpoint}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+    credentials: "include",
+    ...args,
+  }).then((res) => res.json())
+
+export const apiInsertBody = (endpoint, data, ...args) =>
+  fetch(`${API_ENDPOINT}${endpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -29,4 +40,3 @@ export const apiUpdateBody = (endpoint, data, ...args) =>
     credentials: "include",
     ...args,
   }).then((res) => res.json())
-//

@@ -10,9 +10,10 @@ import SubmissionList from "./submissionlist"
 import { Description, Field, Label, Select } from "@headlessui/react"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
 import SystemList from "./SystemList"
-import { apiFetcher } from "@/utils/fetcher"
+import { apiFetcher, apiInsertBody } from "@/utils/fetcher"
 import useSWR from "swr"
 import CircleLoading from "@/icons/circleloading"
+import { Callout } from "@/nextra"
 // import { Loading } from "@/components/loading/loading"
 
 const SYSTEM_TYPES = ["groundtruth", "system", "baseline"]
@@ -41,7 +42,9 @@ export default function Page() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
-  const [teamID, setTeamID] = useState("")
+  const [submissionID, setSubmissionID] = useState(submissions ? submissions[0].id : "")
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  const [state, setState] = useState({ type: "", message: "" })
 
   const submission = useMemo(() => submissions, [submissions])
 
@@ -73,32 +76,27 @@ export default function Page() {
     updateSystemType(systemType)
   }, [systemType, updateSystemType])
 
-
-  async function createSystem(data) {
+  async function onCreateSystem(e) {
+    e.preventDefault()
+    const newSystem = {
+      name: systemname,
+      type: systemType,
+      description: description,
+      submissionid: submissionID,
+    }
+    console.log("data", newSystem)
     try {
-      const res = await axios.post("/api/systems", data)
-      if (res.data.success) {
-        setSystemList(res.data.systems)
+      const res = await apiInsertBody("/api/systems", { newSystem: newSystem })
+      if (res.success) {
+        setState({ type: "info", message: res.msg })
       } else {
-        console.error(res.error)
+        console.log("res", res)
+        setState({ type: "error", message: res.msg })
       }
     } catch (error) {
       console.error(error)
     }
   }
-
-  function onCreateSystem(e) {
-    e.preventDefault()
-    const data = {
-      name: systemname,
-      type: systemType,
-      description: description,
-      userId: teamID,
-    }
-    console.log("data", data)
-    createSystem(data)
-  }
-
 
   // {submissionLoading ? (
   //   <div className="w-full px-12  justify-center">
@@ -110,6 +108,10 @@ export default function Page() {
   // ) : (
 
   // )}
+
+  if (state.message) {
+    return <Callout type={state.type}>{state.message}</Callout>
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -159,7 +161,7 @@ export default function Page() {
             </div>
           </div>
           {/* ********************************************************************************** */}
-          <SubmissionList systemType={systemType} teams={submission} setTeamID={setTeamID} />
+          <SubmissionList systemType={systemType} submission={submission} setSubmissionID={setSubmissionID} />
 
           {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
@@ -191,7 +193,7 @@ export default function Page() {
           {/* ********************************************************************************** */}
           <div className="flex flex-col items-center">
             <div className="pl-[20%] flex justify-start">
-              <button className="flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent text-white bg-black px-4 py-2 text-base font-medium  focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all">
+              <button className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent text-white bg-black px-4 py-2 text-base font-bold  focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all">
                 Create System
               </button>
             </div>
