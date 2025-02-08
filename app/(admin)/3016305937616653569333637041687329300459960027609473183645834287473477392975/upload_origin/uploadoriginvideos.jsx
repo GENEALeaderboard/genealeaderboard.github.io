@@ -84,7 +84,6 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
   useEffect(() => {
-    console.log("selectedIndex", selectedIndex, systems)
     if (systems && systems.length > 0) {
       setDescription(systems[selectedIndex].description)
     }
@@ -114,7 +113,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       console.log("VIDEO_UPLOAD_URL", VIDEO_UPLOAD_URL)
 
       // Start multipart upload
-      const resp = await axios.post(
+      const { data: responseUpload } = await axios.post(
         VIDEO_UPLOAD_URL,
         {
           systemname: systemname,
@@ -135,7 +134,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
       setUploadProgress(fileName, 100, "completed")
 
-      return resp.data
+      return responseUpload.data
     } catch (err) {
       console.error("Error uploading file:", err)
       // setErrorMsg("Error uploading file")
@@ -169,48 +168,37 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       setUploading("Uploading your videos, please waiting ...")
       console.log("systemname", systemname)
 
-      const results = []
+      const videoMeta = []
       for (let index = 0; index < files.length; index++) {
-        const result = await simpleUploadFile(files[index], index, systemname)
-        console.log("result", result)
+        const reponse = await simpleUploadFile(files[index], index, systemname)
+        const { path, inputcode, url } = reponse
 
-        if (!result.success) {
-          setUploadState({ type: "error", message: result.msg })
+        if (!reponse) {
+          setUploadState({ type: "error", message: reponse.msg })
           return
         }
-        results.push(result)
+        videoMeta.push({ path, inputcode, url })
       }
 
-      const videoInfos = results.map((rs) => {
+      const videoDatas = videoMeta.map((meta) => {
         return {
-          url: rs.url,
-          systemid: systems[selectedIndex].id,
+          inputcode: meta.inputcode,
           systemname: systems[selectedIndex].name,
-          inputcode: rs.inputcode,
-          path: rs.path,
+          path: meta.path,
+          url: meta.url,
+          systemid: systems[selectedIndex].id,
         }
       })
-      console.log("videoInfos", videoInfos)
+      console.log("videoDatas", videoDatas)
 
-      const res = await apiInsert("/api/videos", { videos: videoInfos })
-      console.log("res", res)
+      setUploading("Uploading your videos to database, please waiting ...")
+      const resInsert = await apiInsert("/api/videos", { videos: videoDatas })
 
-      if (!res.success) {
-        console.log("Reponse create submission", res)
-        setUploadState({ type: "error", message: "Error with your submission, please contact for support!" })
-        return
-      }
-      console.log("updateVideoUploadInfo", updateVideoUploadInfo)
-      const allSuccessful = results.every((result) => result.success)
-      if (allSuccessful) {
-        const { success, msg, error } = results.at(-1)
-        setUploadState({ type: "info", message: "Your submission has been uploaded successfully" })
-        console.log("Success", success, "msg", msg, "error", error)
-      } else {
-        const failedResult = results.filter((result) => !result.success)[0]
-        const { success, msg, error } = failedResult
+      if (resInsert.success) {
+        setUploadState({ type: "info", message: resInsert.msg })
+      }else{
         setUploadState({ type: "error", message: msg })
-        console.log("Success", success, "msg", msg, "error", error)
+        console.log("resInsert", resInsert)
       }
     } catch (error) {
       setUploadState({ type: "error", message: "Error with your upload video, please contact for support!" })
@@ -350,7 +338,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       <div className="flex flex-col items-center">
         <div className="flex justify-start">
           <button
-            className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+            className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
             onClick={handleUpload}
           >
             Upload Video
