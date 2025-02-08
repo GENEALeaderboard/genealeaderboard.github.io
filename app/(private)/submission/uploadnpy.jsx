@@ -16,15 +16,15 @@ export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user ? user.email : "")
   const [teamname, setTeamName] = useState(user ? user.name : "")
   const [username, setUsername] = useState(user ? user.username : "")
-  const [userId, setUserId] = useState(user ? user.userid : "")
+  const [userid, setUserId] = useState(user ? user.userid : "")
   console.log("Team Name", user ? user.name : "")
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
-  const [errorMsg, setErrorMsg] = useState("")
   const [uploading, setUploading] = useState("")
   // const [uploadProgress, setUploadProgress] = useState({})
   const [progress, setProgress] = useState({})
   const [successMsg, setSuccessMsg] = useState("")
+  const [errorMsg, setErrorMsg] = useState("")
 
   const [missingList, setMissingList] = useState([])
 
@@ -232,11 +232,7 @@ export default function UploadNPY({ codes, user, status }) {
       setUploading("Uploading your submission, please waiting ...")
       const teamid = String(username).toLowerCase()
 
-      //~~~~~~~~  Upload all bvh files ~~~~~~~~
-      // Upload all files concurrently
-      // const results = await Promise.all(
-      //   files.map((file, index) => uploadFile(file, index, session.userId))
-      // )
+      //~~~~~~~~  Upload all npy files ~~~~~~~~
       console.log("files", files)
       const results = []
       for (let index = 0; index < files.length; index++) {
@@ -248,17 +244,19 @@ export default function UploadNPY({ codes, user, status }) {
       const allSuccessful = results.every((result) => result.success)
       if (allSuccessful) {
         //~~~~~~~~  Update submission info to database ~~~~~~~~
-        const formData = new FormData()
-        formData.append("userId", user.userid)
-        formData.append("email", user.email)
-        formData.append("teamid", user.username)
-        formData.append("teamname", user.name)
-        const res = await axios.post("/api/submission", formData)
+        const submissions = {
+          email: email,
+          teamname: teamname,
+          teamid: username,
+          status: "success",
+        }
+        const res = await apiInsertBody("/api/submission", { submissions: submissions })
         console.log("res", res)
 
         if (!res.data.success) {
           console.log(res.data)
-          setErrorMsg("Duplicated submission, only submit once, please contact support")
+          setErrorMsg(res.data.msg)
+          // "Duplicated submission, only submit once, please contact support"
         }
 
         setSuccessMsg("Your submission are successfully.")
@@ -276,7 +274,7 @@ export default function UploadNPY({ codes, user, status }) {
       // setUploading("")
     }
   }
-  
+
   if (status === "unauthenticated" || !user) {
     return <Callout type="error">Please login with github</Callout>
   }
@@ -400,7 +398,7 @@ export default function UploadNPY({ codes, user, status }) {
           id="userId"
           type="userId"
           name="userId"
-          value={userId}
+          value={userid}
         />
       </div>
 
