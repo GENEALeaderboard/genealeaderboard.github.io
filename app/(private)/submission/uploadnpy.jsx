@@ -33,6 +33,17 @@ export default function UploadNPY({ codes, user, status }) {
     async (acceptedFiles) => {
       setValidMsg("")
       setUploading("")
+      for (let npyFile of acceptedFiles) {
+        if (!npyFile.name.endsWith(".npy")) {
+          setValidMsg("Please upload only NPY files")
+          return
+        }
+
+        if (npyFile.size > 100 * 1024 * 1024) {
+          setValidMsg("File size is too large, please upload file less than 100MB")
+          return
+        }
+      }
 
       const missing = []
       codes.map((code) => {
