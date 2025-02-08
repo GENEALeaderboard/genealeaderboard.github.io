@@ -6,7 +6,7 @@ import { Callout } from "@/nextra"
 import { Loading } from "@/components/loading/loading"
 import axios from "axios"
 import BVHFile from "@/icons/bvhfile"
-import { COMPLETE_UPLOAD_API_ENDPOINT, START_UPLOAD_API_ENDPOINT, UPLOAD_API_ENDPOINT, UPLOAD_PART_API_ENDPOINT } from "@/config/constants"
+import { UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
@@ -82,7 +82,7 @@ export default function UploadNPY({ codes, user, status }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-  const updateUploadProgress = useCallback((fileName, percent, status) => {
+  const setUploadProgress = useCallback((fileName, percent, status) => {
     setProgress((prevProgress) => {
       return {
         ...prevProgress,
@@ -96,9 +96,8 @@ export default function UploadNPY({ codes, user, status }) {
     const fileSize = file.size
 
     try {
-      updateUploadProgress(fileName, 0, "uploading")
+      setUploadProgress(fileName, 0, "uploading")
       const UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/npy`
-      console.log("UPLOAD_URL", UPLOAD_URL)
 
       // Start multipart upload
       const resp = await axios.post(
@@ -114,18 +113,18 @@ export default function UploadNPY({ codes, user, status }) {
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
 
-            updateUploadProgress(fileName, percentCompleted, "uploading")
+            setUploadProgress(fileName, percentCompleted, "uploading")
           },
         }
       )
 
-      updateUploadProgress(fileName, 100, "completed")
+      setUploadProgress(fileName, 100, "completed")
 
       return resp.data
     } catch (err) {
       console.error("Error uploading file:", err)
       setValidMsg("Error uploading file")
-      updateUploadProgress(fileName, 0, "error")
+      setUploadProgress(fileName, 0, "error")
       const { success, msg, error } = err.response.data
       return { success, msg, error }
     }
