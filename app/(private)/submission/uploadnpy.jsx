@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 import CircleLoading from "@/icons/circleloading"
 import UploadPreviewer from "./UploadPreviewer"
-import { apiInsert } from "@/utils/fetcher"
+import { apiInsert, apiPatch } from "@/utils/fetcher"
 
 export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user ? user.email : "")
@@ -158,40 +158,40 @@ export default function UploadNPY({ codes, user, status }) {
       }
       const res = await apiInsert("/api/submissions", { submission: submission })
       console.log("res", res)
+      const submitid = res.data.submitid
 
       if (!res.success) {
         console.log(res)
         setErrorMsg(res.msg)
-        // "Duplicated submission, only submit once, please contact support"
+        return
       }
-      // setUploading("Uploading your submission, please waiting ...")
-      // const teamid = String(username).toLowerCase()
+      setUploading("Uploading your submission, please waiting ...")
+      const teamid = String(username).toLowerCase()
 
-      // //~~~~~~~~  Upload all npy files ~~~~~~~~
-      // console.log("files", files)
-      // const results = []
-      // for (let index = 0; index < files.length; index++) {
-      //   const result = await simpleUploadFile(files[index], index, teamid)
-      //   results.push(result)
-      // }
-
-      // console.log("results.uploadFile", results)
-      // const allSuccessful = results.every((result) => result.success)
-      // if (allSuccessful) {
-      //~~~~~~~~  Update submission info to database ~~~~~~~~
-      const submission = {
-        submitid: submitid,
-        submitStatus: "success",
+      //~~~~~~~~  Upload all npy files ~~~~~~~~
+      console.log("files", files)
+      const results = []
+      for (let index = 0; index < files.length; index++) {
+        const result = await simpleUploadFile(files[index], index, teamid)
+        results.push(result)
       }
-      const res = await apiInsert("/api/submissions", { submission: submission })
-      console.log("res", res)
-      // setSuccessMsg("Your submission are successfully.")
-      // } else {
-      //   const failedResult = results.filter((result) => !result.success)[0]
-      //   const { success, msg, error } = failedResult
-      //   setErrorMsg(msg)
-      //   console.log("Success", success, "msg", msg, "error", error)
-      // }
+
+      console.log("results.uploadFile", results)
+      const allSuccessful = results.every((result) => result.success)
+      if (allSuccessful) {
+        //~~~~~~~~  Update submission info to database ~~~~~~~~
+        const resPatch = await apiPatch("/api/submissions", {
+          submitid: submitid,
+          submitStatus: "success",
+        })
+        console.log("res", res)
+        setSuccessMsg("Your submission are successfully.")
+      } else {
+        const failedResult = results.filter((result) => !result.success)[0]
+        const { success, msg, error } = failedResult
+        setErrorMsg(msg)
+        console.log("Success", success, "msg", msg, "error", error)
+      }
     } catch (error) {
       setErrorMsg("EXCEPTION: Error with uploading your submission, please contact support")
       console.log("Exception", error)
