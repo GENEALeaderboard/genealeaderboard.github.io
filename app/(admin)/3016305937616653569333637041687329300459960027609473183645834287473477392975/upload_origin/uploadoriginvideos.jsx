@@ -14,6 +14,7 @@ import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
 import Mp4Icon from "@/icons/mp4"
 import UploadPreviewer from "./UploadPreviewer"
+import { apiInsert } from "@/utils/fetcher"
 
 export default function UploadOriginVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -93,7 +94,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     setSelectedIndex(0)
   }, [systems])
 
-  const updateUploadProgress = useCallback((fileName, percent, status) => {
+  const setUploadProgress = useCallback((fileName, percent, status) => {
     setProgress((prevProgress) => {
       return {
         ...prevProgress,
@@ -107,29 +108,38 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     const fileSize = file.size
 
     try {
-      updateUploadProgress(fileName, 0, "uploading")
+      setUploadProgress(fileName, 0, "uploading")
+      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/videos`
 
-      console.log("UPLOAD_API_ENDPOINT", UPLOAD_API_ENDPOINT)
+      console.log("VIDEO_UPLOAD_URL", VIDEO_UPLOAD_URL)
 
       // Start multipart upload
       const resp = await axios.post(
-        UPLOAD_API_ENDPOINT,
+        VIDEO_UPLOAD_URL,
         {
           systemname: systemname,
           fileName: fileName,
           fileSize: fileSize,
           file: file,
         },
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
+
+            setUploadProgress(fileName, percentCompleted, "uploading")
+          },
+        }
       )
 
-      updateUploadProgress(fileName, 100, "completed")
+      setUploadProgress(fileName, 100, "completed")
 
       return resp.data
     } catch (err) {
       console.error("Error uploading file:", err)
       // setErrorMsg("Error uploading file")
-      updateUploadProgress(fileName, 0, "error")
+      setUploadProgress(fileName, 0, "error")
       const { success, msg, error } = err.response.data
       return { success, msg, error }
     }
@@ -162,14 +172,19 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       const results = []
       for (let index = 0; index < files.length; index++) {
         const result = await simpleUploadFile(files[index], index, systemname)
+        console.log("result", result)
+
+        if (!result.success) {
+          setUploadState({ type: "error", message: result.msg })
+          return
+        }
         results.push(result)
       }
 
       const videoInfos = results.map((rs) => {
-        console.log("videoInfos.result", rs)
         return {
           url: rs.url,
-          systemid: systems[selectedIndex]._id,
+          systemid: systems[selectedIndex].id,
           systemname: systems[selectedIndex].name,
           inputcode: rs.inputcode,
           path: rs.path,
@@ -177,9 +192,14 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       })
       console.log("videoInfos", videoInfos)
 
-      const updateVideoUploadInfo = await axios.post("/api/videos", {
-        videos: videoInfos,
-      })
+      const res = await apiInsert("/api/videos", { videos: videoInfos })
+      console.log("res", res)
+
+      if (!res.success) {
+        console.log("Reponse create submission", res)
+        setUploadState({ type: "error", message: "Error with your submission, please contact for support!" })
+        return
+      }
       console.log("updateVideoUploadInfo", updateVideoUploadInfo)
       const allSuccessful = results.every((result) => result.success)
       if (allSuccessful) {
