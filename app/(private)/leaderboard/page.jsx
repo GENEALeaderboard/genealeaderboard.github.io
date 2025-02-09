@@ -72,7 +72,7 @@ export default function Page() {
   return (
     <div>
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-        Evaluation Result (This page could be change)
+        Leaderboard
       </h1>
       <h3 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-2xl">
         Sample 1

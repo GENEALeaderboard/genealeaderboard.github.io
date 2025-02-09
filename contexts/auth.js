@@ -14,7 +14,7 @@ const AuthContext = createContext({
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [authStatus, setAuthStatus] = useState("loading")
+  const [authStatus, setAuthStatus] = useState(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -27,7 +27,6 @@ export function AuthProvider({ children }) {
       const cachedSession = localStorage.getItem("genea-session-authenicated")
 
       if (!cachedSession) {
-        setAuthStatus("unauthenticated")
         return
       }
 
@@ -37,7 +36,8 @@ export function AuthProvider({ children }) {
         setLoading(false)
         return
       } else if (status === "unauthenticated") {
-        console.log("API_ENDPOINT", `${API_ENDPOINT}/auth/user`)
+        // console.log("API_ENDPOINT", `${API_ENDPOINT}/auth/user`)
+        setAuthStatus("loading")
         // Fetch from the API if no cached user
         const res = await fetch(`${API_ENDPOINT}/auth/user`, {
           credentials: "include", // Important for sending cookies
