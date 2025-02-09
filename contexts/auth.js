@@ -24,36 +24,40 @@ export function AuthProvider({ children }) {
 
   const checkUser = async () => {
     try {
-      // Attempt to get the cached user from localStorage
-      const cachedUser = localStorage.getItem("authUser")
+      const cachedSession = localStorage.getItem("genea-session-authenicated")
 
-      if (cachedUser) {
-        setAuthStatus("authenticated")
-        setUser(JSON.parse(cachedUser))
-        setLoading(false)
+      if (!cachedSession) {
+        setAuthStatus("unauthenticated")
         return
       }
 
-      console.log("API_ENDPOINT", `${API_ENDPOINT}/auth/user`)
-      // Fetch from the API if no cached user
-      const res = await fetch(`${API_ENDPOINT}/auth/user`, {
-        credentials: "include", // Important for sending cookies
-      })
+      const { status, user } = JSON.parse(cachedSession)
+      if (status === "authenticated") {
+        setUser(user)
+        setLoading(false)
+        return
+      } else if (status === "unauthenticated") {
+        console.log("API_ENDPOINT", `${API_ENDPOINT}/auth/user`)
+        // Fetch from the API if no cached user
+        const res = await fetch(`${API_ENDPOINT}/auth/user`, {
+          credentials: "include", // Important for sending cookies
+        })
 
-      if (res.ok) {
-        const resJSON = await res.json()
-        console.log("resJSON", resJSON)
-        setUser(resJSON.data)
-        localStorage.setItem("authUser", JSON.stringify(resJSON.data)) // Cache user
-        setAuthStatus("authenticated")
-      } else {
-        console.log("Login failed")
-        localStorage.removeItem("authUser") // Remove cache if session is invalid
-        setAuthStatus("unauthenticated")
+        if (res.ok) {
+          const resJSON = await res.json()
+          console.log("resJSON", resJSON)
+          setUser(resJSON.data)
+          localStorage.setItem("genea-session-authenicated", JSON.stringify({ status: "authenticated", user: resJSON.data })) // Cache user
+          setAuthStatus("authenticated")
+        } else {
+          console.log("Login failed")
+          localStorage.removeItem("genea-session-authenicated") // Remove cache if session is invalid
+          setAuthStatus("unauthenticated")
+        }
       }
     } catch (error) {
       console.error("Error checking user session:", error)
-      localStorage.removeItem("authUser")
+      localStorage.removeItem("genea-session-authenicated")
       setAuthStatus("unauthenticated")
     } finally {
       setLoading(false)
@@ -63,6 +67,7 @@ export function AuthProvider({ children }) {
   const login = () => {
     const redirectURI = encodeURIComponent(GITHUB_REDIRECT_URI)
     console.log("redirectURI", redirectURI)
+    localStorage.setItem("genea-session-authenicated", JSON.stringify({ status: "unauthenticated", user: null }))
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectURI}&scope=read:user user:email`
     window.location.href = githubAuthUrl
   }
@@ -77,12 +82,12 @@ export function AuthProvider({ children }) {
       console.error("Error during logout:", error)
     } finally {
       setUser(null)
-      localStorage.removeItem("authUser")
+      localStorage.removeItem("genea-session-authenicated")
       router.push("/")
     }
   }
 
-  return <AuthContext.Provider value={{ user, loading, status:authStatus, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loading, status: authStatus, login, logout }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {
