@@ -20,7 +20,7 @@ export default function Page() {
   const [csvList, setCsvList] = useState([])
   const [loadedCSV, setLoadedCSV] = useState(false)
   const [studyType, setStudyType] = useState(Object.keys(STUDY_TYPES)[0])
-  const [isValid, setIsValid] = useState(true)
+  const [isValid, setIsValid] = useState(false)
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
 
@@ -86,170 +86,86 @@ export default function Page() {
       if (!studyConfig) {
         console.log("studyConfig", studyConfig)
         setGenState({ type: "error", msg: "Study configuration not found" })
+        return
       }
-      console.log("studyConfig", studyConfig)
 
       const videos = await apiFetcherData(`/api/videos`)
       if (!videos) {
         console.log("videos", videos)
         setGenState({ type: "error", msg: "Videos not found" })
+        return
       }
       const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
+      const studies = studiesCSV.map((item) => {
+        return { status: "new", name: studyConfig.name, time_start: String(new Date()), type: studyType, global_actions: JSON.stringify([]) }
+      })
 
-      console.log("videos", videos)
-      const studies = await Promise.all(
-        studiesCSV.map(async (studyData) => {
-          const pairwises = await Promise.all(
-            studyData.map(async (row, index) => {
-              const inputcode = row[0]
-              const sysA = String(row[1]).trim()
-              const sysB = String(row[2]).trim()
+      const respStudies = await apiPost(`/api/studies`, { studies: studies })
+      if (!respStudies.success) {
+        console.log("respStudies", respStudies)
+        setGenState({ type: "error", msg: respStudies.msg })
+        return
+      }
 
-              const videoA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
-              const videoB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+      const studiesID = respStudies.data
 
-              if (videoA.length === 0 || videoB.length === 0) {
-                console.log("videoA", videoA, "videoB", videoB)
-                setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
-              }
+      if (studiesCSV.length !== studiesID.length) {
+        console.log("studyData", studyData, "studiesID", studiesID)
+        setGenState({ type: "error", msg: "Studies result not match" })
+        return
+      }
 
-              return {
-                type: "video",
-                name: `Page ${index + 1} of ${studyData.length}`,
-                question: "Pairwise Comparison of Gesture Generation AI Model Studies",
-                selected: {},
-                actions: [],
-                systems: [sysA, sysB],
-                videos: [videoA, videoB],
-              }
-            })
-          )
-          console.log("pairwises", pairwises)
-          const pages = []
-          // pages.unshift(firstPage)
-          // pages.push(lastPage)
-          // console.log("Final Pages:", pages)
+      const pageList = []
+      studiesCSV.forEach((studyData, stdIndex) => {
+        studyData.forEach((row, rowIndex) => {
+          const inputcode = row[0]
+          const sysA = String(row[1]).trim()
+          const sysB = String(row[2]).trim()
 
-          return {
-            ...studyConfig,
-            pages,
-            type: studyType,
-            time_start: null,
-            status: "new",
+          const videoFilteredA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
+          const videoFilteredB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+          const videoA = videoFilteredA[0]
+          const videoB = videoFilteredB[0]
+
+          console.log("videoA", videoA, "videoB", videoB)
+
+          if (videoA.length === 0 || videoB.length === 0) {
+            console.log("videoA", videoA, "videoB", videoB)
+            setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
+            return
           }
+
+          pageList.push({
+            type: "video",
+            name: `Page ${rowIndex + 1} of ${studyData.length}`,
+            question: studyConfig.question,
+            selected: JSON.stringify({}),
+            actions: JSON.stringify([]),
+            options: JSON.stringify(studyConfig.options),
+            system1: sysA,
+            system2: sysB,
+            video1: videoA.id,
+            video2: videoB.id,
+            studyid: studiesID[stdIndex],
+          })
         })
-      )
+      })
 
-      // const studies = await Promise.all(
-      //   studiesCSV.map(async (studyData) => {
-      //     const pairwises = await Promise.all(
-      //       studyData.map(async (row, index) => {
-      //         const inputcode = row[0]
-      //         const sysA = String(row[1]).trim()
-      //         const sysB = String(row[2]).trim()
+      const respPages = await apiPost(`/api/pages`, { pages: pageList })
 
-      //         const videoA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
-      //         const videoB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+      if (!respPages.success) {
+        console.log("respPages", respPages)
+        setGenState({ type: "error", msg: respPages.msg })
+        return
+      }
 
-      //         if (videoA.length === 0 || videoB.length === 0) {
-      //           console.log("videoA", videoA, "videoB", videoB)
-      //           setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
-      //         }
+      console.log("respPages", respPages)
 
-      //         return {
-      //           type: "video",
-      //           name: `Page ${index + 1} of ${studyData.length}`,
-      //           question: "Pairwise Comparison of Gesture Generation AI Model Studies",
-      //           selected: {},
-      //           actions: [],
-      //           systems: [sysA, sysB],
-      //           videos: [videoA, videoB],
-      //         }
-      //       })
-      //     )
-      //     console.log("pairwises", pairwises)
-      //     const pages = []
-      //     // pages.unshift(firstPage)
-      //     // pages.push(lastPage)
-      //     // console.log("Final Pages:", pages)
-
-      //     return {
-      //       ...studyConfig,
-      //       pages,
-      //       type: studyType,
-      //       time_start: null,
-      //       status: "new",
-      //     }
-      //   })
-      // )
-
-      // console.log("studies", studies)
-
-      // console.log(
-      //   JSON.stringify({
-      //     systemType: systemType,
-      //     studiesCSV: studiesCSV,
-      //   })
-      // )
-      // const resp = await apiPost(`/api/${systemType}`, {
-      //   systemType: systemType,
-      //   studiesCSV: studiesCSV,
-      // })
-      // const { success, msg, error } = resp
-
-      // if (success) {
-      //   setGenState({ type: "info", msg: msg })
-      // } else {
-      //   console.log("resp", resp)
-      //   setGenState({ type: "error", msg: msg })
-      // }
+      setGenState({ type: "info", msg: respPages.msg })
     } catch (error) {
       console.log("error", error)
       setGenState({ type: "error", msg: "Exception on upload, please contact support" })
     }
-
-    // if (files.length <= 0) {
-    //   setErrorMsg("Please upload video")
-    //   return
-    // }
-
-    // try {
-    //   setUploading("Uploading your videos, please waiting ...")
-
-    //   const uploadPromises = Array.from(files).map((file) => {
-    //     return uploadPromise(file, (fileName, percent) => {
-    //       setProgress((prevProgress) => {
-    //         // console.log("prevProgress", prevProgress)
-    //         return {
-    //           ...prevProgress,
-    //           [fileName]: percent,
-    //         }
-    //       })
-    //     })
-    //   })
-
-    //   const results = await Promise.all(uploadPromises)
-    //   // console.log("results", results)
-    //   const allSuccessful = results.every((result) => result.success)
-    //   if (allSuccessful) {
-    //     const { success, msg, error } = results.at(-1)
-    //     setSuccess(msg)
-    //     console.log("Success", success, "msg", msg, "error", error)
-    //   } else {
-    //     const failedResult = results.filter((result) => !result.success)[0]
-    //     const { success, msg, error } = failedResult
-    //     setErrorMsg(msg)
-    //     console.log("Success", success, "msg", msg, "error", error)
-    //   }
-    // } catch (error) {
-    //   console.log("EXCEPTION ", error)
-    //   setErrorMsg(
-    //     "EXCEPTION: Error with uploading your videos, please contact support"
-    //   )
-    //   console.log("Exception", error)
-    // } finally {
-    //   setUploading("")
-    // }
   }
 
   if (genState.msg) {
@@ -337,6 +253,7 @@ export default function Page() {
                 {isValid ? (
                   <button
                     className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+                    disabled={genState.type === "loading"}
                     onClick={handleUpload}
                   >
                     {genState.type === "loading" ? <CircleLoading className="w-8 h-8" /> : <></>}
