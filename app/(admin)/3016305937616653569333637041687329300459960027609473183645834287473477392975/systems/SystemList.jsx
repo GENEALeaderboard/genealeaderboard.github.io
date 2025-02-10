@@ -1,13 +1,11 @@
 import { memo } from "react"
 
-const SystemList = memo(function SystemList({ systems, submissions }) {
+const SystemList = memo(function SystemList({ systems }) {
   if (!systems || systems.length <= 0) {
     return <></>
   }
-  if (!submissions || submissions.length <= 0) {
-    return <></>
-  }
 
+  console.log("systems", systems)
   return (
     <table className="w-full border-collapse text-sm">
       <thead>
@@ -25,17 +23,10 @@ const SystemList = memo(function SystemList({ systems, submissions }) {
           systems.map((system, index) => {
             let systemName = "GENEA"
             let emailSystem = ""
-            if (system.submissionid !== null) {
-              const sub = Array.from(submissions).filter((submission) => {
-                return submission.id === system.submissionid
-              })[0]
-
-              if (sub !== undefined) {
-                const submittedDate = new Date(sub.createdat).toISOString().split("T")[0]
-
-                systemName = `${sub.teamname} (${submittedDate})`
-                emailSystem = sub.email
-              }
+            if (system.submissionid !== 0 && system.submissionid !== null) {
+              const submittedDate = new Date(system.createdat).toISOString().split("T")[0]
+              systemName = `${system.teamname} (${submittedDate})`
+              emailSystem = system.email
             }
 
             return (

@@ -125,8 +125,7 @@ export default function UploadNPY({ codes, user, status }) {
       console.error("Error uploading file:", err)
       setValidMsg("Error uploading file")
       setUploadProgress(fileName, 0, "error")
-      const { success, msg, error } = err.response.data
-      return { success, msg, error }
+      return { success:false, msg:"Exception on uploading file", error:null }
     }
   }
 
@@ -170,7 +169,7 @@ export default function UploadNPY({ codes, user, status }) {
       const submitid = res.data.submitid
 
       if (!res.success) {
-        console.log("Reponse create submission", res)
+        console.log("Failed submission", res)
         setUploadState({ type: "error", message: "Error with your submission, please contact for support!" })
         return
       }

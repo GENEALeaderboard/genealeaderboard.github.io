@@ -29,7 +29,7 @@ export default function SubmissionList({ systemType, submissions, setSelectedSys
                   <option
                     key={index}
                     className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"
-                    value={team.id}
+                    value={index}
                   >
                     {`${team.teamname} (${submittedDate})`}
                   </option>

@@ -6,13 +6,13 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from "reac
 import { generateUUID } from "@/utils/generateUUID"
 import { calculateCombinations } from "./utils"
 import { Loading } from "@/components"
-import SubmissionList from "./submissionlist"
 import { Description, Field, Label, Select } from "@headlessui/react"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
 import SystemList from "./SystemList"
 import { apiFetcher, apiInsert } from "@/utils/fetcher"
 import useSWR from "swr"
 import CircleLoading from "@/icons/circleloading"
+import SubmissionList from "./submissionlist"
 import { Callout } from "@/nextra"
 // import { Loading } from "@/components/loading/loading"
 
@@ -23,7 +23,7 @@ export default function Page() {
     data: systems,
     error: systemsError,
     isLoading: systemsLoading,
-  } = useSWR("/api/systems", apiFetcher, {
+  } = useSWR("/api/system-list", apiFetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -37,7 +37,7 @@ export default function Page() {
     data: submissions,
     error: submissionError,
     isLoading: submissionLoading,
-  } = useSWR("/api/submissions", apiFetcher, {
+  } = useSWR("/api/submission-filtered", apiFetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -68,14 +68,20 @@ export default function Page() {
 
   async function onCreateSystem(e) {
     e.preventDefault()
-    const newSystem = {
-      name: systemname,
-      type: systemType,
-      description: description,
-      submissionid: systems[selectedSystem].id,
-    }
-    console.log("data", newSystem)
+
     try {
+      let systemID = 0
+      if (systemType === "system") {
+        systemID = submissions[selectedSystem].id
+      }
+      const newSystem = {
+        name: systemname,
+        type: systemType,
+        description: description,
+        submissionid: systemID,
+      }
+      console.log("data", newSystem)
+
       const res = await apiInsert("/api/systems", { newSystem: newSystem })
       if (res.success) {
         setState({ type: "info", message: res.msg })
@@ -118,7 +124,7 @@ export default function Page() {
       </h2>
 
       <div className={cn("-mx-6 mb-4 mt-6 overflow-x-auto overscroll-x-contain px-6 pb-4 ", "mask-gradient")}>
-        <SystemList systems={systems} submissions={submissions} />
+        <SystemList systems={systems} />
       </div>
       {/* ********************************************************************************** */}
       <div className="">
