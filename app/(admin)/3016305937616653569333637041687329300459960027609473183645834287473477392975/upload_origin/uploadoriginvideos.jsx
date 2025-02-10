@@ -166,6 +166,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
     try {
       setUploading("Uploading your videos, please waiting ...")
+      setUploadState({ type: "loading", message: "" })
       console.log("systemname", systemname)
 
       const videoMeta = []
@@ -196,7 +197,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })
-      }else{
+      } else {
         setUploadState({ type: "error", message: msg })
         console.log("resInsert", resInsert)
       }
@@ -341,6 +342,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
             className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-black px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
             onClick={handleUpload}
           >
+            {uploadState.type === "loading" ? <CircleLoading className="w-6 h-6" /> : <></>}
             Upload Video
           </button>
         </div>

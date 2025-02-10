@@ -134,7 +134,8 @@
 
   .progress-ring.ring-progress-rotate circle.ring-progress-rotate {
     fill: none;
-    stroke: hsl(209, 100%, 36%);
+    stroke: currentColor;
+    /* hsl(209, 100%, 36%); */
     stroke-width: 1.5;
     stroke-linecap: round;
     stroke-dasharray: 43.97;

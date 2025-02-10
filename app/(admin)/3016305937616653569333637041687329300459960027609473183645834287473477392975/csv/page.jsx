@@ -14,13 +14,14 @@ import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
 import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
+import { firstPage, lastPage } from "./config"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
   const [loadedCSV, setLoadedCSV] = useState(false)
   const [studyType, setStudyType] = useState(Object.keys(STUDY_TYPES)[0])
   const [isValid, setIsValid] = useState(true)
-  const [genState, setGenState] = useState({ type: "loading", msg: null })
+  const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
 
   // if (loading) {
@@ -93,7 +94,52 @@ export default function Page() {
         console.log("videos", videos)
         setGenState({ type: "error", msg: "Videos not found" })
       }
+      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
+
       console.log("videos", videos)
+      const studies = await Promise.all(
+        studiesCSV.map(async (studyData) => {
+          const pairwises = await Promise.all(
+            studyData.map(async (row, index) => {
+              const inputcode = row[0]
+              const sysA = String(row[1]).trim()
+              const sysB = String(row[2]).trim()
+
+              const videoA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
+              const videoB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+
+              if (videoA.length === 0 || videoB.length === 0) {
+                console.log("videoA", videoA, "videoB", videoB)
+                setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
+              }
+
+              return {
+                type: "video",
+                name: `Page ${index + 1} of ${studyData.length}`,
+                question: "Pairwise Comparison of Gesture Generation AI Model Studies",
+                selected: {},
+                actions: [],
+                systems: [sysA, sysB],
+                videos: [videoA, videoB],
+              }
+            })
+          )
+          console.log("pairwises", pairwises)
+          const pages = []
+          // pages.unshift(firstPage)
+          // pages.push(lastPage)
+          // console.log("Final Pages:", pages)
+
+          return {
+            ...studyConfig,
+            pages,
+            type: studyType,
+            time_start: null,
+            status: "new",
+          }
+        })
+      )
+
       // const studies = await Promise.all(
       //   studiesCSV.map(async (studyData) => {
       //     const pairwises = await Promise.all(
@@ -102,9 +148,13 @@ export default function Page() {
       //         const sysA = String(row[1]).trim()
       //         const sysB = String(row[2]).trim()
 
-      //         // Fetch videos in parallel
       //         const videoA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
       //         const videoB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+
+      //         if (videoA.length === 0 || videoB.length === 0) {
+      //           console.log("videoA", videoA, "videoB", videoB)
+      //           setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
+      //         }
 
       //         return {
       //           type: "video",
@@ -117,32 +167,24 @@ export default function Page() {
       //         }
       //       })
       //     )
-
-      //     const { insertedIds } = await db.collection("pages").insertMany(pairwises)
-      //     const pageIds = Object.values(insertedIds)
-
-      //     // Fetch the inserted pages
-      //     const pages = await db
-      //       .collection("pages")
-      //       .find({ _id: { $in: pageIds } })
-      //       .toArray()
-
-      //     pages.unshift(firstPage)
-      //     pages.push(lastPage)
-      //     console.log("Final Pages:", pages)
+      //     console.log("pairwises", pairwises)
+      //     const pages = []
+      //     // pages.unshift(firstPage)
+      //     // pages.push(lastPage)
+      //     // console.log("Final Pages:", pages)
 
       //     return {
       //       ...studyConfig,
       //       pages,
-      //       type: systemType,
-      //       createdat: new Date(),
+      //       type: studyType,
       //       time_start: null,
       //       status: "new",
       //     }
       //   })
       // )
 
-      // const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
+      // console.log("studies", studies)
+
       // console.log(
       //   JSON.stringify({
       //     systemType: systemType,
@@ -294,14 +336,15 @@ export default function Page() {
               <div className="flex flex-col gap-8 mt-4 items-center">
                 {isValid ? (
                   <button
-                    className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-black px-4 py-2 text-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+                    className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
                     onClick={handleUpload}
                   >
+                    {genState.type === "loading" ? <CircleLoading className="w-8 h-8" /> : <></>}
                     Generate Study
                   </button>
                 ) : (
                   <button
-                    className="flex cursor-pointer h-10 items-center gap-2 w-44 betterhover:hover:bg-green-600 dark:betterhover:hover:bg-green-300 justify-center rounded-md border border-transparent bg-green-500 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-green-600 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm transition-all"
+                    className="flex cursor-pointer h-10 items-center gap-2 w-44 betterhover:hover:bg-green-600 dark:betterhover:hover:bg-green-300 justify-center rounded-md border border-transparent bg-green-500 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-green-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm transition-all"
                     onClick={handleValidate}
                   >
                     Validate CSV
