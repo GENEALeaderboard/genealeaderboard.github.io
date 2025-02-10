@@ -14,7 +14,7 @@ import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
 import Mp4Icon from "@/icons/mp4"
 import UploadPreviewer from "./UploadPreviewer"
-import { apiInsert } from "@/utils/fetcher"
+import { apiPost } from "@/utils/fetcher"
 
 export default function UploadOriginVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -192,7 +192,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       console.log("videoDatas", videoDatas)
 
       setUploading("Uploading your videos to database, please waiting ...")
-      const resInsert = await apiInsert("/api/videos", { videos: videoDatas })
+      const resInsert = await apiPost("/api/videos", { videos: videoDatas })
 
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })

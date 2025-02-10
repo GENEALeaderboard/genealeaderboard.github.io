@@ -9,7 +9,7 @@ import { Loading } from "@/components"
 import { Description, Field, Label, Select } from "@headlessui/react"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
 import SystemList from "./SystemList"
-import { apiFetcher, apiInsert } from "@/utils/fetcher"
+import { apiFetcher, apiPost } from "@/utils/fetcher"
 import useSWR from "swr"
 import CircleLoading from "@/icons/circleloading"
 import SubmissionList from "./submissionlist"
@@ -82,7 +82,7 @@ export default function Page() {
       }
       console.log("data", newSystem)
 
-      const res = await apiInsert("/api/systems", { newSystem: newSystem })
+      const res = await apiPost("/api/systems", { newSystem: newSystem })
       if (res.success) {
         setState({ type: "info", message: res.msg })
       } else {

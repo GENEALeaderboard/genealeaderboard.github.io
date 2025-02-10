@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/auth"
 import NPYIcon from "@/icons/npy"
 import CircleLoading from "@/icons/circleloading"
 import UploadPreviewer from "./UploadPreviewer"
-import { apiInsert, apiPatch } from "@/utils/fetcher"
+import { apiPost, apiPatch } from "@/utils/fetcher"
 
 export default function UploadNPY({ codes, user, status }) {
   const [email, setEmail] = useState(user ? user.email : "")
@@ -164,7 +164,7 @@ export default function UploadNPY({ codes, user, status }) {
         teamid: username,
         status: "new",
       }
-      const res = await apiInsert("/api/submissions", { submission: submission })
+      const res = await apiPost("/api/submissions", { submission: submission })
       console.log("res", res)
       const submitid = res.data.submitid
 

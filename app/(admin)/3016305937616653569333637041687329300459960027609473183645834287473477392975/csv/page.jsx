@@ -13,7 +13,7 @@ import { API_ENDPOINT, SYSTEM_TYPES } from "@/config/constants"
 import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
-import { apiInsert, apiPatch } from "@/utils/fetcher"
+import { apiPost, apiPatch } from "@/utils/fetcher"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -72,17 +72,7 @@ export default function Page() {
       setIsValid(isAllValid)
     } catch (error) {
       console.error("Validation error:", error)
-      setCsvList((prevList) =>
-        prevList.map((item, index) =>
-          index === i
-            ? {
-                ...item,
-                state: "error",
-                errorMsg: error.response?.data?.msg || "Unknown error occurred",
-              }
-            : item
-        )
-      )
+      setState({ type: "error", msg: "Exception of validation error" })
     }
   }
 
@@ -92,10 +82,8 @@ export default function Page() {
     try {
       setGenState("loading")
 
-      const url = `${API_ENDPOINT}/api/${systemType}`
-
       const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
-      const resp = apiInsert(url, {
+      const resp = await apiPost(`/api/${systemType}`, {
         systemType: systemType,
         studiesCSV: studiesCSV,
       })
