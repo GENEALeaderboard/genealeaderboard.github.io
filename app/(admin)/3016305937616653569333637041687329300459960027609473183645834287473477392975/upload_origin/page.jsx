@@ -8,7 +8,7 @@ import InputCode from "./inputcode"
 import axios from "axios"
 import { Loading } from "@/components"
 import useSWR from "swr"
-import { apiFetcher } from "@/utils/fetcher"
+import { apiFetcherData } from "@/utils/fetcher"
 import CircleLoading from "@/icons/circleloading"
 
 export default function Page() {
@@ -16,7 +16,7 @@ export default function Page() {
     data: systems,
     error: systemsError,
     isLoading: systemsLoading,
-  } = useSWR("/api/systems", apiFetcher, {
+  } = useSWR("/api/systems", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,

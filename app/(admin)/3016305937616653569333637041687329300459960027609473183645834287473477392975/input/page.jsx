@@ -6,7 +6,7 @@ import { generateUUID } from "@/utils/generateUUID"
 import { calculateCombinations } from "./utils"
 import { Loading } from "@/components"
 import useSWR from "swr"
-import { apiFetcher, apiUpdateData, apiPatch } from "@/utils/fetcher"
+import { apiFetcherData, apiUpdateData, apiPatch } from "@/utils/fetcher"
 import { Callout } from "@/nextra"
 // import { Loading } from "@/components/loading/loading"
 
@@ -15,7 +15,7 @@ export default function Page() {
     data: codes,
     error,
     isLoading: loading,
-  } = useSWR("/api/inputcode", apiFetcher, {
+  } = useSWR("/api/inputcode", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,

@@ -14,7 +14,7 @@ export const GITHUB_REDIRECT_URI = `${API_ENDPOINT}/auth/callback/github`
 // https://upload.hemvip.workers.dev
 export const UPLOAD_API_ENDPOINT = process.env.NEXT_PUBLIC_UPLOAD_API_ENDPOINT
 
-export const SYSTEM_TYPES = {
+export const STUDY_TYPES = {
   "pairwise-human-likeness": "pairwise human-likeness studies",
   "pairwise-emotion-studies": "pairwise emotion studies",
   "mismatch-speech-studies": "mismatch speech studies",

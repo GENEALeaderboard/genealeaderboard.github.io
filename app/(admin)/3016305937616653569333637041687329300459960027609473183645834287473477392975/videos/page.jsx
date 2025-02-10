@@ -5,14 +5,14 @@ import cn from "clsx"
 import { Loading } from "@/components"
 import VideoList from "./VideoList"
 import useSWR from "swr"
-import { apiFetcher } from "@/utils/fetcher"
+import { apiFetcherData } from "@/utils/fetcher"
 
 export default function Page() {
   const {
     data: videos,
     error: videosError,
     isLoading: videosLoading,
-  } = useSWR("/api/videos", apiFetcher, {
+  } = useSWR("/api/videos", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,

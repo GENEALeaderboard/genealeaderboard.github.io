@@ -9,17 +9,17 @@ import { Callout } from "@/nextra"
 import { Loading } from "@/components"
 import { Select } from "@headlessui/react"
 import { ArrowLeftIcon } from "@/nextra/icons"
-import { API_ENDPOINT, SYSTEM_TYPES } from "@/config/constants"
+import { API_ENDPOINT, STUDY_TYPES } from "@/config/constants"
 import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
-import { apiPost, apiPatch } from "@/utils/fetcher"
+import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
   const [loadedCSV, setLoadedCSV] = useState(false)
-  const [systemType, setSystemType] = useState(Object.keys(SYSTEM_TYPES)[0])
-  const [isValid, setIsValid] = useState(false)
+  const [studyType, setStudyType] = useState(Object.keys(STUDY_TYPES)[0])
+  const [isValid, setIsValid] = useState(true)
   const [genState, setGenState] = useState({ type: "loading", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
 
@@ -43,7 +43,7 @@ export default function Page() {
         // Update state to indicate validation is in progress
         setCsvList((prevList) => prevList.map((item, index) => (index === i ? { ...item, state: "loading" } : item)))
 
-        const res = await apiPatch(`/api/${systemType}`, { csv: data.slice(1) })
+        const res = await apiPatch(`/api/${studyType}`, { csv: data.slice(1) })
         if (!res.success) {
           console.log("res", res)
           setValidState({ type: "error", msg: res.msg })
@@ -74,32 +74,93 @@ export default function Page() {
       setValidState({ type: "error", msg: "Exception of validation error" })
     }
   }
-
   const handleUpload = async (e) => {
     e.preventDefault()
 
     try {
       setGenState({ type: "loading", msg: null })
 
-      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
-      console.log(
-        JSON.stringify({
-          systemType: systemType,
-          studiesCSV: studiesCSV,
-        })
-      )
-      const resp = await apiPost(`/api/${systemType}`, {
-        systemType: systemType,
-        studiesCSV: studiesCSV,
-      })
-      const { success, msg, error } = resp
-
-      if (success) {
-        setGenState({ type: "info", msg: msg })
-      } else {
-        console.log("resp", resp)
-        setGenState({ type: "error", msg: msg })
+      const configs = await apiFetcherData(`/api/configs?type=${studyType}`)
+      const studyConfig = configs[0]
+      if (!studyConfig) {
+        console.log("studyConfig", studyConfig)
+        setGenState({ type: "error", msg: "Study configuration not found" })
       }
+      console.log("studyConfig", studyConfig)
+
+      const videos = await apiFetcherData(`/api/videos`)
+      if (!videos) {
+        console.log("videos", videos)
+        setGenState({ type: "error", msg: "Videos not found" })
+      }
+      console.log("videos", videos)
+      // const studies = await Promise.all(
+      //   studiesCSV.map(async (studyData) => {
+      //     const pairwises = await Promise.all(
+      //       studyData.map(async (row, index) => {
+      //         const inputcode = row[0]
+      //         const sysA = String(row[1]).trim()
+      //         const sysB = String(row[2]).trim()
+
+      //         // Fetch videos in parallel
+      //         const videoA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
+      //         const videoB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+
+      //         return {
+      //           type: "video",
+      //           name: `Page ${index + 1} of ${studyData.length}`,
+      //           question: "Pairwise Comparison of Gesture Generation AI Model Studies",
+      //           selected: {},
+      //           actions: [],
+      //           systems: [sysA, sysB],
+      //           videos: [videoA, videoB],
+      //         }
+      //       })
+      //     )
+
+      //     const { insertedIds } = await db.collection("pages").insertMany(pairwises)
+      //     const pageIds = Object.values(insertedIds)
+
+      //     // Fetch the inserted pages
+      //     const pages = await db
+      //       .collection("pages")
+      //       .find({ _id: { $in: pageIds } })
+      //       .toArray()
+
+      //     pages.unshift(firstPage)
+      //     pages.push(lastPage)
+      //     console.log("Final Pages:", pages)
+
+      //     return {
+      //       ...studyConfig,
+      //       pages,
+      //       type: systemType,
+      //       createdat: new Date(),
+      //       time_start: null,
+      //       status: "new",
+      //     }
+      //   })
+      // )
+
+      // const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
+      // console.log(
+      //   JSON.stringify({
+      //     systemType: systemType,
+      //     studiesCSV: studiesCSV,
+      //   })
+      // )
+      // const resp = await apiPost(`/api/${systemType}`, {
+      //   systemType: systemType,
+      //   studiesCSV: studiesCSV,
+      // })
+      // const { success, msg, error } = resp
+
+      // if (success) {
+      //   setGenState({ type: "info", msg: msg })
+      // } else {
+      //   console.log("resp", resp)
+      //   setGenState({ type: "error", msg: msg })
+      // }
     } catch (error) {
       console.log("error", error)
       setGenState({ type: "error", msg: "Exception on upload, please contact support" })
@@ -196,9 +257,9 @@ export default function Page() {
                   <Select
                     name="status"
                     id="studytype"
-                    value={systemType}
+                    value={studyType}
                     onChange={(e) => {
-                      setSystemType(e.target.value)
+                      setStudyType(e.target.value)
                     }}
                     className={cn(
                       "w-full appearance-none rounded-md border border-[#666666] px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
@@ -206,7 +267,7 @@ export default function Page() {
                   >
                     {({ focus, hover }) => (
                       <Fragment>
-                        {Object.entries(SYSTEM_TYPES).map(([key, sysType]) => (
+                        {Object.entries(STUDY_TYPES).map(([key, sysType]) => (
                           <option
                             key={key}
                             className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"

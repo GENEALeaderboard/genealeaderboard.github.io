@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import InputCode from "./inputcode"
 import { Loading } from "@/components"
 import useSWR from "swr"
-import { apiFetcher } from "@/utils/fetcher"
+import { apiFetcherData } from "@/utils/fetcher"
 import { useAuth } from "@/contexts/auth"
 import { Callout } from "@/nextra"
 import { API_ENDPOINT } from "@/config/constants"
@@ -18,7 +18,7 @@ export default function Page() {
     data: codes,
     error,
     isLoading,
-  } = useSWR("/api/inputcode", apiFetcher, {
+  } = useSWR("/api/inputcode", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,

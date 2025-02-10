@@ -9,7 +9,7 @@ import { Loading } from "@/components"
 import { Description, Field, Label, Select } from "@headlessui/react"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
 import SystemList from "./SystemList"
-import { apiFetcher, apiPost } from "@/utils/fetcher"
+import { apiFetcherData, apiPost } from "@/utils/fetcher"
 import useSWR from "swr"
 import CircleLoading from "@/icons/circleloading"
 import SubmissionList from "./submissionlist"
@@ -23,7 +23,7 @@ export default function Page() {
     data: systems,
     error: systemsError,
     isLoading: systemsLoading,
-  } = useSWR("/api/system-list", apiFetcher, {
+  } = useSWR("/api/system-list", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -37,7 +37,7 @@ export default function Page() {
     data: submissions,
     error: submissionError,
     isLoading: submissionLoading,
-  } = useSWR("/api/submission-filtered", apiFetcher, {
+  } = useSWR("/api/submission-filtered", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
