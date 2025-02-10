@@ -47,6 +47,7 @@ export default function Page() {
         console.log("res", res)
         if (!res.success) {
           console.log("res", res)
+          setState({ type: "error", msg: res.msg })
           isAllValid = false
         }
 
@@ -56,7 +57,7 @@ export default function Page() {
               ? {
                   ...item,
                   state: res.success ? "success" : "error",
-                  errorMsg: res.success ? "" : res.message,
+                  errorMsg: res.success ? "" : res.msg,
                 }
               : item
           )
@@ -77,7 +78,7 @@ export default function Page() {
             ? {
                 ...item,
                 state: "error",
-                errorMsg: error.response?.data?.message || "Unknown error occurred",
+                errorMsg: error.response?.data?.msg || "Unknown error occurred",
               }
             : item
         )
@@ -88,18 +89,17 @@ export default function Page() {
   const handleUpload = async (e) => {
     e.preventDefault()
 
-    setGenState("loading")
-
-    const url = `${API_ENDPOINT}/api/${systemType}`
-
-    const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
-
     try {
+      setGenState("loading")
+
+      const url = `${API_ENDPOINT}/api/${systemType}`
+
+      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
       const resp = apiInsert(url, {
         systemType: systemType,
         studiesCSV: studiesCSV,
       })
-      const { success, message, error } = resp.data
+      const { success, msg, error } = resp
 
       if (success) {
         setGenState("success")

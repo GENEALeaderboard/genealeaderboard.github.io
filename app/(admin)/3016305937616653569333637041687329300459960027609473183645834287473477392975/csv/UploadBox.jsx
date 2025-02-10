@@ -39,10 +39,21 @@ export default function UploadBox({ setCsvList, loadedCSV, setLoadedCSV }) {
   }
 
   const onDrop = async (files) => {
+    // const csvListData = await Promise.all(
+    //   Array.from(files)
+    //     .sort((a, b) => a.name.localeCompare(b.name))
+    //     .map((file) => parseFile(file))
+    // )
     const csvListData = await Promise.all(
       Array.from(files)
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((file) => parseFile(file))
+        .map(async (file) => {
+          const parsedFile = await parseFile(file)
+          return {
+            data: parsedFile.data.filter((row) => Object.values(row).some((value) => value.trim() !== "")),
+            filename: parsedFile.filename,
+          }
+        })
     )
     const dataList = csvListData.map(({ data, filename }) => {
       return {
@@ -161,18 +172,8 @@ export default function UploadBox({ setCsvList, loadedCSV, setLoadedCSV }) {
         style={{ border: "2px dashed #666666" }}
         className="w-full p-4 cursor-pointer rounded-lg min-h-64 flex flex-col items-center justify-center text-center appearance-none border border-[#666666] bg-white text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
       >
-        <input
-          id="upload"
-          {...getInputProps()}
-          type="file"
-          accept=".csv"
-          multiple={true}
-        />
-        {isDragActive ? (
-          <p>Drop csv files here...</p>
-        ) : (
-          <p>Drag and drop csv files here, or click to select csv</p>
-        )}
+        <input id="upload" {...getInputProps()} type="file" accept=".csv" multiple={true} />
+        {isDragActive ? <p>Drop csv files here...</p> : <p>Drag and drop csv files here, or click to select csv</p>}
       </div>
     </div>
   )
