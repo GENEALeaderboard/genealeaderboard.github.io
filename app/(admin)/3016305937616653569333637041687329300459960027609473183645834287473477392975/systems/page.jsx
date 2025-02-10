@@ -42,11 +42,9 @@ export default function Page() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
-  const [submissionID, setSubmissionID] = useState(submissions ? submissions[0].id : "")
+  const [selectedSystem, setSelectedSystem] = useState(0)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [state, setState] = useState({ type: "", message: "" })
-
-  const submission = useMemo(() => submissions, [submissions])
 
   const updateSystemType = function updateSystemType(type) {
     setSystemType(type)
@@ -74,7 +72,7 @@ export default function Page() {
       name: systemname,
       type: systemType,
       description: description,
-      submissionid: submissionID,
+      submissionid: systems[selectedSystem].id,
     }
     console.log("data", newSystem)
     try {
@@ -120,14 +118,14 @@ export default function Page() {
       </h2>
 
       <div className={cn("-mx-6 mb-4 mt-6 overflow-x-auto overscroll-x-contain px-6 pb-4 ", "mask-gradient")}>
-        <SystemList systems={systems} />
+        <SystemList systems={systems} submissions={submissions} />
       </div>
+      {/* ********************************************************************************** */}
       <div className="">
         <h2 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-10 border-b pb-1 text-3xl border-neutral-200/70 contrast-more:border-neutral-400 dark:border-primary-100/10 contrast-more:dark:border-neutral-400">
           Create System
         </h2>
         <form className="mt-2 mb-6 flex flex-col px-4 gap-4" onSubmit={onCreateSystem}>
-          {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
             <label htmlFor="systemname" className="w-[20%] flex justify-end">
               System Type
@@ -160,10 +158,8 @@ export default function Page() {
               <ArrowLeftIcon className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90" aria-hidden="true" />
             </div>
           </div>
-          {/* ********************************************************************************** */}
-          <SubmissionList systemType={systemType} submission={submission} setSubmissionID={setSubmissionID} />
+          <SubmissionList systemType={systemType} submissions={submissions} setSelectedSystem={setSelectedSystem} />
 
-          {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
             <label htmlFor="systemname" className="w-[20%] flex justify-end">
               System Name
@@ -177,7 +173,6 @@ export default function Page() {
               onChange={(e) => setSystemName(e.target.value)}
             />
           </div>
-          {/* ********************************************************************************** */}
           <div className="flex flex-row items-center gap-4">
             <label htmlFor="upload" className="w-[20%] flex justify-end">
               Description
@@ -190,7 +185,6 @@ export default function Page() {
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </div>
-          {/* ********************************************************************************** */}
           <div className="flex flex-col items-center">
             <div className="pl-[20%] flex justify-start">
               <button className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent text-white bg-black px-4 py-2 text-base font-bold  focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all">

@@ -52,7 +52,7 @@ export default function Header() {
                     </div>
                 </div> */}
       <Link
-        href="https://genea-workshop.github.io/leaderboard/"
+        href="https://genea-workshop.github.io/leaderboard"
         target="blank"
         rel="blank"
         className="text-sm contrast-more:text-gray-700 contrast-more:dark:text-gray-100 max-md:hidden whitespace-nowrap text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"

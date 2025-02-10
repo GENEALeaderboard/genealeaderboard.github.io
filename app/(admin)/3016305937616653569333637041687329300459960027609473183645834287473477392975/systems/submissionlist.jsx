@@ -3,8 +3,8 @@ import { Fragment, useState } from "react"
 import { clsx as cn } from "clsx"
 import { ArrowLeftIcon, ArrowRightIcon } from "@/nextra/icons"
 
-export default function SubmissionList({ systemType, submission, setSubmissionID }) {
-  if (systemType !== "system" || !submission || submission.length <= 0) {
+export default function SubmissionList({ systemType, submissions, setSelectedSystem }) {
+  if (systemType !== "system" || !submissions || submissions.length <= 0) {
     return <></>
   }
 
@@ -16,14 +16,14 @@ export default function SubmissionList({ systemType, submission, setSubmissionID
       <div className="relative items-center align-middle flex-grow">
         <Select
           name="status"
-          onChange={(e) => setSubmissionID(e.target.value)}
+          onChange={(e) => setSelectedSystem(e.target.value)}
           className={cn(
             "bg-gray-200 w-full appearance-none rounded-md border border-[#666666]  px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
           )}
         >
           {({ focus, hover }) => (
             <>
-              {submission.map((team, index) => {
+              {submissions.map((team, index) => {
                 const submittedDate = new Date(team.createdat).toISOString().split("T")[0]
                 return (
                   <option
