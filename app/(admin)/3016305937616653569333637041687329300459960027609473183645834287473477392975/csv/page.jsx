@@ -9,10 +9,11 @@ import { Callout } from "@/nextra"
 import { Loading } from "@/components"
 import { Select } from "@headlessui/react"
 import { ArrowLeftIcon } from "@/nextra/icons"
-import { SYSTEM_TYPES } from "@/config/constants"
+import { API_ENDPOINT, SYSTEM_TYPES } from "@/config/constants"
 import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
+import { apiInsert, apiPatch } from "@/utils/fetcher"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -20,6 +21,7 @@ export default function Page() {
   const [systemType, setSystemType] = useState(Object.keys(SYSTEM_TYPES)[0])
   const [isValid, setIsValid] = useState(false)
   const [genState, setGenState] = useState("")
+  const [state, setState] = useState({ type: "loading", msg: "" })
 
   // if (loading) {
   //   return (
@@ -31,25 +33,20 @@ export default function Page() {
 
   const handleValidate = async (e) => {
     e.preventDefault()
-    window.scrollTo({ top: 0 })
-    let isAllValid = true
+    try {
+      window.scrollTo({ top: 0 })
+      let isAllValid = true
 
-    for (let i = 0; i < csvList.length; i++) {
-      const { data, filename } = csvList[i]
+      for (let i = 0; i < csvList.length; i++) {
+        const { data, filename } = csvList[i]
 
-      // Update state to indicate validation is in progress
-      setCsvList((prevList) =>
-        prevList.map((item, index) =>
-          index === i ? { ...item, state: "loading" } : item
-        )
-      )
+        // Update state to indicate validation is in progress
+        setCsvList((prevList) => prevList.map((item, index) => (index === i ? { ...item, state: "loading" } : item)))
 
-      try {
-        const res = await axios.patch(`/api/${systemType}`, {
-          csv: data.slice(1),
-        })
-
-        if (!res.data.success) {
+        const res = await apiPatch(`/api/${systemType}`, { csv: data.slice(1) })
+        console.log("res", res)
+        if (!res.success) {
+          console.log("res", res)
           isAllValid = false
         }
 
@@ -58,32 +55,34 @@ export default function Page() {
             index === i
               ? {
                   ...item,
-                  state: res.data.success ? "success" : "error",
-                  errorMsg: res.data.success ? "" : res.data.message,
+                  state: res.success ? "success" : "error",
+                  errorMsg: res.success ? "" : res.message,
                 }
               : item
           )
         )
-      } catch (error) {
-        console.error("Validation error:", error)
-        setCsvList((prevList) =>
-          prevList.map((item, index) =>
-            index === i
-              ? {
-                  ...item,
-                  state: "error",
-                  errorMsg:
-                    error.response?.data?.message || "Unknown error occurred",
-                }
-              : item
-          )
-        )
+
+        document.getElementById(`csv-previewer-${i}`).scrollIntoView()
+
+        if (isAllValid === false) {
+          break
+        }
       }
-
-      document.getElementById(`csv-previewer-${i}`).scrollIntoView()
+      setIsValid(isAllValid)
+    } catch (error) {
+      console.error("Validation error:", error)
+      setCsvList((prevList) =>
+        prevList.map((item, index) =>
+          index === i
+            ? {
+                ...item,
+                state: "error",
+                errorMsg: error.response?.data?.message || "Unknown error occurred",
+              }
+            : item
+        )
+      )
     }
-
-    setIsValid(isAllValid)
   }
 
   const handleUpload = async (e) => {
@@ -91,18 +90,16 @@ export default function Page() {
 
     setGenState("loading")
 
-    const url = `/api/${systemType}`
+    const url = `${API_ENDPOINT}/api/${systemType}`
+
     const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
 
     try {
-      const result = await axios.post(url, {
+      const resp = apiInsert(url, {
         systemType: systemType,
         studiesCSV: studiesCSV,
-      }, {
-        withCredentials: true
       })
-      console.log("result", result)
-      const { success, message, error } = result.data
+      const { success, message, error } = resp.data
 
       if (success) {
         setGenState("success")
@@ -157,6 +154,7 @@ export default function Page() {
     //   setUploading("")
     // }
   }
+
   if (genState) {
     if (genState === "loading") {
       return (
@@ -194,24 +192,11 @@ export default function Page() {
       <div className="mt-6 mb-32">
         {/* <p className="mt-3 leading-7 first:mt-0">Github information</p> */}
         <form className="mt-6 flex flex-col gap-4">
-          <UploadBox
-            setCsvList={setCsvList}
-            loadedCSV={loadedCSV}
-            setLoadedCSV={setLoadedCSV}
-          />
+          <UploadBox setCsvList={setCsvList} loadedCSV={loadedCSV} setLoadedCSV={setLoadedCSV} />
 
           <div className="flex flex-col py-4 gap-4">
             {csvList.map(({ data, filename, state, errorMsg }, index) => {
-              return (
-                <CSVPreviewer
-                  key={index}
-                  index={index}
-                  data={data}
-                  filename={filename}
-                  state={state}
-                  errorMsg={errorMsg}
-                />
-              )
+              return <CSVPreviewer key={index} index={index} data={data} filename={filename} state={state} errorMsg={errorMsg} />
             })}
           </div>
           {loadedCSV && (
@@ -247,13 +232,17 @@ export default function Page() {
                       </Fragment>
                     )}
                   </Select>
-                  <ArrowLeftIcon
-                    className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90"
-                    aria-hidden="true"
-                  />
+                  <ArrowLeftIcon className="pointer-events-none absolute top-2.5 right-2.5 size-5  ltr:rotate-90" aria-hidden="true" />
                 </div>
               </div>
               {/* ********************************************************************************** */}
+              {state.msg ? (
+                <Callout type={state.type} className="mt-0">
+                  {state.msg}
+                </Callout>
+              ) : (
+                <> </>
+              )}
 
               <div className="flex flex-col gap-8 mt-4 items-center">
                 {isValid ? (
