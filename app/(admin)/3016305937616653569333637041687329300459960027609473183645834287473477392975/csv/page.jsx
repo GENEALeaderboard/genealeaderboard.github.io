@@ -20,8 +20,8 @@ export default function Page() {
   const [loadedCSV, setLoadedCSV] = useState(false)
   const [systemType, setSystemType] = useState(Object.keys(SYSTEM_TYPES)[0])
   const [isValid, setIsValid] = useState(false)
-  const [genState, setGenState] = useState("")
-  const [state, setState] = useState({ type: "loading", msg: "" })
+  const [genState, setGenState] = useState({ type: "loading", msg: null })
+  const [validState, setValidState] = useState({ type: "loading", msg: null })
 
   // if (loading) {
   //   return (
@@ -44,10 +44,9 @@ export default function Page() {
         setCsvList((prevList) => prevList.map((item, index) => (index === i ? { ...item, state: "loading" } : item)))
 
         const res = await apiPatch(`/api/${systemType}`, { csv: data.slice(1) })
-        console.log("res", res)
         if (!res.success) {
           console.log("res", res)
-          setState({ type: "error", msg: res.msg })
+          setValidState({ type: "error", msg: res.msg })
           isAllValid = false
         }
 
@@ -72,7 +71,7 @@ export default function Page() {
       setIsValid(isAllValid)
     } catch (error) {
       console.error("Validation error:", error)
-      setState({ type: "error", msg: "Exception of validation error" })
+      setValidState({ type: "error", msg: "Exception of validation error" })
     }
   }
 
@@ -80,9 +79,15 @@ export default function Page() {
     e.preventDefault()
 
     try {
-      setGenState("loading")
+      setGenState({ type: "loading", msg: null })
 
       const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
+      console.log(
+        JSON.stringify({
+          systemType: systemType,
+          studiesCSV: studiesCSV,
+        })
+      )
       const resp = await apiPost(`/api/${systemType}`, {
         systemType: systemType,
         studiesCSV: studiesCSV,
@@ -90,13 +95,14 @@ export default function Page() {
       const { success, msg, error } = resp
 
       if (success) {
-        setGenState("success")
+        setGenState({ type: "info", msg: msg })
       } else {
-        setGenState("Please contact support")
+        console.log("resp", resp)
+        setGenState({ type: "error", msg: msg })
       }
     } catch (error) {
       console.log("error", error)
-      setGenState("Please contact support")
+      setGenState({ type: "error", msg: "Exception on upload, please contact support" })
     }
 
     // if (files.length <= 0) {
@@ -143,8 +149,8 @@ export default function Page() {
     // }
   }
 
-  if (genState) {
-    if (genState === "loading") {
+  if (genState.msg) {
+    if (genState.type === "loading") {
       return (
         <div className="w-full px-12  justify-center">
           <p className="flex justify-center p-4 gap-2">
@@ -153,19 +159,11 @@ export default function Page() {
           </p>
         </div>
       )
-    } else if (genState === "success") {
-      return (
-        <div className="w-full p-12 justify-center ">
-          <Callout type="info" className="mt-0">
-            Your studies are generated successfully.
-          </Callout>
-        </div>
-      )
     } else {
       return (
         <div className="w-full p-12 justify-center ">
-          <Callout type="error" className="mt-0">
-            {genState}
+          <Callout type={genState.type} className="mt-0">
+            {genState.msg}
           </Callout>
         </div>
       )
@@ -224,9 +222,9 @@ export default function Page() {
                 </div>
               </div>
               {/* ********************************************************************************** */}
-              {state.msg ? (
-                <Callout type={state.type} className="mt-0">
-                  {state.msg}
+              {validState.msg ? (
+                <Callout type={validState.type} className="mt-0">
+                  {validState.msg}
                 </Callout>
               ) : (
                 <> </>
