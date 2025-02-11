@@ -24,14 +24,6 @@ export default function Page() {
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
 
-  // if (loading) {
-  //   return (
-  //     <div className="text-center">
-  //       <Loading />
-  //     </div>
-  //   )
-  // }
-
   const handleValidate = async (e) => {
     e.preventDefault()
     try {
@@ -50,7 +42,7 @@ export default function Page() {
           setValidState({ type: "error", msg: res.msg })
           isAllValid = false
         }
-
+        console.log("res", res)
         setCsvList((prevList) =>
           prevList.map((item, index) =>
             index === i
@@ -70,6 +62,9 @@ export default function Page() {
         }
       }
       setIsValid(isAllValid)
+      if (isAllValid) {
+        setValidState({ type: "success", msg: "Validate success, continue with generate studies" })
+      }
     } catch (error) {
       console.error("Validation error:", error)
       setValidState({ type: "error", msg: "Exception of validation error" })
@@ -128,6 +123,11 @@ export default function Page() {
           const videoB = videoFilteredB[0]
 
           console.log("videoA", videoA, "videoB", videoB)
+          if (!videoA || !videoB) {
+            console.log("videoA", videoA, "videoB", videoB)
+            setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
+            return
+          }
 
           if (videoA.length === 0 || videoB.length === 0) {
             console.log("videoA", videoA, "videoB", videoB)
@@ -241,12 +241,12 @@ export default function Page() {
                 </div>
               </div>
               {/* ********************************************************************************** */}
-              {validState.msg ? (
-                <Callout type={validState.type} className="mt-0">
+              {validState.type === "success" ? (
+                <Callout type="info" className="mt-0">
                   {validState.msg}
                 </Callout>
               ) : (
-                <> </>
+                <></>
               )}
 
               <div className="flex flex-col gap-8 mt-4 items-center">
