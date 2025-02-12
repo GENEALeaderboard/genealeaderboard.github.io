@@ -14,7 +14,6 @@ import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
 import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
-import { firstPage, lastPage } from "./config"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -90,10 +89,22 @@ export default function Page() {
         setGenState({ type: "error", msg: "Videos not found" })
         return
       }
-      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
-      const studies = studiesCSV.map((item) => {
-        return { status: "new", name: studyConfig.name, time_start: String(new Date()), type: studyType, global_actions: JSON.stringify([]) }
+      const studies = csvList.map((item) => {
+        return {
+          status: "new",
+          name: studyConfig.name,
+          time_start: String(new Date()),
+          type: studyType,
+          global_actions: JSON.stringify([]),
+          file_created: item.filename,
+          prolific_sessionid: "",
+          prolific_studyid: "",
+          prolific_userid: "",
+          completion_code: studyConfig.completion_code,
+          fail_code: studyConfig.fail_code,
+        }
       })
+      console.log("studies", studies)
 
       const respStudies = await apiPost(`/api/studies`, { studies: studies })
       if (!respStudies.success) {
@@ -103,7 +114,7 @@ export default function Page() {
       }
 
       const studiesID = respStudies.data
-
+      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
       if (studiesCSV.length !== studiesID.length) {
         console.log("studyData", studyData, "studiesID", studiesID)
         setGenState({ type: "error", msg: "Studies result not match" })
