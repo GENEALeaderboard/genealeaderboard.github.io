@@ -9,11 +9,9 @@ export default function ScreenInfo({ info }) {
     finish: "border-orange-200 bg-orange-100",
   }
   return (
-    <div
-      className={cn("flex flex-col border p-2 rounded-lg", colors[info.type])}
-    >
+    <div className={cn("flex flex-col border p-2 rounded-lg", colors[info.type])}>
       <div className="">
-        PageID: <code className="nextra-code">{info._id}</code>
+        PageID: <code className="nextra-code">{info.id}</code>
       </div>
       <div className="">
         Type: <code className="nextra-code">{info.type}</code>
@@ -26,59 +24,56 @@ export default function ScreenInfo({ info }) {
       </div>
       <div className="">
         Video:
-        {info.videos && info.videos.length === 2 && (
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
+          {info.video1 && (
             <div className="border border-gray-300 bg-gray-200 p-2 rounded-lg flex gap-2 flex-col">
               <div className="">
-                System :{" "}
-                <code className="nextra-code">{info.videos[0].systemid}</code>
+                System : <code className="nextra-code">{info.video1.systemname}</code>
               </div>
               <div className="">
-                InputID :{" "}
-                <code className="nextra-code">{info.videos[0].inputcode}</code>
+                InputID : <code className="nextra-code">{info.video1.inputcode}</code>
               </div>
               <div className="">
-                Path :{" "}
-                <code className="nextra-code">{info.videos[0].path}</code>
+                Path : <code className="nextra-code">{info.video1.path}</code>
               </div>
               <div className="flex gap-2">
                 <span>URL: </span>
                 <a
-                  href={info.videos[0].url}
+                  href={info.video1.url}
                   className="w-72 overflow-hidden text-ellipsis whitespace-nowrap text-primary-600 underline decoration-from-font [text-underline-position:from-font]"
                 >
-                  {info.videos[0].url}
+                  {info.video1.url}
                 </a>
               </div>
             </div>
+          )}
+          {info.video1 && (
             <div className="border border-gray-300 bg-gray-200 p-2 rounded-lg ">
               <div className="">
-                System:{" "}
-                <code className="nextra-code">{info.videos[1].systemid}</code>
+                System: <code className="nextra-code">{info.video2.systemname}</code>
               </div>
               <div className="">
-                InputID:{" "}
-                <code className="nextra-code">{info.videos[1].inputcode}</code>
+                InputID: <code className="nextra-code">{info.video2.inputcode}</code>
               </div>
               <div className="">
-                Path: <code className="nextra-code">{info.videos[1].path}</code>
+                Path: <code className="nextra-code">{info.video2.path}</code>
               </div>
               <div className="flex gap-2 w-full">
                 <span>URL: </span>
                 <a
-                  href={info.videos[1].url}
+                  href={info.video2.url}
                   className="w-72 overflow-hidden text-ellipsis whitespace-nowrap text-primary-600 underline decoration-from-font [text-underline-position:from-font]"
                 >
-                  {info.videos[1].url}
+                  {info.video2.url}
                 </a>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <div className="">
         Local actions :
-        <ActionList actions={info.actions} />
+        <ActionList actions={JSON.parse(info.actions)} />
       </div>
     </div>
   )
