@@ -93,7 +93,7 @@ export default function Page() {
         return {
           status: "new",
           name: studyConfig.name,
-          time_start: String(new Date()),
+          time_start: new Date(),
           type: studyType,
           global_actions: JSON.stringify([]),
           file_created: item.filename,
