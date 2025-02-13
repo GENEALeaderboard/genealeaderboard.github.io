@@ -272,7 +272,7 @@ export default function UploadNPY({ codes, user, status }) {
           id="email-address"
           type="email"
           name="email-address"
-          value={user.email}
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
