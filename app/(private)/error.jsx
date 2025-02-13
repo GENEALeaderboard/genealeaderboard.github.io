@@ -9,8 +9,8 @@ export default function Error({ error, reset }) {
   }, [error])
 
   return (
-    <div>
-      <Callout title="Something went wrong!">Unknow Error, please contact support</Callout>
+    <div className="w-full p-12 justify-center ">
+      <Callout type="error">Unknow Error, please contact support</Callout>
     </div>
   )
 }

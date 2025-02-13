@@ -7,7 +7,6 @@ import React from "react"
 
 export default function Layout({ children }) {
   return (
-    <ErrorBoundary fallback={Error}>
       <div className="mx-auto flex max-w-[90rem]">
         <Sidebar />
         <nav className="nextra-toc order-last max-xl:hidden w-64 shrink-0 print:hidden" aria-label="table of contents"></nav>
@@ -15,6 +14,5 @@ export default function Layout({ children }) {
           <main className="">{children}</main>
         </article>
       </div>
-    </ErrorBoundary>
   )
 }

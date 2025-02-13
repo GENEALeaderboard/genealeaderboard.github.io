@@ -6,6 +6,7 @@ import Body from "@/components/body"
 import Footer from "@/components/footer"
 import Header from "@/components/header"
 import { AuthProvider } from "@/contexts/auth"
+import ErrorBoundary from "@/components/ErrorBoundary"
 // import { NextAuthProviders } from "@/components/auth/auth-provider"
 // import { AuthProvider } from "@/contexts/auth"
 // import { useThemeConfig } from "@/contexts/theme";
@@ -22,10 +23,7 @@ export default async function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning dir="ltr">
       <head>
         <meta charSet="utf-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico"></link>
         <meta
           name="description"
@@ -36,15 +34,17 @@ The GENEA Leaderboard is the evolution of the GENEA challenge, which was held at
         <title>GENEA Leaderboard Submission Page</title>
       </head>
       <body className="nextra-banner-hidden">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <AuthProvider>
-          <div dir="ltr">
-            <Header />
-            {children}
-            <Footer />
-          </div>
-          </AuthProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <AuthProvider>
+              <div dir="ltr">
+                <Header />
+                {children}
+                <Footer />
+              </div>
+            </AuthProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

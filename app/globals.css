@@ -10,6 +10,8 @@
 /* @import "../styles/cards.css"; */
 /* @import "../styles/hamburger.css"; */
 /* @import "../styles/typesetting-article.css"; */
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant light (&:where(.light, .light *));
 
 @layer base {
   :root {
@@ -42,8 +44,8 @@
       "ss01" 1,
       "ss06" 1 !important;
     font-family:
-      TTT,
       "Segoe UI",
+      TTT,
       ui-sans-serif,
       system-ui,
       -apple-system,
@@ -84,6 +86,10 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .dark:text-slate-200:where(.dark *) {
+    color: rgba(229, 231, 235);
   }
 }
 

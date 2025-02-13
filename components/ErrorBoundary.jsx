@@ -1,37 +1,32 @@
-import * as React from "react"
+"use client"
 
-export class ErrorBoundary extends React.Component {
+import { Callout } from "@/nextra"
+import React, { Component } from "react"
+
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
     this.state = { hasError: false }
   }
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
+  static getDerivedStateFromError() {
     return { hasError: true }
   }
 
-  componentDidCatch(error, info) {
-    logErrorToMyService(
-      error,
-      // Example "componentStack":
-      //   in ComponentThatThrows (created by App)
-      //   in ErrorBoundary (created by App)
-      //   in div (created by App)
-      //   in App
-      info.componentStack,
-      // Only available in react@canary.
-      // Warning: Owner Stack is not available in production.
-      React.captureOwnerStack()
-    )
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo)
   }
 
   render() {
     if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return this.props.fallback
+      return (
+        <div className="w-full p-12 justify-center ">
+          <Callout type="error">Unknow Error, please contact support</Callout>
+        </div>
+      )
     }
-
     return this.props.children
   }
 }
+
+export default ErrorBoundary

@@ -1,5 +1,6 @@
 "use client" // Error boundaries must be Client Components
 
+import { Callout } from "@/nextra"
 import { useEffect } from "react"
 
 export default function Error({ error, reset }) {
@@ -9,8 +10,11 @@ export default function Error({ error, reset }) {
   }, [error])
 
   return (
-    <div>
+    <div className="w-full p-12 justify-center h-full">
       <h2>Something went wrong!</h2>
+      <div className="w-full p-12 justify-center ">
+        <Callout type="error">Unknow Error, please contact support</Callout>
+      </div>
       <button
         onClick={
           // Attempt to recover by trying to re-render the segment
