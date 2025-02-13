@@ -147,12 +147,12 @@ export default function UploadNPY({ codes, user, status }) {
       return
     }
 
-    if (!user.email) {
+    if (!email) {
       setValidMsg("Please add email address")
       return
     }
 
-    if (!user.name) {
+    if (!teamname) {
       setValidMsg("Please add your team name")
       return
     }
