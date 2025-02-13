@@ -5,29 +5,11 @@
 @import "../styles/steps.css";
 @import "../styles/code-block.css";
 @import "../styles/utilities.css";
-
+@import "./fonts.css";
 
 /* @import "../styles/cards.css"; */
 /* @import "../styles/hamburger.css"; */
 /* @import "../styles/typesetting-article.css"; */
-
-@theme {
-  --color-primary-50: hsl(212deg 100% calc(45% + 52%));
-  --color-primary-100: hsl(212deg 100% calc(45% + 49%));
-  --color-primary-200: hsl(212deg 100% calc(45% + 41%));
-  --color-primary-300: hsl(212deg 100% calc(45% + 32%));
-  --color-primary-400: hsl(212deg 100% calc(45% + 21%));
-  --color-primary-500: hsl(212deg 100% calc(45% + 5%));
-  --color-primary-600: hsl(
-    var(--nextra-primary-hue) var(--nextra-primary-saturation)
-      var(--nextra-primary-lightness)
-  );
-  --color-primary-700: hsl(212deg 100% calc(45% - 6%));
-  --color-primary-800: hsl(212deg 100% calc(45% - 13%));
-  --color-primary-900: hsl(212deg 100% calc(45% - 21%));
-
-  --color-dark: #111;
-}
 
 @layer base {
   :root {
@@ -60,7 +42,8 @@
       "ss01" 1,
       "ss06" 1 !important;
     font-family:
-      Segoe UI,
+      TTT,
+      "Segoe UI",
       ui-sans-serif,
       system-ui,
       -apple-system,
@@ -127,8 +110,7 @@
     outline: none;
   }
 
-  .progress-ring.indeterminate.ring-progress-rotate
-    circle.ring-progress-rotate {
+  .progress-ring.indeterminate.ring-progress-rotate circle.ring-progress-rotate {
     animation: progress-ring-indeterminate 2s linear infinite;
   }
 
@@ -161,4 +143,19 @@
     animation-timing-function: linear;
     animation-iteration-count: infinite;
   }
+}
+
+@theme {
+  --color-primary-50: hsl(212deg 100% calc(45% + 52%));
+  --color-primary-100: hsl(212deg 100% calc(45% + 49%));
+  --color-primary-200: hsl(212deg 100% calc(45% + 41%));
+  --color-primary-300: hsl(212deg 100% calc(45% + 32%));
+  --color-primary-400: hsl(212deg 100% calc(45% + 21%));
+  --color-primary-500: hsl(212deg 100% calc(45% + 5%));
+  --color-primary-600: hsl(var(--nextra-primary-hue) var(--nextra-primary-saturation) var(--nextra-primary-lightness));
+  --color-primary-700: hsl(212deg 100% calc(45% - 6%));
+  --color-primary-800: hsl(212deg 100% calc(45% - 13%));
+  --color-primary-900: hsl(212deg 100% calc(45% - 21%));
+
+  --color-dark: #111;
 }

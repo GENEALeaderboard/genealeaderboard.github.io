@@ -15,10 +15,10 @@ import UploadPreviewer from "./UploadPreviewer"
 import { apiPost, apiPatch } from "@/utils/fetcher"
 
 export default function UploadNPY({ codes, user, status }) {
-  const [email, setEmail] = useState(user ? user.email : "")
-  const [teamname, setTeamName] = useState(user ? user.name : "")
-  const [username, setUsername] = useState(user ? user.username : "")
-  const [userid, setUserId] = useState(user ? user.userid : "")
+  const [email, setEmail] = useState(user ? (user.email ? user.email : "") : "")
+  const [teamname, setTeamName] = useState(user ? (user.name ? user.name : "") : "")
+  const [username, setUsername] = useState(user ? (user.username ? user.username : "") : "")
+  const [userid, setUserId] = useState(user ? (user.userid ? user.userid : "") : "")
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [uploading, setUploading] = useState("")
@@ -125,7 +125,7 @@ export default function UploadNPY({ codes, user, status }) {
       console.error("Error uploading file:", err)
       setValidMsg("Error uploading file")
       setUploadProgress(fileName, 0, "error")
-      return { success:false, msg:"Exception on uploading file", error:null }
+      return { success: false, msg: "Exception on uploading file", error: null }
     }
   }
 
@@ -138,7 +138,7 @@ export default function UploadNPY({ codes, user, status }) {
     }
 
     if (files.length <= 0) {
-      setValidMsg("Please upload video")
+      setValidMsg("Please upload npy file")
       return
     }
 
