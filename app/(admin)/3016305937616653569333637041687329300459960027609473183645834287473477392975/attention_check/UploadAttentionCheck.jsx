@@ -94,7 +94,7 @@ export default function UploadAttetionCheck() {
 
     try {
       setUploadProgress(fileName, 0, "uploading")
-      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/videos`
+      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/attention-check`
 
       console.log("VIDEO_UPLOAD_URL", VIDEO_UPLOAD_URL)
 
@@ -153,17 +153,17 @@ export default function UploadAttetionCheck() {
         videoMeta.push({ path, inputcode, url })
       }
 
-      const videoDatas = videoMeta.map((meta) => {
+      const checkDatas = videoMeta.map((meta) => {
         return {
           inputcode: meta.inputcode,
           path: meta.path,
           url: meta.url,
         }
       })
-      console.log("videoDatas", videoDatas)
+      console.log("videoDatas", checkDatas)
 
       setUploading("Uploading your videos to database, please waiting ...")
-      const resInsert = await apiPost("/api/videos", { videos: videoDatas })
+      const resInsert = await apiPost("/api/attention-check", { checks: checkDatas })
 
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })
