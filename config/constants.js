@@ -20,3 +20,8 @@ export const STUDY_TYPES = {
   "mismatch-speech-studies": "mismatch speech studies",
   "mismatch-emotion-studies": "mismatch emotion studies",
 }
+
+export const MISMATCH_TYPES = {
+  speech: "Speech Mismatch",
+  emotion: "Emotion Mismatch",
+}
