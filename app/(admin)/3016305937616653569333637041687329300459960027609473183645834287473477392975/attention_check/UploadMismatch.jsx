@@ -8,7 +8,6 @@ import axios from "axios"
 import clsx from "clsx"
 import BVHFile from "@/icons/bvhfile"
 import { Select } from "@headlessui/react"
-import SystemList from "./systemlist"
 import { UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
@@ -16,7 +15,7 @@ import Mp4Icon from "@/icons/mp4"
 import MismatchPreviewer from "./MismatchPreviewer"
 import { apiPost } from "@/utils/fetcher"
 
-export default function UploadMismatch({ }) {
+export default function UploadMismatch() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
@@ -25,9 +24,6 @@ export default function UploadMismatch({ }) {
   // const [uploadProgress, setUploadProgress] = useState({})
   const [progress, setProgress] = useState({})
   const [uploadState, setUploadState] = useState({ type: "", message: "" })
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const [description, setDescription] = useState("")
-  // const [missingList, setMissingList] = useState([])
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   const onDrop = useCallback(async (acceptedFiles) => {
@@ -83,16 +79,6 @@ export default function UploadMismatch({ }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-  useEffect(() => {
-    if (systems && systems.length > 0) {
-      setDescription(systems[selectedIndex].description)
-    }
-  }, [selectedIndex, systems])
-
-  useEffect(() => {
-    setSelectedIndex(0)
-  }, [systems])
-
   const setUploadProgress = useCallback((fileName, percent, status) => {
     setProgress((prevProgress) => {
       return {
@@ -102,7 +88,7 @@ export default function UploadMismatch({ }) {
     })
   }, [])
 
-  const simpleUploadFile = async (file, index, systemname) => {
+  const simpleUploadFile = async (file, index) => {
     const fileName = file.name
     const fileSize = file.size
 
@@ -116,7 +102,6 @@ export default function UploadMismatch({ }) {
       const { data: responseUpload } = await axios.post(
         VIDEO_UPLOAD_URL,
         {
-          systemname: systemname,
           fileName: fileName,
           fileSize: fileSize,
           file: file,
@@ -152,26 +137,13 @@ export default function UploadMismatch({ }) {
       return
     }
 
-    const systemname = systems[selectedIndex].name
-
-    if (!systemname) {
-      setValidMsg("System selected not found")
-      return
-    }
-
-    // if (missingList.length > 0) {
-    //   setErrorMsg("Please upload missing files")
-    //   return
-    // }
-
     try {
       setUploading("Uploading your videos, please waiting ...")
       setUploadState({ type: "loading", message: "" })
-      console.log("systemname", systemname)
 
       const videoMeta = []
       for (let index = 0; index < files.length; index++) {
-        const reponse = await simpleUploadFile(files[index], index, systemname)
+        const reponse = await simpleUploadFile(files[index], index)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
@@ -184,10 +156,8 @@ export default function UploadMismatch({ }) {
       const videoDatas = videoMeta.map((meta) => {
         return {
           inputcode: meta.inputcode,
-          systemname: systems[selectedIndex].name,
           path: meta.path,
           url: meta.url,
-          systemid: systems[selectedIndex].id,
         }
       })
       console.log("videoDatas", videoDatas)
@@ -207,21 +177,6 @@ export default function UploadMismatch({ }) {
     } finally {
       setUploading("")
     }
-  }
-
-  if (videosLoading) {
-    return (
-      <div className="w-full px-12  justify-center">
-        <p className="flex justify-center p-4 gap-2">
-          <CircleLoading />
-          Loading ...
-        </p>
-      </div>
-    )
-  }
-
-  if (!systems || systems.length <= 0) {
-    return <Callout type="error">Failed to connect, please contact support</Callout>
   }
 
   if (uploadState.message) {
@@ -255,9 +210,8 @@ export default function UploadMismatch({ }) {
 
   return (
     <form className="mt-6 flex flex-col px-4 gap-4">
-
       {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
-      
+
       <div className="items-center">
         <div
           {...getRootProps()}
@@ -291,19 +245,6 @@ export default function UploadMismatch({ }) {
           </Callout>
         </div>
       )}
-
-      {/* {missingList.length > 0 && (
-        <Callout type="error">
-          You upload missing following files:
-          <div className="flex flex-wrap gap-2 text-sm">
-            {missingList.map((filemis, index) => (
-              <code key={index} className="text-xs px-2">
-                {filemis}
-              </code>
-            ))}
-          </div>
-        </Callout>
-      )} */}
 
       <div className="flex flex-col items-center">
         <div className="flex justify-start">

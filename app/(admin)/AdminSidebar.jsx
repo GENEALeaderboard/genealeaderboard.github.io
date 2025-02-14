@@ -15,6 +15,7 @@ import UserStudy from "@/icons/userstudy"
 import VideoIcon from "@/icons/video"
 import Participation from "@/icons/participation"
 import Mismatch from "@/icons/mismatch"
+import AttentionCheck from "@/icons/attetioncheck"
 
 // Advanced
 export const OnFocusItemContext = createContext(null)
@@ -177,10 +178,10 @@ export default function AdminSidebar() {
                 <li className="flex flex-col gap-1">
                   <Link
                     className="flex rounded gap-2 items-center px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/mismatch"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check"
                   >
-                    <Mismatch className="w-5" />
-                    Mismatch
+                    <AttentionCheck className="w-5" />
+                    Upload Attention Check
                   </Link>
                 </li>
                 <li className="flex flex-col gap-1">
@@ -198,7 +199,9 @@ export default function AdminSidebar() {
                     className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
                     href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_mismatch"
                   >
-                    <VideoUploadIcon className="w-5" />
+                    {/* <VideoUploadIcon className="w-5" />
+                     */}
+                    <Mismatch className="w-5" />
                     Upload Mismatched
                   </Link>
                 </li>
