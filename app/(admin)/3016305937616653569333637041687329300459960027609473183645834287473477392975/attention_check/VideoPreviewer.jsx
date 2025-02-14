@@ -1,7 +1,7 @@
 import { UploadStatus } from "@/components/UploadStatus"
 import Mp4Icon from "@/icons/mp4"
 
-export default function MismatchPreviewer({ file, progress, index }) {
+export default function VideoPreviewer({ file, progress, index }) {
   return (
     <div className="px-4 text-xs text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-neutral-900 flex items-center h-10 gap-2 rounded-md border border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50">
       <Mp4Icon className="w-4 h-4" />

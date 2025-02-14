@@ -12,10 +12,10 @@ import { UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
 import Mp4Icon from "@/icons/mp4"
-import MismatchPreviewer from "./MismatchPreviewer"
+import VideoPreviewer from "./VideoPreviewer"
 import { apiPost } from "@/utils/fetcher"
 
-export default function UploadMismatch() {
+export default function UploadAttetionCheck() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
@@ -198,7 +198,7 @@ export default function UploadMismatch() {
         </p>
         <div className="flex flex-col gap-2">
           {files.map((file, index) => {
-            return <MismatchPreviewer file={file} progress={progress} index={index} key={index} />
+            return <VideoPreviewer file={file} progress={progress} index={index} key={index} />
           })}
         </div>
         <Callout type="warning" className="mt-0">
@@ -211,7 +211,6 @@ export default function UploadMismatch() {
   return (
     <form className="mt-6 flex flex-col px-4 gap-4">
       {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
-
       <div className="items-center">
         <div
           {...getRootProps()}
