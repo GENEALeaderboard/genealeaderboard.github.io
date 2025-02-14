@@ -27,7 +27,7 @@ export default function ParticipantList({ loading, participants }) {
         </tr>
       </thead>
       <tbody className="align-baseline text-gray-900 dark:text-gray-100">
-        {participants.map((participant, index) => (
+        {participants && participants.map((participant, index) => (
           <tr key={index} className="border-b border-gray-100 dark:border-neutral-700/50">
             <td className="py-2 pl-6">{index + 1}</td>
             <td className="py-2 pl-6">{participant.prolific_userid}</td>

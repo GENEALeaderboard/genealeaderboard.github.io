@@ -102,7 +102,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
     })
   }, [])
 
-  const simpleUploadFile = async (file, index, systemname) => {
+  const simpleUploadFile = async (file, index, systemname, mismatchType) => {
     const fileName = file.name
     const fileSize = file.size
 
@@ -116,10 +116,11 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
       const { data: responseUpload } = await axios.post(
         VIDEO_UPLOAD_URL,
         {
-          systemname: systemname,
           fileName: fileName,
           fileSize: fileSize,
           file: file,
+          systemname: systemname,
+          mismatchType: mismatchType,
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -167,11 +168,11 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
     try {
       setUploading("Uploading your videos, please waiting ...")
       setUploadState({ type: "loading", message: "" })
-      console.log("systemname", systemname)
+      console.log("systemname", systemname, "mismatchType", mismatchType)
 
       const videoMeta = []
       for (let index = 0; index < files.length; index++) {
-        const reponse = await simpleUploadFile(files[index], index, systemname)
+        const reponse = await simpleUploadFile(files[index], index, systemname, mismatchType)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
