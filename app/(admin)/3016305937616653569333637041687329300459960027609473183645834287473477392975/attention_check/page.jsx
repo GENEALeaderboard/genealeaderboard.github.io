@@ -32,34 +32,22 @@ export default function Page() {
         >
           <code className="nextra-code" dir="ltr">
             <span>
-              <span>/videos</span>
+              <span>/videos/attentioncheck/&lt;1_LeftClearlyBetter&gt;.mp4</span>
             </span>
             <span>
-              <span></span>
+              <span>/videos/attentioncheck/&lt;1_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck</span>
+              <span>/videos/attentioncheck/&lt;2_LeftSlightlyBetter&gt;.mp4</span>
             </span>
             <span>
-              <span></span>
+              <span>/videos/attentioncheck/&lt;2_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;1_attentioncheck_LeftClearlyBetter&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;3_Equal&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;1_attentioncheck_LeftSlightlyBetter&gt;.mp4</span>
-            </span>
-            <span>
-              <span>/videos/attentioncheck/&lt;1_attentioncheck_Equal&gt;.mp4</span>
-            </span>
-            <span>
-              <span>/videos/attentioncheck/&lt;1_attentioncheck_RightSlightlyBetter&gt;.mp4</span>
-            </span>
-            <span>
-              <span>/videos/attentioncheck/&lt;1_attentioncheck_RightClearlyBetter&gt;.mp4</span>
-            </span>
-            <span>
-              <span>/videos/attentioncheck/&lt;1_attentioncheck_Reference&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;3_Reference&gt;.mp4</span>
             </span>
           </code>
         </pre>

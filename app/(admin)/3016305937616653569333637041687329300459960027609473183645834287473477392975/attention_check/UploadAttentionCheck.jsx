@@ -25,6 +25,7 @@ export default function UploadAttetionCheck() {
   const [progress, setProgress] = useState({})
   const [uploadState, setUploadState] = useState({ type: "", message: "" })
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  const [isValidated, setValidated] = useState(false)
 
   const onDrop = useCallback(async (acceptedFiles) => {
     setValidMsg("")
@@ -247,13 +248,23 @@ export default function UploadAttetionCheck() {
 
       <div className="flex flex-col items-center">
         <div className="flex justify-start">
-          <button
-            className="cursor-pointer select-none flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-neutral-800 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
-            onClick={handleUpload}
-          >
-            {uploadState.type === "loading" ? <CircleLoading className="w-6 h-6" /> : <></>}
-            Upload Video
-          </button>
+          {isValidated ? (
+            <button
+              className="cursor-pointer select-none flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-neutral-800 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+              onClick={handleUpload}
+            >
+              {uploadState.type === "loading" ? <CircleLoading className="w-6 h-6" /> : <></>}
+              Upload Video
+            </button>
+          ) : (
+            <button
+              className="cursor-pointer select-none flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+              onClick={handleUpload}
+            >
+              {uploadState.type === "loading" ? <CircleLoading className="w-6 h-6" /> : <></>}
+              Validate
+            </button>
+          )}
         </div>
       </div>
     </form>

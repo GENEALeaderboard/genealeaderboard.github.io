@@ -362,7 +362,7 @@ export default function Page() {
       </div>
       <div className="mt-3 text-center">
         <button
-          className="text-sm py-2 px-4 border border-green-500 bg-green-500 text-white contrast-more:text-gray-700 contrast-more:dark:text-gray-100 max-md:hidden whitespace-nowrap subpixel-antialiased hover:underline rounded-md transition-all"
+          className="text-sm py-2 px-4 border border-green-500 bg-green-600 text-white contrast-more:text-gray-700 contrast-more:dark:text-gray-100 max-md:hidden whitespace-nowrap subpixel-antialiased hover:underline rounded-md transition-all"
           aria-current="true"
           onClick={handleGenerate}
         >
