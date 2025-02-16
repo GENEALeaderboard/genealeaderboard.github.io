@@ -90,8 +90,9 @@ export default function UploadAttetionCheck() {
     })
   }, [])
 
-  const simpleUploadFile = async (file, fileName) => {
+  const simpleUploadFile = async (file, randomFileName) => {
     try {
+      const fileName = file.name
       const fileSize = file.size
       setUploadProgress(fileName, 0, "uploading")
       const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/attention-check`
@@ -102,7 +103,7 @@ export default function UploadAttetionCheck() {
       const { data: responseUpload } = await axios.post(
         VIDEO_UPLOAD_URL,
         {
-          fileName: fileName,
+          fileName: randomFileName,
           fileSize: fileSize,
           file: file,
         },
