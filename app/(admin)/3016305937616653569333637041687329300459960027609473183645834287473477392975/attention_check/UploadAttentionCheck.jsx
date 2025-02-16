@@ -8,12 +8,13 @@ import axios from "axios"
 import clsx from "clsx"
 import BVHFile from "@/icons/bvhfile"
 import { Select } from "@headlessui/react"
-import { UPLOAD_API_ENDPOINT } from "@/config/constants"
+import { ATTENTION_CHECK_EXPECTED_VOTE, UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
 import Mp4Icon from "@/icons/mp4"
 import VideoPreviewer from "./VideoPreviewer"
 import { apiPost } from "@/utils/fetcher"
+import { generateUUID } from "@/utils/generateUUID"
 
 export default function UploadAttetionCheck() {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -89,11 +90,9 @@ export default function UploadAttetionCheck() {
     })
   }, [])
 
-  const simpleUploadFile = async (file, index) => {
-    const fileName = file.name
-    const fileSize = file.size
-
+  const simpleUploadFile = async (file, fileName) => {
     try {
+      const fileSize = file.size
       setUploadProgress(fileName, 0, "uploading")
       const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/attention-check`
 
@@ -125,8 +124,39 @@ export default function UploadAttetionCheck() {
       console.error("Error uploading file:", err)
       // setErrorMsg("Error uploading file")
       setUploadProgress(fileName, 0, "error")
-      const { success, msg, error } = err.response.data
-      return { success, msg, error }
+      return { success: false, msg: "Exception on uploading file", error: null }
+    }
+  }
+
+  const handleValidate = async (e) => {
+    e.preventDefault()
+
+    if (files.length <= 0) {
+      setValidMsg("Please upload video")
+      return
+    }
+
+    try {
+      let allValid = true
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+
+        const filename = file.name.replace(/\.[^.]+$/, "")
+        const idx = filename.split("_")[0]
+        const expectedVote = filename.split("_")[1]
+        console.log("idx", idx, "expectedVote", expectedVote)
+        if (!ATTENTION_CHECK_EXPECTED_VOTE.includes(expectedVote)) {
+          setValidMsg(`Expected vote is not valid: [${expectedVote}] in file ${file.name}`)
+          allValid = false
+          break
+        }
+      }
+      if (allValid) {
+        setValidated(true)
+      }
+    } catch (error) {
+      setUploadState({ type: "error", message: error.message })
+      console.log("EXCEPTION", error)
     }
   }
 
@@ -143,34 +173,33 @@ export default function UploadAttetionCheck() {
       setUploadState({ type: "loading", message: "" })
 
       const videoMeta = []
+
       for (let index = 0; index < files.length; index++) {
-        const reponse = await simpleUploadFile(files[index], index)
+        const file = files[index]
+        const fileName = file.name.replace(/\.[^.]+$/, "")
+        const idx = fileName.split("_")[0]
+        const expectedVote = fileName.split("_")[1]
+
+        const fileNameRandomGen = `${generateUUID(6)}.mp4`
+        const reponse = await simpleUploadFile(file, fileNameRandomGen)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
           setUploadState({ type: "error", message: reponse.msg })
           return
         }
-        videoMeta.push({ path, inputcode, url })
+        videoMeta.push({ path, inputcode, url, expectedVote, idx })
       }
 
-      const checkDatas = videoMeta.map((meta) => {
-        return {
-          inputcode: meta.inputcode,
-          path: meta.path,
-          url: meta.url,
-        }
-      })
-      console.log("videoDatas", checkDatas)
-
+      console.log("videoMeta", JSON.stringify(videoMeta))
       setUploading("Uploading your videos to database, please waiting ...")
-      const resInsert = await apiPost("/api/attention-check", { checks: checkDatas })
+      const resInsert = await apiPost("/api/attention-check", { videos: videoMeta })
 
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })
       } else {
-        setUploadState({ type: "error", message: msg })
         console.log("resInsert", resInsert)
+        setUploadState({ type: "error", message: resInsert.msg })
       }
     } catch (error) {
       setUploadState({ type: "error", message: "Error with your upload video, please contact for support!" })
@@ -259,7 +288,7 @@ export default function UploadAttetionCheck() {
           ) : (
             <button
               className="cursor-pointer select-none flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
-              onClick={handleUpload}
+              onClick={handleValidate}
             >
               {uploadState.type === "loading" ? <CircleLoading className="w-6 h-6" /> : <></>}
               Validate

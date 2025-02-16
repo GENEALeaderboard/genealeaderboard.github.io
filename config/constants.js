@@ -25,3 +25,5 @@ export const MISMATCH_TYPES = {
   speech: "Speech Mismatch",
   emotion: "Emotion Mismatch",
 }
+
+export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "Equal", "RightSlightlyBetter", "RightClearlyBetter"]
