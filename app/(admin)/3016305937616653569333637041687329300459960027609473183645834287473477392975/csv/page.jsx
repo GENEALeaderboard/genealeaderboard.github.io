@@ -14,6 +14,8 @@ import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
 import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
+import AttentionCheckList from "./AttentionCheckList"
+import useSWR from "swr"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -22,6 +24,18 @@ export default function Page() {
   const [isValid, setIsValid] = useState(false)
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
+
+  // ******************************************************
+  const {
+    data: attentionCheckList,
+    error: isError,
+    isLoading,
+  } = useSWR("/api/attention-check", apiFetcherData, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  // ******************************************************
 
   const handleValidate = async (e) => {
     e.preventDefault()
@@ -202,6 +216,13 @@ export default function Page() {
 
   return (
     <>
+      <h2 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-10 border-b pb-1 text-3xl border-neutral-200/70 contrast-more:border-neutral-400 dark:border-primary-100/10 contrast-more:dark:border-neutral-400">
+        Attention Check
+      </h2>
+
+      <div className={cn("-mx-6 mb-4 mt-6 overflow-x-auto overscroll-x-contain px-6 pb-4 ", "mask-gradient")}>
+        <AttentionCheckList attentionCheckList={attentionCheckList} />
+      </div>
       <h2 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-10 border-b pb-1 text-3xl border-neutral-200/70 contrast-more:border-neutral-400 dark:border-primary-100/10 contrast-more:dark:border-neutral-400">
         Upload CSV Studies
       </h2>
