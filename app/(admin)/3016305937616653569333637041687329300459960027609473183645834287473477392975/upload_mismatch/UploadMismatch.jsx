@@ -108,7 +108,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
 
     try {
       setUploadProgress(fileName, 0, "uploading")
-      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/videos`
+      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/attention-check`
 
       console.log("VIDEO_UPLOAD_URL", VIDEO_UPLOAD_URL)
 
@@ -140,8 +140,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
       console.error("Error uploading file:", err)
       // setErrorMsg("Error uploading file")
       setUploadProgress(fileName, 0, "error")
-      const { success, msg, error } = err.response.data
-      return { success, msg, error }
+      return { success: false, msg: err.message, err }
     }
   }
 

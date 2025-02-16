@@ -14,6 +14,15 @@ export default function Page() {
       <h2 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-10 border-b pb-1 text-3xl border-neutral-200/70 contrast-more:border-neutral-400 dark:border-primary-100/10 contrast-more:dark:border-neutral-400">
         Attention Check Videos
       </h2>
+      <ul className="mt-6 list-disc first:mt-0 ltr:ml-6 rtl:mr-6">
+        <li className="my-2">
+          <code>LeftClearlyBetter</code> | <code>LeftSlightlyBetter</code> | <code>Equal</code> | <code>RightSlightlyBetter</code> | <code>RightClearlyBetter</code>
+        </li>
+        <li className="my-2">
+          <code>Reference</code>
+        </li>
+      </ul>
+
       <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Attention Check structure</h4>
       <div className="nextra-code relative mt-6 first:mt-0">
         <pre
@@ -35,14 +44,29 @@ export default function Page() {
               <span></span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;video_segment_name&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;1_attentioncheck_LeftClearlyBetter&gt;.mp4</span>
+            </span>
+            <span>
+              <span>/videos/attentioncheck/&lt;1_attentioncheck_LeftSlightlyBetter&gt;.mp4</span>
+            </span>
+            <span>
+              <span>/videos/attentioncheck/&lt;1_attentioncheck_Equal&gt;.mp4</span>
+            </span>
+            <span>
+              <span>/videos/attentioncheck/&lt;1_attentioncheck_RightSlightlyBetter&gt;.mp4</span>
+            </span>
+            <span>
+              <span>/videos/attentioncheck/&lt;1_attentioncheck_RightClearlyBetter&gt;.mp4</span>
+            </span>
+            <span>
+              <span>/videos/attentioncheck/&lt;1_attentioncheck_Reference&gt;.mp4</span>
             </span>
           </code>
         </pre>
       </div>
       <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Upload Attention Check Video</h4>
       <div className="mt-6 mb-32">
-        <UploadAttetionCheck  />
+        <UploadAttetionCheck />
       </div>
     </>
   )
