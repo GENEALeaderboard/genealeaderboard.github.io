@@ -6,6 +6,7 @@ export default function ScreenInfo({ info }) {
   const colors = {
     generic: "border-green-200 bg-green-100",
     video: "border-red-200 bg-red-100",
+    check: "border-blue-200 bg-blue-100",
     finish: "border-orange-200 bg-orange-100",
   }
   return (

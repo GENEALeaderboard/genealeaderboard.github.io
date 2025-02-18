@@ -17,7 +17,9 @@ export default function Study({ loading, studies }) {
     )
   }
 
-  console.log("studies", studies)
+  if (!studies || studies.length === 0) {
+    return <></>
+  }
 
   return (
     <table className="table-auto border-collapse text-sm">
@@ -25,7 +27,7 @@ export default function Study({ loading, studies }) {
         <tr className="border-b py-4 text-left dark:border-neutral-700">
           <th className="p-2 font-semibold">ID</th>
           <th className="p-2 font-semibold">Status</th>
-          <th className="p-2 font-semibold">Status</th>
+          <th className="p-2 font-semibold">User Study</th>
         </tr>
       </thead>
       <tbody className="align-baseline text-gray-900 dark:text-gray-100">
