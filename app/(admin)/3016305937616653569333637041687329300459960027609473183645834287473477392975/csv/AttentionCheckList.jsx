@@ -5,7 +5,6 @@ const AttentionCheckList = memo(function AttentionCheckList({ attentionCheckList
     return <></>
   }
 
-  console.log("attentionCheckList", attentionCheckList)
   return (
     <table className="w-full border-collapse text-sm">
       <thead>

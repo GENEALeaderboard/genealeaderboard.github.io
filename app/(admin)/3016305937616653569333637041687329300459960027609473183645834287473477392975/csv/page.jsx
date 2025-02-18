@@ -15,6 +15,7 @@ import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
 import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
 import AttentionCheckList from "./AttentionCheckList"
+import { getRandomSubset } from "@/utils/randomSubset"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -135,14 +136,14 @@ export default function Page() {
       }
 
       const pageList = []
-      const attentionSubset = getRandomSubset(attentionCheckList, min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
+      const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
       const nCheck = attentionSubset.length
 
       studiesCSV.forEach((studyData, stdIndex) => {
-        const step = Math.floor(studyData.length / (nCheck + 1))
+        const step = Math.floor(Array.from(studyData).length / (nCheck + 1))
         let pageIdx = 0
         let attentionCheckIdx = 0
-        const totalPageIdx = studyData.length + nCheck + 1
+        const totalPageIdx = studyData.length + nCheck
         studyData.forEach((row, rowIndex) => {
           const inputcode = row[0]
           const sysA = String(row[1]).trim()
@@ -183,8 +184,8 @@ export default function Page() {
 
           console.log("rowIndex", rowIndex, "step", step, "rowIndex + 1) % step ", (rowIndex + 1) % step)
 
-          if ((rowIndex + 1) % step === 0) {
-            const item = attentionSubset[attentionCheckIdx % nCheck]
+          if ((rowIndex + 1) % step === 0 && attentionCheckIdx < nCheck) {
+            const item = attentionSubset[attentionCheckIdx]
 
             pageList.push({
               type: "check",
@@ -206,17 +207,17 @@ export default function Page() {
         })
       })
       console.log("pageList", pageList)
-      const respPages = await apiPost(`/api/pages`, { pages: pageList })
+      // const respPages = await apiPost(`/api/pages`, { pages: pageList })
 
-      if (!respPages.success) {
-        console.log("respPages", respPages)
-        setGenState({ type: "error", msg: respPages.msg })
-        return
-      }
+      // if (!respPages.success) {
+      //   console.log("respPages", respPages)
+      //   setGenState({ type: "error", msg: respPages.msg })
+      //   return
+      // }
 
-      console.log("respPages", respPages)
+      // console.log("respPages", respPages)
 
-      setGenState({ type: "info", msg: respPages.msg })
+      // setGenState({ type: "info", msg: respPages.msg })
     } catch (error) {
       console.log("error", error)
       setGenState({ type: "error", msg: "Exception on upload, please contact support" })
