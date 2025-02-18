@@ -15,9 +15,9 @@ export function Status({ type }) {
       label: "Finish",
       color: "border-blue-500 text-blue-600 bg-blue-100",
     },
-    uncomplete: {
+    failed: {
       label: "Uncomplete",
-      color: "border-neutral-500 text-neutral-600 bg-neutral-100",
+      color: "border-gray-500 text-gray-600 bg-gray-100",
     },
   }
   if (!type || !status[type]) {

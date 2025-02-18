@@ -6,7 +6,7 @@ import { Callout } from "@/nextra"
 
 export default function SystemList({ systemList, selectedIndex, setSelectedIndex }) {
   if (!systemList) {
-    return <Callout type="error">Failed to connect, please contact support</Callout>
+    return <Callout type="error">Not found any submitted system</Callout>
   }
   return (
     <div className="relative items-center align-middle flex-grow">

@@ -221,7 +221,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
   }
 
   if (!systems || systems.length <= 0) {
-    return <Callout type="error">Failed to connect, please contact support</Callout>
+    return <Callout type="error">Not found any submitted system</Callout>
   }
 
   if (uploadState.message) {
