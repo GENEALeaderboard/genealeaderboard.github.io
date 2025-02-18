@@ -207,17 +207,17 @@ export default function Page() {
         })
       })
       console.log("pageList", pageList)
-      // const respPages = await apiPost(`/api/pages`, { pages: pageList })
+      const respPages = await apiPost(`/api/pages`, { pages: pageList })
 
-      // if (!respPages.success) {
-      //   console.log("respPages", respPages)
-      //   setGenState({ type: "error", msg: respPages.msg })
-      //   return
-      // }
+      if (!respPages.success) {
+        console.log("respPages", respPages)
+        setGenState({ type: "error", msg: respPages.msg })
+        return
+      }
 
-      // console.log("respPages", respPages)
+      console.log("respPages", respPages)
 
-      // setGenState({ type: "info", msg: respPages.msg })
+      setGenState({ type: "info", msg: respPages.msg })
     } catch (error) {
       console.log("error", error)
       setGenState({ type: "error", msg: "Exception on upload, please contact support" })
