@@ -90,7 +90,7 @@ export default function UploadAttetionCheck() {
     })
   }, [])
 
-  const simpleUploadFile = async (file, randomFileName) => {
+  const simpleUploadFile = async (file, randomFileName, expectedVote) => {
     try {
       const fileName = file.name
       const fileSize = file.size
@@ -104,6 +104,7 @@ export default function UploadAttetionCheck() {
         VIDEO_UPLOAD_URL,
         {
           fileName: randomFileName,
+          inputCode: expectedVote,
           fileSize: fileSize,
           file: file,
         },
@@ -182,7 +183,7 @@ export default function UploadAttetionCheck() {
         const expectedVote = fileName.split("_")[1]
 
         const fileNameRandomGen = `${generateUUID(6)}.mp4`
-        const reponse = await simpleUploadFile(file, fileNameRandomGen)
+        const reponse = await simpleUploadFile(file, fileNameRandomGen, expectedVote)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {

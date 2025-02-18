@@ -130,13 +130,18 @@ export default function Page() {
       const studiesID = respStudies.data
       const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
       if (studiesCSV.length !== studiesID.length) {
-        console.log("studyData", studyData, "studiesID", studiesID)
+        console.log("studiesCSV", studiesCSV, "studiesID", studiesID)
         setGenState({ type: "error", msg: "Studies result not match" })
         return
       }
 
       const pageList = []
+      const n_attentionCheck = attentionCheckList.length
+
       studiesCSV.forEach((studyData, stdIndex) => {
+        const step = Math.floor(studyData.length / (n_attentionCheck + 1))
+        let idx_attentionCheck = 0
+        console.log("step", step, "n_attentionCheck", n_attentionCheck, "idx_attentionCheck", idx_attentionCheck)
         studyData.forEach((row, rowIndex) => {
           const inputcode = row[0]
           const sysA = String(row[1]).trim()
@@ -147,7 +152,6 @@ export default function Page() {
           const videoA = videoFilteredA[0]
           const videoB = videoFilteredB[0]
 
-          console.log("videoA", videoA, "videoB", videoB)
           if (!videoA || !videoB) {
             console.log("videoA", videoA, "videoB", videoB)
             setGenState({ type: "error", msg: `Video not found for ${inputcode} ${sysA} ${sysB}` })
@@ -162,20 +166,41 @@ export default function Page() {
 
           pageList.push({
             type: "video",
+            studyid: studiesID[stdIndex],
             name: `Page ${rowIndex + 1} of ${studyData.length}`,
             question: studyConfig.question,
-            selected: JSON.stringify({}),
-            actions: JSON.stringify([]),
-            options: JSON.stringify(studyConfig.options),
+            selected: {},
+            actions: [],
+            options: studyConfig.options,
             system1: sysA,
             system2: sysB,
             video1: videoA.id,
             video2: videoB.id,
-            studyid: studiesID[stdIndex],
           })
+
+          console.log("rowIndex", rowIndex, "step", step, "rowIndex + 1) % step ", (rowIndex + 1) % step)
+
+          if ((rowIndex + 1) % step === 0) {
+            const item = attentionCheckList[idx_attentionCheck % n_attentionCheck]
+
+            pageList.push({
+              type: "check",
+              studyid: studiesID[stdIndex],
+              name: ``,
+              question: studyConfig.question,
+              selected: {},
+              actions: [],
+              options: studyConfig.options,
+              system1: "AttentionCheck",
+              system2: "AttentionCheck",
+              video1: item.videoid1,
+              video2: item.videoid2,
+            })
+            idx_attentionCheck = idx_attentionCheck + 1
+          }
         })
       })
-
+      console.log("pageList", pageList)
       const respPages = await apiPost(`/api/pages`, { pages: pageList })
 
       if (!respPages.success) {
@@ -284,7 +309,7 @@ export default function Page() {
               <div className="flex flex-col gap-8 mt-4 items-center">
                 {isValid ? (
                   <button
-                    className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+                    className="cursor-pointer flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
                     disabled={genState.type === "loading"}
                     onClick={handleUpload}
                   >
