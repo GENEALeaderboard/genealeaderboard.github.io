@@ -58,7 +58,7 @@ export default function Header() {
         className="text-sm contrast-more:text-gray-700 contrast-more:dark:text-gray-100 max-md:hidden whitespace-nowrap text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
         aria-current="false"
       >
-        GENEA Leaderboard ↗
+        GENEA Workshop ↗
       </Link>
       {/* <Link
         href="https://genea-workshop.github.io/2024/"
