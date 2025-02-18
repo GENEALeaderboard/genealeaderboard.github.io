@@ -138,10 +138,13 @@ export default function Page() {
       const pageList = []
       const n_attentionCheck = attentionCheckList.length
 
+      console.log("studyConfig.options", studyConfig.options)
+
       studiesCSV.forEach((studyData, stdIndex) => {
         const step = Math.floor(studyData.length / (n_attentionCheck + 1))
+        let pageIdx = 0
         let idx_attentionCheck = 0
-        console.log("step", step, "n_attentionCheck", n_attentionCheck, "idx_attentionCheck", idx_attentionCheck)
+        const totalPageIdx = studyData.length + n_attentionCheck
         studyData.forEach((row, rowIndex) => {
           const inputcode = row[0]
           const sysA = String(row[1]).trim()
@@ -167,16 +170,17 @@ export default function Page() {
           pageList.push({
             type: "video",
             studyid: studiesID[stdIndex],
-            name: `Page ${rowIndex + 1} of ${studyData.length}`,
+            name: `Page ${pageIdx + 1} of ${totalPageIdx}`,
             question: studyConfig.question,
-            selected: {},
-            actions: [],
+            selected: JSON.stringify({}),
+            actions: JSON.stringify([]),
             options: studyConfig.options,
             system1: sysA,
             system2: sysB,
             video1: videoA.id,
             video2: videoB.id,
           })
+          pageIdx++
 
           console.log("rowIndex", rowIndex, "step", step, "rowIndex + 1) % step ", (rowIndex + 1) % step)
 
@@ -186,17 +190,18 @@ export default function Page() {
             pageList.push({
               type: "check",
               studyid: studiesID[stdIndex],
-              name: ``,
+              name: `Page ${pageIdx + 1} of ${totalPageIdx}`,
               question: studyConfig.question,
-              selected: {},
-              actions: [],
+              selected: JSON.stringify({}),
+              actions: JSON.stringify([]),
               options: studyConfig.options,
               system1: "AttentionCheck",
               system2: "AttentionCheck",
               video1: item.videoid1,
               video2: item.videoid2,
             })
-            idx_attentionCheck = idx_attentionCheck + 1
+            idx_attentionCheck++
+            pageIdx++
           }
         })
       })
