@@ -16,7 +16,7 @@ export default function Page() {
       </h2>
       <ul className="mt-6 list-disc first:mt-0 ltr:ml-6 rtl:mr-6">
         <li className="my-2">
-          <code>LeftClearlyBetter</code> | <code>LeftSlightlyBetter</code> | <code>Equal</code> | <code>RightSlightlyBetter</code> | <code>RightClearlyBetter</code>
+          <code>LeftClearlyBetter</code> | <code>LeftSlightlyBetter</code> | <code>TheyAreEqual</code> | <code>RightSlightlyBetter</code> | <code>RightClearlyBetter</code>
         </li>
         <li className="my-2">
           <code>Reference</code>
@@ -44,7 +44,7 @@ export default function Page() {
               <span>/videos/attentioncheck/&lt;2_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;3_Equal&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;3_TheyAreEqual&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;3_Reference&gt;.mp4</span>

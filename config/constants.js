@@ -26,6 +26,6 @@ export const MISMATCH_TYPES = {
   emotion: "Emotion Mismatch",
 }
 
-export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "Equal", "RightSlightlyBetter", "RightClearlyBetter"]
+export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "TheyAreEqual", "RightSlightlyBetter", "RightClearlyBetter"]
 
 export const N_ATTENTION_CHECK_PER_STUDY = 4
