@@ -144,7 +144,7 @@ export default function Page() {
         const step = Math.floor(studyData.length / (n_attentionCheck + 1))
         let pageIdx = 0
         let idx_attentionCheck = 0
-        const totalPageIdx = studyData.length + n_attentionCheck
+        const totalPageIdx = studyData.length + n_attentionCheck + 1
         studyData.forEach((row, rowIndex) => {
           const inputcode = row[0]
           const sysA = String(row[1]).trim()
