@@ -27,3 +27,5 @@ export const MISMATCH_TYPES = {
 }
 
 export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "Equal", "RightSlightlyBetter", "RightClearlyBetter"]
+
+export const N_ATTENTION_CHECK_PER_STUDY = 4

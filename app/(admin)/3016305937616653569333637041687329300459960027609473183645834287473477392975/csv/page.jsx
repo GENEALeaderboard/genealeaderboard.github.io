@@ -4,18 +4,17 @@ import { Fragment, useEffect, useState } from "react"
 import Image from "next/image"
 import { clsx as cn } from "clsx"
 import axios from "axios"
-
+import useSWR from "swr"
 import { Callout } from "@/nextra"
 import { Loading } from "@/components"
 import { Select } from "@headlessui/react"
 import { ArrowLeftIcon } from "@/nextra/icons"
-import { API_ENDPOINT, STUDY_TYPES } from "@/config/constants"
+import { API_ENDPOINT, N_ATTENTION_CHECK_PER_STUDY, STUDY_TYPES } from "@/config/constants"
 import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
 import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
 import AttentionCheckList from "./AttentionCheckList"
-import useSWR from "swr"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -136,15 +135,14 @@ export default function Page() {
       }
 
       const pageList = []
-      const n_attentionCheck = attentionCheckList.length
-
-      console.log("studyConfig.options", studyConfig.options)
+      const attentionSubset = getRandomSubset(attentionCheckList, min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
+      const nCheck = attentionSubset.length
 
       studiesCSV.forEach((studyData, stdIndex) => {
-        const step = Math.floor(studyData.length / (n_attentionCheck + 1))
+        const step = Math.floor(studyData.length / (nCheck + 1))
         let pageIdx = 0
-        let idx_attentionCheck = 0
-        const totalPageIdx = studyData.length + n_attentionCheck + 1
+        let attentionCheckIdx = 0
+        const totalPageIdx = studyData.length + nCheck + 1
         studyData.forEach((row, rowIndex) => {
           const inputcode = row[0]
           const sysA = String(row[1]).trim()
@@ -179,13 +177,14 @@ export default function Page() {
             system2: sysB,
             video1: videoA.id,
             video2: videoB.id,
+            expectedvalue: "null",
           })
           pageIdx++
 
           console.log("rowIndex", rowIndex, "step", step, "rowIndex + 1) % step ", (rowIndex + 1) % step)
 
           if ((rowIndex + 1) % step === 0) {
-            const item = attentionCheckList[idx_attentionCheck % n_attentionCheck]
+            const item = attentionSubset[attentionCheckIdx % nCheck]
 
             pageList.push({
               type: "check",
@@ -199,8 +198,9 @@ export default function Page() {
               system2: "AttentionCheck",
               video1: item.videoid1,
               video2: item.videoid2,
+              expectedvalue: item.expected_vote,
             })
-            idx_attentionCheck++
+            attentionCheckIdx++
             pageIdx++
           }
         })
