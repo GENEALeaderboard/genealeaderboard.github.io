@@ -178,7 +178,7 @@ export default function Page() {
             system2: sysB,
             video1: videoA.id,
             video2: videoB.id,
-            expectedvalue: "null",
+            expected_vote: "null",
           })
           pageIdx++
 
@@ -199,7 +199,7 @@ export default function Page() {
               system2: "AttentionCheck",
               video1: item.videoid1,
               video2: item.videoid2,
-              expectedvalue: item.expected_vote,
+              expected_vote: item.expected_vote,
             })
             attentionCheckIdx++
             pageIdx++
