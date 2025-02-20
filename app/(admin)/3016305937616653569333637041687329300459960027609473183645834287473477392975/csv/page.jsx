@@ -15,8 +15,8 @@ import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
 import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
 import AttentionCheckList from "./AttentionCheckList"
-import { getRandomSubset } from "@/utils/randomSubset"
 import { generatePairwiseHumanlikness } from "./generatePairwiseHumanlikness"
+import { generateMismatchSpeech } from "./generateMismatchSpeech"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -108,7 +108,7 @@ export default function Page() {
         setGenState({ type: "error", msg: "Videos not found" })
         return
       }
-      
+
       const studies = csvList.map((item) => {
         return {
           status: "new",
@@ -141,7 +141,18 @@ export default function Page() {
         return
       }
 
-      const pageList = generatePairwiseHumanlikness(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+      const pageList = []
+      switch (studyKey) {
+        case "pairwise-humanlikeness":
+          generatePairwiseHumanlikness(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          break
+        case "pairwise-emotion":
+          generateMismatchSpeech(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          break
+
+        default:
+          break
+      }
       console.log("pageList", pageList)
 
       if (!pageList || pageList.length === 0) {
