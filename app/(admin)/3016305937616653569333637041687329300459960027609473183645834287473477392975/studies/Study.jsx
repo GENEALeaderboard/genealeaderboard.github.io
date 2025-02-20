@@ -45,11 +45,7 @@ export default function Study({ loading, studies }) {
               </div>
               <div className="flex flex-col p-2 gap-2">
                 Global actions:
-                {study.global_actions && study.global_actions.length > 0 && (
-                  <div className="overflow-y-visible w-full max-h-96 border overflow-auto bg-gray-200 border-gray-300 rounded-lg p-2 ">
-                    <ActionList actions={JSON.parse(study.global_actions)} />
-                  </div>
-                )}
+                {study.global_actions && study.global_actions.length > 0 && <ActionList actions={JSON.parse(study.global_actions)} />}
               </div>
             </td>
           </tr>

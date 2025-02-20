@@ -10,7 +10,7 @@ export default function ScreenInfo({ info }) {
     finish: "border-orange-200 bg-orange-100",
   }
   return (
-    <div className={cn("flex flex-col border p-2 rounded-lg", colors[info.type])}>
+    <div className={cn("flex gap-1 flex-col border p-2 rounded-lg", colors[info.type])}>
       <div className="">
         PageID: <code className="nextra-code">{info.id}</code>
       </div>
@@ -27,7 +27,7 @@ export default function ScreenInfo({ info }) {
         Video:
         <div className="flex flex-col gap-2">
           {info.video1 && (
-            <div className="border border-gray-300 bg-gray-200 p-2 rounded-lg flex gap-2 flex-col">
+            <div className="border border-gray-300 bg-gray-200 p-2 rounded-lg flex gap-1 flex-col">
               <div className="">
                 System : <code className="nextra-code">{info.video1.systemname}</code>
               </div>
@@ -74,9 +74,7 @@ export default function ScreenInfo({ info }) {
       </div>
       <div className="">
         Local actions :
-        <div className="overflow-y-visible w-full max-h-96 border overflow-auto bg-gray-200 border-gray-300 rounded-lg p-2 ">
-          <ActionList actions={JSON.parse(info.actions)} />
-        </div>
+        <ActionList actions={JSON.parse(info.actions)} />
       </div>
     </div>
   )
