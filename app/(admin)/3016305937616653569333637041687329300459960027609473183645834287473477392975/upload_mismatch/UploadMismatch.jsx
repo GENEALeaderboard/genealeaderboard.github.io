@@ -28,7 +28,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
   const [description, setDescription] = useState("")
   // const [missingList, setMissingList] = useState([])
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const [mismatchType, setMismatchType] = useState(MISMATCH_TYPES.speech.value)
+  const [mismatchKey, setMismatchType] = useState(MISMATCH_TYPES.speech.value)
 
   const onDrop = useCallback(async (acceptedFiles) => {
     setValidMsg("")
@@ -167,11 +167,12 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
     try {
       setUploading("Uploading your videos, please waiting ...")
       setUploadState({ type: "loading", message: "" })
-      console.log("systemname", systemname, "mismatchType", mismatchType)
+      console.log("systemname", systemname, "mismatchType", mismatchKey)
+      const mismatchKeyType = MISMATCH_TYPES[mismatchKey].type
 
       const videoMeta = []
       for (let index = 0; index < files.length; index++) {
-        const reponse = await simpleUploadFile(files[index], index, systemname, mismatchType)
+        const reponse = await simpleUploadFile(files[index], index, systemname, mismatchKey)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
@@ -188,7 +189,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
           path: meta.path,
           url: meta.url,
           systemid: systems[selectedIndex].id,
-          type:"mismatch"
+          type:mismatchKeyType
         }
       })
 
@@ -290,7 +291,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
           <Select
             name="status"
             id="mismatchType"
-            value={mismatchType}
+            value={mismatchKey}
             onChange={(e) => {
               setMismatchType(e.target.value)
             }}

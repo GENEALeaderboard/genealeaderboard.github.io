@@ -23,8 +23,8 @@ export const STUDY_TYPES = {
 export const STUDY_KEYS = Object.keys(STUDY_TYPES)
 
 export const MISMATCH_TYPES = {
-  speech: { label: "Speech Mismatch", value: "speech" },
-  emotion: { label: "Emotion Mismatch", value: "emotion" },
+  speech: { label: "Speech Mismatch", value: "speech", type: "mismatch-speech" },
+  emotion: { label: "Emotion Mismatch", value: "emotion", type: "mismatch-emotion" },
 }
 
 export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "TheyAreEqual", "RightSlightlyBetter", "RightClearlyBetter"]
