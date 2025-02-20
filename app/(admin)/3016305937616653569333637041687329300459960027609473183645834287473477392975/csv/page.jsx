@@ -144,10 +144,11 @@ export default function Page() {
       }
 
       const pageList = []
+      const videoOrigins = videos.filter((video) => video.type === "origin")
+
       switch (studyKey) {
         case "pairwise-humanlikeness":
           console.log("generatePairwiseHumanlikness")
-          const videoOrigins = videos.filter((video) => video.type === "origin")
           pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
           break
         case "pairwise-emotion":
@@ -156,7 +157,6 @@ export default function Page() {
           break
         case "mismatch-speech":
           console.log("generateMismatchSpeech")
-          const videoOrigins = videos.filter((video) => video.type === "origin")
           const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
           pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList)
           break
