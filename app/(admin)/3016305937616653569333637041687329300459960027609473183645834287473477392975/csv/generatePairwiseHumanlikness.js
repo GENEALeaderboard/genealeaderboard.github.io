@@ -1,7 +1,7 @@
 import { N_ATTENTION_CHECK_PER_STUDY } from "@/config/constants"
 import { getRandomSubset } from "@/utils/randomSubset"
 
-export function generatePairwiseHumanlikness(studiesCSV, videos, studiesID, studyConfig, attentionCheckList) {
+export function generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList) {
   const pageList = []
   const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
   const nCheck = attentionSubset.length
@@ -16,8 +16,8 @@ export function generatePairwiseHumanlikness(studiesCSV, videos, studiesID, stud
       const sysA = String(row[1]).replace(/\s+/g, "")
       const sysB = String(row[2]).replace(/\s+/g, "")
 
-      const videoFilteredA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
-      const videoFilteredB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
+      const videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
+      const videoFilteredB = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode && video.systemname === sysB)
       const videoA = videoFilteredA[0]
       const videoB = videoFilteredB[0]
 

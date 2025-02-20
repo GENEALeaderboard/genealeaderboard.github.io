@@ -147,7 +147,8 @@ export default function Page() {
       switch (studyKey) {
         case "pairwise-humanlikeness":
           console.log("generatePairwiseHumanlikness")
-          pageList = generatePairwiseHumanlikness(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          const videoOrigins = videos.filter((video) => video.type === "origin")
+          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
           break
         case "pairwise-emotion":
           console.log("generatePairwiseEmotion")
