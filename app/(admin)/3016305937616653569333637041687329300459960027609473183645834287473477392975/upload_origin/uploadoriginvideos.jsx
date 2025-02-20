@@ -188,6 +188,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           path: meta.path,
           url: meta.url,
           systemid: systems[selectedIndex].id,
+          type: "video",
         }
       })
       console.log("videoDatas", videoDatas)
@@ -198,7 +199,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })
       } else {
-        setUploadState({ type: "error", message: msg })
+        setUploadState({ type: "error", message: resInsert.msg })
         console.log("resInsert", resInsert)
       }
     } catch (error) {

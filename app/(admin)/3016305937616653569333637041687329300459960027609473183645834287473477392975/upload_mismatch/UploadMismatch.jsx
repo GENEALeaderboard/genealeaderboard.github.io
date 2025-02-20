@@ -28,7 +28,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
   const [description, setDescription] = useState("")
   // const [missingList, setMissingList] = useState([])
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const [mismatchType, setMismatchType] = useState(MISMATCH_TYPES.SPEECH)
+  const [mismatchType, setMismatchType] = useState(MISMATCH_TYPES.speech.value)
 
   const onDrop = useCallback(async (acceptedFiles) => {
     setValidMsg("")
@@ -108,7 +108,7 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
 
     try {
       setUploadProgress(fileName, 0, "uploading")
-      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/attention-check`
+      const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/mismatch`
 
       console.log("VIDEO_UPLOAD_URL", VIDEO_UPLOAD_URL)
 
@@ -188,17 +188,17 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
           path: meta.path,
           url: meta.url,
           systemid: systems[selectedIndex].id,
+          type:"mismatch"
         }
       })
-      console.log("videoDatas", videoDatas)
 
-      setUploading("Uploading your videos to database, please waiting ...")
+      // setUploading("Uploading your videos to database, please waiting ...")
       const resInsert = await apiPost("/api/videos", { videos: videoDatas })
 
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })
       } else {
-        setUploadState({ type: "error", message: msg })
+        setUploadState({ type: "error", message: resInsert.msg })
         console.log("resInsert", resInsert)
       }
     } catch (error) {
@@ -302,9 +302,9 @@ export default function UploadMismatchVideos({ systems, videosLoading }) {
                   <option
                     key={key}
                     className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"
-                    value={sysType}
+                    value={sysType.value}
                   >
-                    {sysType}
+                    {sysType.label}
                   </option>
                 ))}
               </Fragment>
