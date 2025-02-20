@@ -32,7 +32,7 @@ export default function Study({ loading, studies }) {
       </thead>
       <tbody className="align-baseline text-gray-900 dark:text-gray-100">
         {studies.map((study, index) => (
-          <tr key={index} className="border-b border-gray-100 dark:border-neutral-700/50">
+          <tr key={index} className="border border-gray-200 gap-2 dark:border-neutral-700/50">
             <td className="p-2">{index + 1}</td>
             <td className="p-2">
               <Status type={study.status} />
@@ -43,9 +43,13 @@ export default function Study({ loading, studies }) {
                   <ScreenInfo info={page} key={index} />
                 ))}
               </div>
-              <div className="flex p-2 gap-2">
-                <span>Global actions:</span>
-                {study.global_actions && study.global_actions.length > 0 && <ActionList actions={JSON.parse(study.global_actions)} />}
+              <div className="flex flex-col p-2 gap-2">
+                Global actions:
+                {study.global_actions && study.global_actions.length > 0 && (
+                  <div className="overflow-y-visible w-full max-h-96 border overflow-auto bg-gray-200 border-gray-300 rounded-lg p-2 ">
+                    <ActionList actions={JSON.parse(study.global_actions)} />
+                  </div>
+                )}
               </div>
             </td>
           </tr>

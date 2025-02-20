@@ -15,11 +15,12 @@ export const GITHUB_REDIRECT_URI = `${API_ENDPOINT}/auth/callback/github`
 export const UPLOAD_API_ENDPOINT = process.env.NEXT_PUBLIC_UPLOAD_API_ENDPOINT
 
 export const STUDY_TYPES = {
-  pairwiseHumanLikeness: { key: "pairwise-humanlikeness", label: "Pairwise Human-Likeness Studies" },
-  pairwiseEmotion: { key: "pairwise-emotion", label: "Pairwise Emotion Studies" },
-  mismatchSpeech: { key: "mismatch-speech", label: "Mismatch Speech Studies" },
-  mismatchEmotion: { key: "mismatch-emotion", label: "Mismatch Emotion Studies" },
+  pairwiseHumanLikeness: { key: "pairwise-humanlikeness", label: "Pairwise Human-Likeness Studies", type: "origin" },
+  pairwiseEmotion: { key: "pairwise-emotion", label: "Pairwise Emotion Studies", type: "origin" },
+  mismatchSpeech: { key: "mismatch-speech", label: "Mismatch Speech Studies", type: "mismatch-speech" },
+  mismatchEmotion: { key: "mismatch-emotion", label: "Mismatch Emotion Studies", type: "mismatch-emotion" },
 }
+export const STUDY_KEYS = Object.keys(STUDY_TYPES)
 
 export const MISMATCH_TYPES = {
   speech: { label: "Speech Mismatch", value: "speech" },

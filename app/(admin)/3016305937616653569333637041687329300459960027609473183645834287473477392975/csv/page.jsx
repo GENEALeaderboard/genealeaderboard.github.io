@@ -9,7 +9,7 @@ import { Callout } from "@/nextra"
 import { Loading } from "@/components"
 import { Select } from "@headlessui/react"
 import { ArrowLeftIcon } from "@/nextra/icons"
-import { API_ENDPOINT, N_ATTENTION_CHECK_PER_STUDY, STUDY_TYPES } from "@/config/constants"
+import { API_ENDPOINT, N_ATTENTION_CHECK_PER_STUDY, STUDY_KEYS, STUDY_TYPES } from "@/config/constants"
 import CSVPreviewer from "./CSVPreviewer"
 import UploadBox from "./UploadBox"
 import CircleLoading from "@/icons/circleloading"
@@ -20,7 +20,7 @@ import { getRandomSubset } from "@/utils/randomSubset"
 export default function Page() {
   const [csvList, setCsvList] = useState([])
   const [loadedCSV, setLoadedCSV] = useState(false)
-  const [studyType, setStudyType] = useState(STUDY_TYPES.pairwiseHumanLikeness.key)
+  const [keyStd, setStudyType] = useState(STUDY_KEYS[0])
   const [isValid, setIsValid] = useState(false)
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
@@ -43,13 +43,15 @@ export default function Page() {
       window.scrollTo({ top: 0 })
       let isAllValid = true
 
+      const studyKey = STUDY_TYPES[keyStd].key
+
       for (let i = 0; i < csvList.length; i++) {
         const { data, filename } = csvList[i]
 
         // Update state to indicate validation is in progress
         setCsvList((prevList) => prevList.map((item, index) => (index === i ? { ...item, state: "loading" } : item)))
 
-        const res = await apiPatch(`/api/${studyType}`, { csv: data.slice(1) })
+        const res = await apiPatch(`/api/${studyKey}`, { csv: data.slice(1) })
         if (!res.success) {
           console.log("res", res)
           setValidState({ type: "error", msg: res.msg })
@@ -88,8 +90,10 @@ export default function Page() {
 
     try {
       setGenState({ type: "loading", msg: null })
+      const studyKey = STUDY_TYPES[keyStd].key
+      const studyVideoType = STUDY_TYPES[keyStd].type
 
-      const configs = await apiFetcherData(`/api/configs?type=${studyType}`)
+      const configs = await apiFetcherData(`/api/configs?type=${studyKey}`)
       const studyConfig = configs[0]
       if (!studyConfig) {
         console.log("studyConfig", studyConfig)
@@ -97,7 +101,7 @@ export default function Page() {
         return
       }
 
-      const videos = await apiFetcherData(`/api/video-list?type=${studyType}`)
+      const videos = await apiFetcherData(`/api/video-list?type=${studyVideoType}`)
       if (!videos) {
         console.log("videos", videos)
         setGenState({ type: "error", msg: "Videos not found" })
@@ -108,7 +112,7 @@ export default function Page() {
           status: "new",
           name: studyConfig.name,
           time_start: new Date(),
-          type: studyType,
+          type: studyKey,
           global_actions: JSON.stringify([]),
           file_created: item.filename,
           prolific_sessionid: "",
@@ -278,7 +282,7 @@ export default function Page() {
                   <Select
                     name="status"
                     id="studytype"
-                    value={studyType}
+                    value={keyStd}
                     onChange={(e) => {
                       setStudyType(e.target.value)
                     }}
@@ -292,7 +296,7 @@ export default function Page() {
                           <option
                             key={key}
                             className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"
-                            value={sysType.key}
+                            value={key}
                           >
                             {sysType.label}
                           </option>

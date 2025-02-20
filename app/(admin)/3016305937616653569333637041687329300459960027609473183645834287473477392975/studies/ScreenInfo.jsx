@@ -17,10 +17,10 @@ export default function ScreenInfo({ info }) {
       <div className="">
         Type: <code className="nextra-code">{info.type}</code>
       </div>
-      <div className="text-wrap w-72">
+      <div className="text-wrap w-full">
         Name: <code className="nextra-code text-wrap">{info.name}</code>
       </div>
-      <div className="text-wrap w-72">
+      <div className="text-wrap w-full">
         Question: <code className="nextra-code text-wrap">{info.question}</code>
       </div>
       <div className="">
@@ -74,7 +74,9 @@ export default function ScreenInfo({ info }) {
       </div>
       <div className="">
         Local actions :
-        <ActionList actions={JSON.parse(info.actions)} />
+        <div className="overflow-y-visible w-full max-h-96 border overflow-auto bg-gray-200 border-gray-300 rounded-lg p-2 ">
+          <ActionList actions={JSON.parse(info.actions)} />
+        </div>
       </div>
     </div>
   )
