@@ -20,7 +20,7 @@ import { getRandomSubset } from "@/utils/randomSubset"
 export default function Page() {
   const [csvList, setCsvList] = useState([])
   const [loadedCSV, setLoadedCSV] = useState(false)
-  const [studyType, setStudyType] = useState(Object.keys(STUDY_TYPES)[0])
+  const [studyType, setStudyType] = useState(STUDY_TYPES.pairwiseHumanLikeness.key)
   const [isValid, setIsValid] = useState(false)
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
@@ -97,7 +97,7 @@ export default function Page() {
         return
       }
 
-      const videos = await apiFetcherData(`/api/videos`)
+      const videos = await apiFetcherData(`/api/video-list?type=${studyType}`)
       if (!videos) {
         console.log("videos", videos)
         setGenState({ type: "error", msg: "Videos not found" })
@@ -292,9 +292,9 @@ export default function Page() {
                           <option
                             key={key}
                             className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"
-                            value={sysType}
+                            value={sysType.key}
                           >
-                            {sysType}
+                            {sysType.label}
                           </option>
                         ))}
                       </Fragment>

@@ -15,15 +15,15 @@ export const GITHUB_REDIRECT_URI = `${API_ENDPOINT}/auth/callback/github`
 export const UPLOAD_API_ENDPOINT = process.env.NEXT_PUBLIC_UPLOAD_API_ENDPOINT
 
 export const STUDY_TYPES = {
-  "pairwise-human-likeness": "pairwise human-likeness studies",
-  "pairwise-emotion-studies": "pairwise emotion studies",
-  "mismatch-speech-studies": "mismatch speech studies",
-  "mismatch-emotion-studies": "mismatch emotion studies",
+  pairwiseHumanLikeness: { key: "pairwise-humanlikeness", label: "Pairwise Human-Likeness Studies" },
+  pairwiseEmotion: { key: "pairwise-emotion", label: "Pairwise Emotion Studies" },
+  mismatchSpeech: { key: "mismatch-speech", label: "Mismatch Speech Studies" },
+  mismatchEmotion: { key: "mismatch-emotion", label: "Mismatch Emotion Studies" },
 }
 
 export const MISMATCH_TYPES = {
-  speech: {label:"Speech Mismatch", value: "speech"},
-  emotion: {label:"Emotion Mismatch", value: "emotion"},
+  speech: { label: "Speech Mismatch", value: "speech" },
+  emotion: { label: "Emotion Mismatch", value: "emotion" },
 }
 
 export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "TheyAreEqual", "RightSlightlyBetter", "RightClearlyBetter"]
