@@ -12,9 +12,9 @@ export function generatePairwiseHumanlikness(studiesCSV, videos, studiesID, stud
     let attentionCheckIdx = 0
     const totalPageIdx = studyData.length + nCheck
     studyData.forEach((row, rowIndex) => {
-      const inputcode = row[0]
-      const sysA = String(row[1]).trim()
-      const sysB = String(row[2]).trim()
+      const inputcode = String(row[0]).replace(/\s+/g, "")
+      const sysA = String(row[1]).replace(/\s+/g, "")
+      const sysB = String(row[2]).replace(/\s+/g, "")
 
       const videoFilteredA = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysA)
       const videoFilteredB = Array.from(videos).filter((video) => video.inputcode === inputcode && video.systemname === sysB)

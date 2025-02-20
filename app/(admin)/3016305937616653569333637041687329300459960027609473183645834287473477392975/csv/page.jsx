@@ -17,6 +17,8 @@ import { apiPost, apiPatch, apiFetcherData, apiFetcher } from "@/utils/fetcher"
 import AttentionCheckList from "./AttentionCheckList"
 import { generatePairwiseHumanlikness } from "./generatePairwiseHumanlikness"
 import { generateMismatchSpeech } from "./generateMismatchSpeech"
+import { generateMismatchEmotion } from "./generateMismatchEmotion"
+import { generatePairwiseEmotion } from "./generatePairwiseEmotion"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -102,7 +104,7 @@ export default function Page() {
         return
       }
 
-      const videos = await apiFetcherData(`/api/video-list?type=${studyVideoType}`)
+      const videos = await apiFetcherData(`/api/videos`)
       if (!videos) {
         console.log("videos", videos)
         setGenState({ type: "error", msg: "Videos not found" })
@@ -144,10 +146,22 @@ export default function Page() {
       const pageList = []
       switch (studyKey) {
         case "pairwise-humanlikeness":
-          generatePairwiseHumanlikness(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          console.log("generatePairwiseHumanlikness")
+          pageList = generatePairwiseHumanlikness(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
           break
         case "pairwise-emotion":
-          generateMismatchSpeech(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          console.log("generatePairwiseEmotion")
+          pageList = generatePairwiseEmotion(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          break
+        case "mismatch-speech":
+          console.log("generateMismatchSpeech")
+          const videoOrigins = videos.filter((video) => video.type === "origin")
+          const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
+          pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList)
+          break
+        case "mismatch-emotion":
+          console.log("generateMismatchEmotion")
+          pageList = generateMismatchEmotion(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
           break
 
         default:
@@ -160,17 +174,17 @@ export default function Page() {
         setGenState({ type: "error", msg: "Failed to generate screen study" })
         return
       }
-      // const respPages = await apiPost(`/api/pages`, { pages: pageList })
+      const respPages = await apiPost(`/api/pages`, { pages: pageList })
 
-      // if (!respPages.success) {
-      //   console.log("respPages", respPages)
-      //   setGenState({ type: "error", msg: respPages.msg })
-      //   return
-      // }
+      if (!respPages.success) {
+        console.log("respPages", respPages)
+        setGenState({ type: "error", msg: respPages.msg })
+        return
+      }
 
-      // console.log("respPages", respPages)
+      console.log("respPages", respPages)
 
-      // setGenState({ type: "info", msg: respPages.msg })
+      setGenState({ type: "info", msg: respPages.msg })
     } catch (error) {
       console.log("error", error)
       setGenState({ type: "error", msg: "Exception on upload, please contact support" })
