@@ -168,7 +168,6 @@ export default function Page() {
         default:
           break
       }
-      console.log("pageList", pageList)
 
       if (!pageList || pageList.length === 0) {
         console.log("pageList", pageList)
