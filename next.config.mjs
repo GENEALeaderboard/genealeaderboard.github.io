@@ -26,7 +26,6 @@ import { rehypeIcon } from "./plugins/rehype-icon.mjs"
 
 const withMDX = nextMDX({
   extension: /\.mdx?$/,
-  baseUrl: "./",
   options: {
     remarkPlugins: [
       // remarkMermaid,
@@ -142,7 +141,6 @@ export default withMDX({
     NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
     NEXT_PUBLIC_UPLOAD_API_ENDPOINT: process.env.NEXT_PUBLIC_UPLOAD_API_ENDPOINT,
     NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT: process.env.NEXT_PUBLIC_UPLOAD_VIDEO_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
   },
   // images: {
   //   remotePatterns: [
