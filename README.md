@@ -12,15 +12,8 @@ GENEA (Generation and Evaluation of Non-verbal Behaviour for Embodied Agents) Le
 
 We standardize the input, output and evaluation process of gesture generation models with human evaluation.
 
-<iframe
-  src="https://www.youtube.com/embed/w-lxvddiGVc?si=OiiRnF6-EGQY6wMw"
-  className="aspect-video w-full mt-4"
-  title="Benchmarking Gesture Generation for Game Characters"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  referrerPolicy="strict-origin-when-cross-origin"
-  allowFullScreen
-></iframe>
+[![Benchmarking Gesture Generation for Game Characters](https://img.youtube.com/vi/w-lxvddiGVc/0.jpg)](https://www.youtube.com/watch?v=w-lxvddiGVc)
+
 
 How we evalution in GENEA Leaderboard?
 We provide a input to teams, and each team's model will generate gestures output in .npy format.
@@ -42,16 +35,10 @@ Using pairwise comparison, we evaluate the generated gestures with human evaluat
 
 ## Workshop
 
-![workshop](./public/2024/img/workshop.png)
-
 [Workshop](https://genea-workshop.github.io/2024/workshop)  
 Official GENEA Workshop at ICMI 2024
 
 ## Links to previous years
-
-<br />
-
-![avatar](./public/2024/img/avatar.png)
 
 - [Results of the GENEA Challenge 2023](https://svito-zar.github.io/GENEAchallenge2023/)
 - [4th GENEA Workshop website (at ICMI 2023)](https://genea-workshop.github.io/2023/)
