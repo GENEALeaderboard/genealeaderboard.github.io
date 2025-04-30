@@ -65,7 +65,7 @@ export default function Page() {
       {/* ********************************************************************************** */}
       {!submissions || submissions.length === 0 ? (
         <div className="w-full px-12  justify-center">
-          <Callout type="error">No submissions available</Callout>
+          <Callout type="info">No submissions available. A new system can only be created after a submission has been made.</Callout>
         </div>
       ) : (
         <CreateSystem submissions={submissions} systems={systems} />

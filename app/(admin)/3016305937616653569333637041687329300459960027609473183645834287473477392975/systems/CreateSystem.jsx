@@ -57,7 +57,7 @@ export default function CreateSystem({ submissions, systems }) {
 
     try {
       if (submissions.length === 0) {
-        setState({ type: "error", message: "No submissions available" })
+        setState({ type: "info", message: "No submissions available. A new system can only be created after a submission has been made." })
         return
       }
 
