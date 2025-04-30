@@ -68,7 +68,7 @@ export default function Page() {
           <Callout type="error">No submissions available</Callout>
         </div>
       ) : (
-        <CreateSystem submissions={submissions} />
+        <CreateSystem submissions={submissions} systems={systems} />
       )}
     </div>
   )

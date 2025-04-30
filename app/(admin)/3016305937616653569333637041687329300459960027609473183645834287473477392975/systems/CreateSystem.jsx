@@ -6,15 +6,28 @@ import { Description, Field, Label, Select } from "@headlessui/react"
 import SubmissionList from "./submissionlist"
 import { SYSTEM_TYPES } from "@/config/constants"
 import { ArrowLeftIcon } from "@/nextra/icons"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { generateUUID } from "@/utils/generateUUID"
+import { incrementAlpha } from "./utils"
+import { apiPost } from "@/utils/fetcher"
 
-export default function CreateSystem({ submissions }) {
+export default function CreateSystem({ submissions, systems }) {
   const [selectedSystem, setSelectedSystem] = useState(0)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [systemType, setSystemType] = useState("system")
   const [systemname, setSystemName] = useState("")
   const [description, setDescription] = useState("")
+  const lastSystemName = useMemo(() => {
+    const systemNames = systems.map((system) => system.name).filter((name) => /^S[A-Z]+$/.test(name))
+
+    const systemSorted = [...new Set(systemNames)].sort()
+
+    const lastSystem = systemSorted.length > 0 ? systemSorted[systemSorted.length - 1] : "S"
+
+    const nextSuffix = incrementAlpha(lastSystem.slice(1))
+    return `S${nextSuffix}`
+  }, [systems, systemType])
+  console.log("lastSystemName", lastSystemName)
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [state, setState] = useState({ type: "", message: "" })
@@ -31,7 +44,7 @@ export default function CreateSystem({ submissions }) {
         setDescription("Baseline System")
         break
       case "system":
-        setSystemName("SA")
+        setSystemName(lastSystemName)
         setDescription("System")
         break
       default:
@@ -125,9 +138,10 @@ export default function CreateSystem({ submissions }) {
             System Name
           </label>
           <input
-            className="flex-grow min-w-0 appearance-none rounded-md border border-[#666666] bg-white px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark: dark:focus:border-white sm:text-sm"
+            className="flex-grow disabled bg-gray-200 min-w-0 appearance-none rounded-md border border-[#666666]  px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark: dark:focus:border-white sm:text-sm"
             id="systemname"
             type="text"
+            disabled
             name="systemname"
             value={systemname}
             onChange={(e) => setSystemName(e.target.value)}

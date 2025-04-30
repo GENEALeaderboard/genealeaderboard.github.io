@@ -26,3 +26,24 @@ export function calculateCombinations(n, k) {
   }
   return Math.round(factorial(n) / (factorial(k) * factorial(n - k)))
 }
+
+export function incrementAlpha(str) {
+  let carry = 1
+  let result = ""
+
+  for (let i = str.length - 1; i >= 0; i--) {
+    let code = str.charCodeAt(i) - 65 + carry
+    carry = 0
+    if (code === 26) {
+      code = 0
+      carry = 1
+    }
+    result = String.fromCharCode(65 + code) + result
+  }
+
+  if (carry === 1) {
+    result = "A" + result
+  }
+
+  return result
+}
