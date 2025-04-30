@@ -1,4 +1,7 @@
 import { isValidElement } from "react"
+
+export const SYSTEM_TYPES = ["groundtruth", "system", "baseline"]
+
 export const DEFAULT_THEME = {
   darkMode: true,
   direction: "ltr",
