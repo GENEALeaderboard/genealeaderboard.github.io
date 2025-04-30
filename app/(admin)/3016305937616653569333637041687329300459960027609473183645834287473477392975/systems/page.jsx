@@ -70,15 +70,10 @@ export default function Page() {
     e.preventDefault()
 
     try {
-      let systemID = 0
-      if (systemType === "system") {
-        systemID = submissions[selectedSystem].id
-      }
       const newSystem = {
         name: systemname,
         type: systemType,
         description: description,
-        submissionid: systemID,
       }
       console.log("data", newSystem)
 
