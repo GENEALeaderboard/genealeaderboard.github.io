@@ -188,7 +188,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           path: meta.path,
           url: meta.url,
           systemid: systems[selectedIndex].id,
-          type: "video",
+          type: "origin",
         }
       })
       console.log("videoDatas", videoDatas)
