@@ -8,7 +8,7 @@ import axios from "axios"
 import clsx from "clsx"
 import BVHFile from "@/icons/bvhfile"
 import { Select } from "@headlessui/react"
-import { ATTENTION_CHECK_EXPECTED_VOTE, UPLOAD_API_ENDPOINT } from "@/config/constants"
+import { ATTENTION_CHECK_EXPECTED_VOTE, ATTENTION_CHECK_TYPE, ATTENTION_CHECK_VOLUME, UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
 import Mp4Icon from "@/icons/mp4"
@@ -146,9 +146,21 @@ export default function UploadAttetionCheck() {
         const filename = file.name.replace(/\.[^.]+$/, "")
         const idx = filename.split("_")[0]
         const expectedVote = filename.split("_")[1]
-        console.log("idx", idx, "expectedVote", expectedVote)
+        const type = filename.split("_")[2]
+        const volume = filename.split("_")[3]
+        console.log("idx", idx, "expectedVote", expectedVote, "type", type, "volume", volume)
         if (!ATTENTION_CHECK_EXPECTED_VOTE.includes(expectedVote)) {
           setValidMsg(`Expected vote is not valid: [${expectedVote}] in file ${file.name}`)
+          allValid = false
+          break
+        }
+        if (!ATTENTION_CHECK_TYPE.includes(type) && expectedVote != "Reference") {
+          setValidMsg(`Type is not valid: [${type}] in file ${file.name}`)
+          allValid = false
+          break
+        }
+        if (!ATTENTION_CHECK_VOLUME.includes(volume) && expectedVote != "Reference") {
+          setValidMsg(`Volume is not specified: [${volume}] in file ${file.name}`)
           allValid = false
           break
         }
@@ -181,16 +193,18 @@ export default function UploadAttetionCheck() {
         const fileName = file.name.replace(/\.[^.]+$/, "")
         const idx = fileName.split("_")[0]
         const expectedVote = fileName.split("_")[1]
+        const type = fileName.split("_")[2]
+        const volume = fileName.split("_")[3]
 
         const fileNameRandomGen = `${generateUUID(6)}.mp4`
-        const reponse = await simpleUploadFile(file, fileNameRandomGen, expectedVote)
+        const reponse = await simpleUploadFile(file, fileNameRandomGen, expectedVote, type, volume)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
           setUploadState({ type: "error", message: reponse.msg })
           return
         }
-        videoMeta.push({ path, inputcode, url, expectedVote, idx })
+        videoMeta.push({ path, inputcode, url, expectedVote, type, volume, idx })
       }
 
       console.log("videoMeta", JSON.stringify(videoMeta))
