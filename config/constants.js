@@ -32,6 +32,6 @@ export const MISMATCH_TYPES = {
 
 export const ATTENTION_CHECK_EXPECTED_VOTE = ["Reference", "LeftClearlyBetter", "LeftSlightlyBetter", "TheyAreEqual", "RightSlightlyBetter", "RightClearlyBetter"]
 export const ATTENTION_CHECK_TYPE = ["Audio", "Text"]
-export const ATTENTION_CHECK_VOLUME = ["unmuted", "muted"]
+export const ATTENTION_CHECK_VOLUME = ["Unmuted", "Muted"]
 
 export const N_ATTENTION_CHECK_PER_STUDY = 4

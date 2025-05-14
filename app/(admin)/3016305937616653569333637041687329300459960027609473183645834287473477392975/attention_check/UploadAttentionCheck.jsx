@@ -197,7 +197,7 @@ export default function UploadAttetionCheck() {
         const volume = fileName.split("_")[3]
 
         const fileNameRandomGen = `${generateUUID(6)}.mp4`
-        const reponse = await simpleUploadFile(file, fileNameRandomGen, expectedVote, type, volume)
+        const reponse = await simpleUploadFile(file, fileNameRandomGen, expectedVote)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
