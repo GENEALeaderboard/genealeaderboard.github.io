@@ -16,7 +16,7 @@ export default function Page() {
       </h2>
       <ul className="mt-6 list-disc first:mt-0 ltr:ml-6 rtl:mr-6">
         <li className="my-2">
-          <code>LeftClearlyBetter</code> | <code>LeftSlightlyBetter</code> | <code>TheyAreEqual</code> | <code>RightSlightlyBetter</code> | <code>RightClearlyBetter</code>
+          <code>LeftClearlyBetter_Type_Volume</code> | <code>LeftSlightlyBetter_Type_Volume</code> | <code>TheyAreEqual_Type_Volume</code> | <code>RightSlightlyBetter_Type_Volume</code> | <code>RightClearlyBetter_Type_Volume</code>
         </li>
         <li className="my-2">
           <code>Reference</code>
@@ -32,19 +32,19 @@ export default function Page() {
         >
           <code className="nextra-code" dir="ltr">
             <span>
-              <span>/videos/attentioncheck/&lt;1_LeftClearlyBetter&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;1_LeftClearlyBetter_Audio_unmuted&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;1_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;2_LeftSlightlyBetter&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;2_LeftSlightlyBetter_Text_muted&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;2_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;3_TheyAreEqual&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;3_TheyAreEqual_Text_unmuted&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;3_Reference&gt;.mp4</span>
