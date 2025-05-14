@@ -21,6 +21,12 @@ export default function Page() {
         <li className="my-2">
           <code>Reference</code>
         </li>
+        <li className="my-2">
+          <code>Type = Audio or Text</code>
+        </li>
+        <li className="my-2">
+          <code>Volume = Muted or Unmuted</code>
+        </li>
       </ul>
 
       <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Attention Check structure</h4>
@@ -32,19 +38,19 @@ export default function Page() {
         >
           <code className="nextra-code" dir="ltr">
             <span>
-              <span>/videos/attentioncheck/&lt;1_LeftClearlyBetter_Audio_unmuted&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;1_LeftClearlyBetter_Audio_Unmuted&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;1_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;2_LeftSlightlyBetter_Text_muted&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;2_LeftSlightlyBetter_Text_Muted&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;2_Reference&gt;.mp4</span>
             </span>
             <span>
-              <span>/videos/attentioncheck/&lt;3_TheyAreEqual_Text_unmuted&gt;.mp4</span>
+              <span>/videos/attentioncheck/&lt;3_TheyAreEqual_Text_Unmuted&gt;.mp4</span>
             </span>
             <span>
               <span>/videos/attentioncheck/&lt;3_Reference&gt;.mp4</span>
