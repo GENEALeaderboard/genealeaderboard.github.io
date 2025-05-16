@@ -6,6 +6,7 @@ export function generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID
   const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
   const nCheck = attentionSubset.length
 
+  console.log("ncheck", nCheck, "attentionchecklist", attentionCheckList, "subset", attentionSubset)
   studiesCSV.forEach((studyData, stdIndex) => {
     const step = Math.floor(Array.from(studyData).length / (nCheck + 1))
     let pageIdx = 0
@@ -49,7 +50,7 @@ export function generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID
       })
       pageIdx++
 
-      console.log("rowIndex", rowIndex, "step", step, "rowIndex + 1) % step ", (rowIndex + 1) % step)
+      console.log("rowIndex", rowIndex, "step", step, "(rowIndex + 1) % step ", (rowIndex + 1) % step)
 
       if ((rowIndex + 1) % step === 0 && attentionCheckIdx < nCheck) {
         const item = attentionSubset[attentionCheckIdx]
