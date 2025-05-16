@@ -3,7 +3,11 @@ import { getRandomSubset } from "@/utils/randomSubset"
 
 export function generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList) {
   const pageList = []
-  const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
+  if attentionCheckList.length < N_ATTENTION_CHECK_PER_STUDY {
+    console.log("ERROR: not enough attention checks available. Minimum ", N_ATTENTION_CHECK_PER_STUDY, " is required, but we only have ", attentionCheckList.length)
+    return []
+  }
+  const attentionSubset = getRandomSubset(attentionCheckList, N_ATTENTION_CHECK_PER_STUDY)
   const nCheck = attentionSubset.length
 
   console.log("ncheck", nCheck, "attentionchecklist", attentionCheckList, "subset", attentionSubset)
