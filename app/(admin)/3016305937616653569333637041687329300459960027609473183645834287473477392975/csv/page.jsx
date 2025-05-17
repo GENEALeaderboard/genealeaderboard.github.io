@@ -38,8 +38,6 @@ export default function Page() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
-
-  console.log("AttentionCheckList: ", attentionCheckList)
   // ******************************************************
 
   const handleValidate = async (e) => {
@@ -49,34 +47,9 @@ export default function Page() {
       let isAllValid = true
 
       const studyKey = STUDY_TYPES[keyStd].key
-      console.log("StudyKey: ", studyKey)
-
-      switch (studyKey) {
-        case "pairwise-humanlikeness":
-          console.log("generatePairwiseHumanlikness")
-          const unmutedObjects = attentionCheckList.filter(item => item.volume === "Unmuted");
-          console.log("Unmuted: ", unmutedObjects);
-          const mutedObjects = attentionCheckList.filter(item => item.volume === "Muted");
-          console.log("Muted: ", mutedObjects);
-          const textObjects = attentionCheckList.filter(item => item.type === "Text");
-          console.log("Text: ", textObjects);
-          const audioObjects = attentionCheckList.filter(item => item.type === "Audio");
-          console.log("Audio: ", audioObjects);
-          // pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
-          break
-        case "mismatch-speech":
-          console.log("generateMismatchSpeech")
-          const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
-          // pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList)
-          break
-        default:
-          break
-      }
 
       for (let i = 0; i < csvList.length; i++) {
         const { data, filename } = csvList[i]
-
-        console.log("CSVLength: ", csvList.length)
         // Update state to indicate validation is in progress
         setCsvList((prevList) => prevList.map((item, index) => (index === i ? { ...item, state: "loading" } : item)))
 
@@ -117,7 +90,6 @@ export default function Page() {
 
   const handleUpload = async (e) => {
     e.preventDefault()
-
     try {
       setGenState({ type: "loading", msg: null })
       const studyKey = STUDY_TYPES[keyStd].key
@@ -176,7 +148,8 @@ export default function Page() {
       switch (studyKey) {
         case "pairwise-humanlikeness":
           console.log("generatePairwiseHumanlikness")
-          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
+          const attentionCheckList_TextMuted = attentionCheckList.filter(item => item.type === "Text" && item.volume === "Muted");
+          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList_TextMuted)
           break
         case "pairwise-emotion":
           console.log("generatePairwiseEmotion")
