@@ -148,8 +148,7 @@ export default function Page() {
       switch (studyKey) {
         case "pairwise-humanlikeness":
           console.log("generatePairwiseHumanlikness")
-          const attentionCheckList_TextMuted = attentionCheckList.filter(item => item.type === "Text" && item.volume === "Muted");
-          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList_TextMuted)
+          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
           break
         case "pairwise-emotion":
           console.log("generatePairwiseEmotion")

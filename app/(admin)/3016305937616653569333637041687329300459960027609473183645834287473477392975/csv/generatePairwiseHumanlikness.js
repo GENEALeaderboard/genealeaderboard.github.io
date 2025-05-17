@@ -1,8 +1,10 @@
-import { N_ATTENTION_CHECK_PER_STUDY } from "@/config/constants"
+import { N_ATTENTION_CHECK_PER_STUDY, ATTENTION_CHECK_TYPE, ATTENTION_CHECK_VOLUME } from "@/config/constants"
 import { getRandomSubset } from "@/utils/randomSubset"
 
 export function generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList) {
   const pageList = []
+  attentionCheckList = attentionCheckList.filter(item => item.type === ATTENTION_CHECK_TYPE["Text"] && item.volume === ATTENTION_CHECK_VOLUME["Muted"]);
+
   if (attentionCheckList.length < N_ATTENTION_CHECK_PER_STUDY) {
     console.log("ERROR: not enough attention checks available. Minimum ", N_ATTENTION_CHECK_PER_STUDY, " is required, but we only have ", attentionCheckList.length)
     return []
