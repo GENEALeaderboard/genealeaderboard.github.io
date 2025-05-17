@@ -51,6 +51,28 @@ export default function Page() {
       const studyKey = STUDY_TYPES[keyStd].key
       console.log("StudyKey: ", studyKey)
 
+      switch (studyKey) {
+        case "pairwise-humanlikeness":
+          console.log("generatePairwiseHumanlikness")
+          const unmutedObjects = attentionCheckList.filter(item => item.volume === "Unmuted");
+          console.log("Unmuted: ", unmutedObjects);
+          const mutedObjects = attentionCheckList.filter(item => item.volume === "Muted");
+          console.log("Muted: ", mutedObjects);
+          const textObjects = attentionCheckList.filter(item => item.type === "Text");
+          console.log("Text: ", textObjects);
+          const audioObjects = attentionCheckList.filter(item => item.type === "Audio");
+          console.log("Audio: ", audioObjects);
+          // pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
+          break
+        case "mismatch-speech":
+          console.log("generateMismatchSpeech")
+          const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
+          // pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList)
+          break
+        default:
+          break
+      }
+
       for (let i = 0; i < csvList.length; i++) {
         const { data, filename } = csvList[i]
 
@@ -169,7 +191,6 @@ export default function Page() {
           console.log("generateMismatchEmotion")
           pageList = generateMismatchEmotion(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
           break
-
         default:
           break
       }
