@@ -38,6 +38,8 @@ export default function Page() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
+
+  console.log("AttentionCheckList: ", attentionCheckList)
   // ******************************************************
 
   const handleValidate = async (e) => {
@@ -47,10 +49,12 @@ export default function Page() {
       let isAllValid = true
 
       const studyKey = STUDY_TYPES[keyStd].key
+      console.log("StudyKey: ", studyKey)
 
       for (let i = 0; i < csvList.length; i++) {
         const { data, filename } = csvList[i]
 
+        console.log("CSVLength: ", csvList.length)
         // Update state to indicate validation is in progress
         setCsvList((prevList) => prevList.map((item, index) => (index === i ? { ...item, state: "loading" } : item)))
 
@@ -88,6 +92,7 @@ export default function Page() {
       setValidState({ type: "error", msg: "Exception of validation error" })
     }
   }
+
   const handleUpload = async (e) => {
     e.preventDefault()
 
