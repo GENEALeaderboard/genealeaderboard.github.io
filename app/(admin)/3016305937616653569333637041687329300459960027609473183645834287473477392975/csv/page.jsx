@@ -60,8 +60,6 @@ export default function Page() {
       switch (studyKey) {
         case "mismatch-speech":
           console.log("generateMismatchSpeech")
-          const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
-
           // Assuming ObjectList is your original array
           const audioUnmuted = attentionCheckList.filter(item => item.type === "Audio" && item.volume === "Unmuted");
           console.log("audioUnmuted: ", audioUnmuted)
