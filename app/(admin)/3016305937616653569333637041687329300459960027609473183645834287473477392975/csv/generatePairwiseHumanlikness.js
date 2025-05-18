@@ -1,4 +1,4 @@
-import { N_ATTENTION_CHECK_PER_STUDY, ATTENTION_CHECK_TYPE, ATTENTION_CHECK_VOLUME } from "@/config/constants"
+import { N_ATTENTION_CHECK_PER_STUDY } from "@/config/constants"
 import { getRandomSubset } from "@/utils/randomSubset"
 
 export function generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList) {

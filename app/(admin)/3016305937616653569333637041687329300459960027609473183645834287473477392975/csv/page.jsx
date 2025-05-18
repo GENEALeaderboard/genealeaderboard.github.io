@@ -20,6 +20,15 @@ import { generateMismatchSpeech } from "./generateMismatchSpeech"
 import { generateMismatchEmotion } from "./generateMismatchEmotion"
 import { generatePairwiseEmotion } from "./generatePairwiseEmotion"
 
+// Utility to shuffle an array in-place
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[array[i], array[j]] = [array[j], array[i]]
+  }
+  return array
+}
+
 export default function Page() {
   const [csvList, setCsvList] = useState([])
   const [loadedCSV, setLoadedCSV] = useState(false)
@@ -48,6 +57,33 @@ export default function Page() {
 
       const studyKey = STUDY_TYPES[keyStd].key
 
+      switch (studyKey) {
+        case "mismatch-speech":
+          console.log("generateMismatchSpeech")
+          const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
+
+          // Assuming ObjectList is your original array
+          const audioUnmuted = attentionCheckList.filter(item => item.type === "Audio" && item.volume === "Unmuted");
+          console.log("audioUnmuted: ", audioUnmuted)
+          const textUnmuted = attentionCheckList.filter(item => item.type === "Text" && item.volume === "Unmuted");
+          console.log("textUnmuted: ", textUnmuted)
+
+          if (audioUnmuted.length < 2 || textUnmuted.length < 2) {
+            throw new Error("Not enough unmuted attention check videos: Need at least 2 Audio and 2 Text.");
+          }
+
+          console.log("attentionCheckList_Before: ", attentionCheckList)
+          attentionCheckList = [
+            ...shuffleArray(audioUnmuted).slice(0, 2),
+            ...shuffleArray(textUnmuted).slice(0, 2),
+          ]
+          console.log("attentionCheckList_After: ", attentionCheckList)
+          // pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList)
+          break
+        default:
+          break
+      }
+      
       for (let i = 0; i < csvList.length; i++) {
         const { data, filename } = csvList[i]
         // Update state to indicate validation is in progress
