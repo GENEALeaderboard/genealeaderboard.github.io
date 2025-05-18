@@ -1,8 +1,34 @@
 import { N_ATTENTION_CHECK_PER_STUDY } from "@/config/constants"
 import { getRandomSubset } from "@/utils/randomSubset"
 
+// Utility to shuffle an array in-place
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[array[i], array[j]] = [array[j], array[i]]
+  }
+  return array
+}
+
 export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList) {
   let pageList = []
+  // Assuming ObjectList is your original array
+  const audioUnmuted = attentionCheckList.filter(item => item.type === "Audio" && item.volume === "Unmuted");
+  console.log("audioUnmuted: ", audioUnmuted)
+  const textUnmuted = attentionCheckList.filter(item => item.type === "Text" && item.volume === "Unmuted");
+  console.log("textUnmuted: ", textUnmuted)
+
+  if (audioUnmuted.length < 2 || textUnmuted.length < 2) {
+    throw new Error("Not enough unmuted attention check videos: Need at least 2 Audio and 2 Text.");
+  }
+
+  console.log("attentionCheckList_Before: ", attentionCheckList)
+  attentionCheckList = [
+    ...shuffleArray(audioUnmuted).slice(0, 2),
+    ...shuffleArray(textUnmuted).slice(0, 2),
+  ]
+  console.log("attentionCheckList_After: ", attentionCheckList)
+
   const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
   const nCheck = attentionSubset.length
 
