@@ -33,6 +33,7 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
     const step = Math.floor(Array.from(studyData).length / (nCheck + 1))
     let pageIdx = 0
     let attentionCheckIdx = 0
+    console.log("studylen", studyData.length)
     const totalPageIdx = studyData.length + nCheck
     studyData.forEach((row, rowIndex) => {
       const inputcode1 = String(row[0]).replace(/\s+/g, "")
@@ -69,6 +70,7 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
         expected_vote: "null",
       })
       pageIdx++
+      console.log("rowIndex", rowIndex, "step", step, "(rowIndex + 1) % step ", (rowIndex + 1) % step)
 
       if ((rowIndex + 1) % step === 0 && attentionCheckIdx < nCheck) {
         const item = attentionSubset[attentionCheckIdx]
