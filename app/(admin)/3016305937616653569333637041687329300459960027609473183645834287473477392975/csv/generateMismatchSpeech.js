@@ -28,7 +28,7 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
   const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
   const nCheck = attentionSubset.length
 
-  console.log("nCheck", nCheck, attentionsubset)
+  console.log("nCheck", nCheck, attentionSubset)
   studiesCSV.forEach((studyData, stdIndex) => {
     const step = Math.floor(Array.from(studyData).length / (nCheck + 1))
     let pageIdx = 0
