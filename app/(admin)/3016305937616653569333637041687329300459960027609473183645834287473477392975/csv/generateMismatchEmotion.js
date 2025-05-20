@@ -53,7 +53,7 @@ export function generateMismatchEmotion(studiesCSV, videos, studiesID, studyConf
       pageIdx++
 
       console.log("rowIndex", rowIndex, "step", step, "rowIndex + 1) % step ", (rowIndex + 1) % step)
-
+      console.log("attentionCheckIdx", attentionCheckIdx, "nCheck", nCheck)
       if ((rowIndex + 1) % step === 0 && attentionCheckIdx < nCheck) {
         const item = attentionSubset[attentionCheckIdx]
 
