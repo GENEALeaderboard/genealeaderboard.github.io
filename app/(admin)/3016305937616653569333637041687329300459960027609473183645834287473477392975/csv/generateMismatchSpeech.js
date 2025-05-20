@@ -14,9 +14,8 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
   let pageList = []
   // Assuming ObjectList is your original array
   console.log("attentionCheckList", attentionCheckList)
-  attentionCheckList = attentionCheckList.filter(item => item.type in ["Audio", "Text"] && item.volume === "Unmuted");
+  attentionCheckList = attentionCheckList.filter(item => ["Audio", "Text"].includes(item.type) && item.volume === "Unmuted")
   console.log("attentionCheckList", attentionCheckList)
-  console.log(attentionCheckList)
   if (attentionCheckList.length < 4 || textUnmuted.length < 2) {
     throw new Error("Not enough unmuted attention check videos: Need at least 2 Audio and 2 Text.");
   }
