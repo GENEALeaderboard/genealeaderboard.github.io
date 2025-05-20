@@ -39,11 +39,25 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
       const inputcode1 = String(row[0]).replace(/\s+/g, "")
       const systemname = String(row[1]).replace(/\s+/g, "")
       const inputcode2 = String(row[2]).replace(/\s+/g, "")
-
-      const videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
-      const videoFilteredB = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
-      const videoA = videoFilteredA[0]
-      const videoB = videoFilteredB[0]
+      
+      const is_mismatched_on_right_side = (Math.random() < 0.5)
+      
+      if (is_mismatched_on_right_side) {
+        const sysA = systemname
+        const sysB = systemname + "_Mismatched"
+        const videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
+        const videoFilteredB = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
+        const videoA = videoFilteredA[0]
+        const videoB = videoFilteredB[0]
+      } else {
+        const sysA = systemname + "_Mismatched"
+        const sysB = systemname
+        const videoFilteredA = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
+        const videoFilteredB = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
+        const videoA = videoFilteredA[0]
+        const videoB = videoFilteredB[0]
+      }
+      
 
       if (!videoA || !videoB) {
         console.log("videoA", videoA, "videoB", videoB)
@@ -63,8 +77,8 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
         selected: JSON.stringify({}),
         actions: JSON.stringify([]),
         options: studyConfig.options,
-        system1: systemname,
-        system2: systemname,
+        system1: sysA,
+        system2: sysB,
         video1: videoA.id,
         video2: videoB.id,
         expected_vote: "null",
