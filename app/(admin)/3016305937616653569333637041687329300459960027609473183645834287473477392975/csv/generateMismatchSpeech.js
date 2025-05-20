@@ -25,7 +25,7 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
   //   ...shuffleArray(textUnmuted).slice(0, 2),
   // ]
 
-  const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
+  const attentionSubset = attentionCheckList //getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
   const nCheck = attentionSubset.length
 
   console.log("nCheck", nCheck, attentionSubset, studiesCSV.length)
