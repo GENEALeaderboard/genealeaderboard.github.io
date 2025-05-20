@@ -13,22 +13,22 @@ function shuffleArray(array) {
 export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList) {
   let pageList = []
   // Assuming ObjectList is your original array
-  const audioUnmuted = attentionCheckList.filter(item => item.type === "Audio" && item.volume === "Unmuted");
-  const textUnmuted = attentionCheckList.filter(item => item.type === "Text" && item.volume === "Unmuted");
+  attentionCheckList = attentionCheckList.filter(item => item.type in ["Audio", "Text"] && item.volume === "Unmuted");
 
-  if (audioUnmuted.length < 2 || textUnmuted.length < 2) {
+  console.log(attentionCheckList)
+  if (attentionCheckList.length < 4 || textUnmuted.length < 2) {
     throw new Error("Not enough unmuted attention check videos: Need at least 2 Audio and 2 Text.");
   }
 
-  attentionCheckList = [
-    ...shuffleArray(audioUnmuted).slice(0, 2),
-    ...shuffleArray(textUnmuted).slice(0, 2),
-  ]
+  // attentionCheckList = [
+  //   ...shuffleArray(audioUnmuted).slice(0, 2),
+  //   ...shuffleArray(textUnmuted).slice(0, 2),
+  // ]
 
   const attentionSubset = getRandomSubset(attentionCheckList, Math.min(studiesCSV.length, N_ATTENTION_CHECK_PER_STUDY))
   const nCheck = attentionSubset.length
 
-  console.log("nCheck", nCheck, attentionSubset)
+  console.log("nCheck", nCheck, attentionSubset, studiesCSV.length)
   studiesCSV.forEach((studyData, stdIndex) => {
     const step = Math.floor(Array.from(studyData).length / (nCheck + 1))
     let pageIdx = 0
