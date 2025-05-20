@@ -40,22 +40,24 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
       const systemname = String(row[1]).replace(/\s+/g, "")
       const inputcode2 = String(row[2]).replace(/\s+/g, "")
 
-      const is_mismatched_on_right_side = (Math.random() < 0.5)
+      let sysA, sysB, videoFilteredA, videoFilteredB, videoA, videoB;
 
-      if (is_mismatched_on_right_side) {
-        let sysA = systemname
-        let sysB = systemname + "_Mismatched"
-        let videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
-        let videoFilteredB = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
-        let videoA = videoFilteredA[0]
-        let videoB = videoFilteredB[0]
+      if (Math.random() < 0.5) {
+        // Mismatched is on the right side
+        sysA = systemname
+        sysB = systemname + "_Mismatched"
+        videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
+        videoFilteredB = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
+        videoA = videoFilteredA[0]
+        videoB = videoFilteredB[0]
       } else {
-        let sysA = systemname + "_Mismatched"
-        let sysB = systemname
-        let videoFilteredA = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
-        let videoFilteredB = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
-        let videoA = videoFilteredA[0]
-        let videoB = videoFilteredB[0]
+        // Mismatched is on the left side
+        sysA = systemname + "_Mismatched"
+        sysB = systemname
+        videoFilteredA = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
+        videoFilteredB = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
+        videoA = videoFilteredA[0]
+        videoB = videoFilteredB[0]
       }
 
 
