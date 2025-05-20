@@ -5,7 +5,7 @@ import { getRandomSubset } from "@/utils/randomSubset"
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[array[i], array[j]] = [array[j], array[i]]
+      ;[array[i], array[j]] = [array[j], array[i]]
   }
   return array
 }
@@ -39,25 +39,25 @@ export function generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, 
       const inputcode1 = String(row[0]).replace(/\s+/g, "")
       const systemname = String(row[1]).replace(/\s+/g, "")
       const inputcode2 = String(row[2]).replace(/\s+/g, "")
-      
+
       const is_mismatched_on_right_side = (Math.random() < 0.5)
-      
+
       if (is_mismatched_on_right_side) {
-        const sysA = systemname
-        const sysB = systemname + "_Mismatched"
-        const videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
-        const videoFilteredB = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
-        const videoA = videoFilteredA[0]
-        const videoB = videoFilteredB[0]
+        let sysA = systemname
+        let sysB = systemname + "_Mismatched"
+        let videoFilteredA = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
+        let videoFilteredB = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
+        let videoA = videoFilteredA[0]
+        let videoB = videoFilteredB[0]
       } else {
-        const sysA = systemname + "_Mismatched"
-        const sysB = systemname
-        const videoFilteredA = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
-        const videoFilteredB = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
-        const videoA = videoFilteredA[0]
-        const videoB = videoFilteredB[0]
+        let sysA = systemname + "_Mismatched"
+        let sysB = systemname
+        let videoFilteredA = Array.from(videoMismatch).filter((video) => video.inputcode === inputcode1 && video.systemname === systemname)
+        let videoFilteredB = Array.from(videoOrigins).filter((video) => video.inputcode === inputcode2 && video.systemname === systemname)
+        let videoA = videoFilteredA[0]
+        let videoB = videoFilteredB[0]
       }
-      
+
 
       if (!videoA || !videoB) {
         console.log("videoA", videoA, "videoB", videoB)
