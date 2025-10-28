@@ -49,5 +49,4 @@ Official GENEA Workshop at ICMI 2024
 - [1st GENEA Workshop and Challenge website (at IVA 2020)](https://genea-workshop.github.io/2020/)
 
 ## Follow us on Twitter
-
 For updates, follow us: [GENEA Workshop](https://twitter.com/genea_workshop)
