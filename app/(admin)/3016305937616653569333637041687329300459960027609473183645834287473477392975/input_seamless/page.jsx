@@ -6,7 +6,7 @@ import useSWR from "swr"
 import { apiFetcherData, apiPatch } from "@/utils/fetcher"
 import { Callout } from "@/nextra"
 
-const INPUTCODE_TYPE = "origin"
+const INPUTCODE_TYPE = "seamless-origin-humanlikeness"
 
 export default function Page() {
   const {
@@ -49,7 +49,8 @@ export default function Page() {
 
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Input Codes</h1>
+      <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Seamless Input Codes</h1>
+      <p className="text-sm text-gray-500">Input codes for Seamless Human-Likeness studies.</p>
 
       <div className="mt-3 text-center flex gap-2 justify-center items-center">
         <button
@@ -60,21 +61,19 @@ export default function Page() {
           Update Database
         </button>
       </div>
-      {inputCodes && (
-        <div className="flex flex-row items-center gap-4">
-          <label htmlFor="codes" className="flex justify-end w-[15%]">
-            Inputs Codes
-          </label>
-          <textarea
-            className="flex-grow min-w-0 appearance-none rounded-md border border-[#666666] bg-white px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
-            id="codes"
-            rows="7"
-            name="codes"
-            value={inputCodes}
-            onChange={(e) => setInputCodes(e.target.value)}
-          />
-        </div>
-      )}
+      <div className="flex flex-row items-center gap-4">
+        <label htmlFor="codes" className="flex justify-end w-[15%]">
+          Inputs Codes
+        </label>
+        <textarea
+          className="flex-grow min-w-0 appearance-none rounded-md border border-[#666666] bg-white px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
+          id="codes"
+          rows="7"
+          name="codes"
+          value={inputCodes}
+          onChange={(e) => setInputCodes(e.target.value)}
+        />
+      </div>
     </div>
   )
 }

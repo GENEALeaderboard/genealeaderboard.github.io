@@ -1,34 +1,26 @@
 "use client"
 
-import React, { Fragment, useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Callout } from "@/nextra"
-import { Loading } from "@/components/loading/loading"
 import axios from "axios"
-import clsx from "clsx"
-import BVHFile from "@/icons/bvhfile"
-import { Select } from "@headlessui/react"
-import SystemList from "./systemlist"
+import SystemList from "../upload_origin/systemlist"
 import { UPLOAD_API_ENDPOINT } from "@/config/constants"
-import { UploadStatus } from "@/components/UploadStatus"
 import CircleLoading from "@/icons/circleloading"
-import Mp4Icon from "@/icons/mp4"
-import UploadPreviewer from "./UploadPreviewer"
+import UploadPreviewer from "../upload_origin/UploadPreviewer"
 import { apiPost } from "@/utils/fetcher"
 
-export default function UploadOriginVideos({ systems, videosLoading }) {
+const VIDEO_TYPE = "seamless-origin-humanlikeness"
+
+export default function UploadSeamlessVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [validMsg, setValidMsg] = useState("")
   const [uploading, setUploading] = useState("")
-  // const [uploadProgress, setUploadProgress] = useState({})
   const [progress, setProgress] = useState({})
   const [uploadState, setUploadState] = useState({ type: "", message: "" })
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [description, setDescription] = useState("")
-  // const [missingList, setMissingList] = useState([])
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   const onDrop = useCallback(async (acceptedFiles) => {
     setValidMsg("")
@@ -46,19 +38,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       }
     }
 
-    // const missing = []
-    // codes.map((code) => {
-    //   const found = acceptedFiles.find((file) => file.name === `${code}.mp4`)
-    //   if (!found) {
-    //     missing.push(`${code}.mp4`)
-    //   }
-    // })
-    // setMissingList(missing)
-
-    // Do something with the files, like upload to a server
-    // console.log("acceptedFiles", acceptedFiles)
     setFiles(acceptedFiles)
-    // setProgress({})
     setProgress(
       Array.from(acceptedFiles).reduce((progressItems, fileItem) => {
         progressItems[fileItem.name] = { percent: 0, status: "pending" }
@@ -71,13 +51,6 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       url: URL.createObjectURL(file),
     }))
     setPreviews(selectedFiles)
-
-    try {
-      // handleUpload()
-      // console.log(response.data.message)
-    } catch (error) {
-      console.error("Error uploading files:", error)
-    }
     setUploading("")
   }, [])
 
@@ -94,16 +67,13 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
   }, [systems])
 
   const setUploadProgress = useCallback((fileName, percent, status) => {
-    setProgress((prevProgress) => {
-      return {
-        ...prevProgress,
-        [fileName]: { percent: percent, status: status },
-      }
-    })
+    setProgress((prevProgress) => ({
+      ...prevProgress,
+      [fileName]: { percent, status },
+    }))
   }, [])
 
   const simpleUploadFile = async (file, index, systemname) => {
-    const videoType = "origin"
     const fileName = file.name
     const fileSize = file.size
 
@@ -111,35 +81,29 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
       setUploadProgress(fileName, 0, "uploading")
       const VIDEO_UPLOAD_URL = `${UPLOAD_API_ENDPOINT}/upload/videos`
 
-      console.log("VIDEO_UPLOAD_URL", VIDEO_UPLOAD_URL)
-
-      // Start multipart upload
       const { data: responseUpload } = await axios.post(
         VIDEO_UPLOAD_URL,
         {
-          systemname: systemname,
-          fileName: fileName,
-          fileSize: fileSize,
-          file: file,
-          videoType: videoType,
+          systemname,
+          fileName,
+          fileSize,
+          file,
+          videoType: VIDEO_TYPE,
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
           withCredentials: true,
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total ?? 1))
-
             setUploadProgress(fileName, percentCompleted, "uploading")
           },
         }
       )
 
       setUploadProgress(fileName, 100, "completed")
-
       return responseUpload.data
     } catch (err) {
       console.error("Error uploading file:", err)
-      // setErrorMsg("Error uploading file")
       setUploadProgress(fileName, 0, "error")
       const { success, msg, error } = err.response.data
       return { success, msg, error }
@@ -155,21 +119,14 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     }
 
     const systemname = systems[selectedIndex].name
-
     if (!systemname) {
       setValidMsg("System selected not found")
       return
     }
 
-    // if (missingList.length > 0) {
-    //   setErrorMsg("Please upload missing files")
-    //   return
-    // }
-
     try {
       setUploading("Uploading your videos, please waiting ...")
       setUploadState({ type: "loading", message: "" })
-      console.log("systemname", systemname)
 
       const videoMeta = []
       for (let index = 0; index < files.length; index++) {
@@ -183,17 +140,14 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
         videoMeta.push({ path, inputcode, url })
       }
 
-      const videoDatas = videoMeta.map((meta) => {
-        return {
-          inputcode: meta.inputcode,
-          systemname: systems[selectedIndex].name,
-          path: meta.path,
-          url: meta.url,
-          systemid: systems[selectedIndex].id,
-          type: "origin",
-        }
-      })
-      console.log("videoDatas", videoDatas)
+      const videoDatas = videoMeta.map((meta) => ({
+        inputcode: meta.inputcode,
+        systemname: systems[selectedIndex].name,
+        path: meta.path,
+        url: meta.url,
+        systemid: systems[selectedIndex].id,
+        type: VIDEO_TYPE,
+      }))
 
       setUploading("Uploading your videos to database, please waiting ...")
       const resInsert = await apiPost("/api/videos", { videos: videoDatas })
@@ -202,7 +156,6 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
         setUploadState({ type: "info", message: resInsert.msg })
       } else {
         setUploadState({ type: "error", message: resInsert.msg })
-        console.log("resInsert", resInsert)
       }
     } catch (error) {
       setUploadState({ type: "error", message: "Error with your upload video, please contact for support!" })
@@ -214,7 +167,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
   if (videosLoading) {
     return (
-      <div className="w-full px-12  justify-center">
+      <div className="w-full px-12 justify-center">
         <p className="flex justify-center p-4 gap-2">
           <CircleLoading />
           Loading ...
@@ -229,7 +182,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
   if (uploadState.message) {
     return (
-      <div className="w-full p-12 justify-center ">
+      <div className="w-full p-12 justify-center">
         <Callout type={uploadState.type} className="mt-0">
           {uploadState.message}
         </Callout>
@@ -239,15 +192,15 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
   if (uploading) {
     return (
-      <div className="w-full px-12  justify-center ">
+      <div className="w-full px-12 justify-center">
         <p className="flex justify-center p-4 gap-2">
           <CircleLoading />
           Uploading...
         </p>
         <div className="flex flex-col gap-2">
-          {files.map((file, index) => {
-            return <UploadPreviewer file={file} progress={progress} index={index} key={index} />
-          })}
+          {files.map((file, index) => (
+            <UploadPreviewer file={file} progress={progress} index={index} key={index} />
+          ))}
         </div>
         <Callout type="warning" className="mt-0">
           {uploading}
@@ -258,7 +211,6 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
   return (
     <form className="mt-6 flex flex-col px-4 gap-4">
-      {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
       <div className="flex flex-row items-center gap-4">
         <label htmlFor="name" className="w-[20%] text-right">
           System Name
@@ -268,7 +220,6 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
         </div>
       </div>
 
-      {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
       <div className="flex flex-row items-center gap-4">
         <label htmlFor="name" className="w-[20%] text-right">
           Team Name
@@ -285,7 +236,6 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
         </div>
       </div>
 
-      {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
       <div className="flex flex-row items-center gap-4 mt-4">
         <label htmlFor="name" className="w-[20%] text-left font-semibold">
           Videos Upload
@@ -302,7 +252,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           {previews.length > 0 && (
             <ul className="w-full flex flex-wrap gap-2 justify-center">
               {previews.map(({ file, url }, index) => (
-                <li title={file.name} key={index} className="min-w-24 max-w-40  flex flex-col justify-center items-center gap-1 p-2 border rounded-md border-black">
+                <li title={file.name} key={index} className="min-w-24 max-w-40 flex flex-col justify-center items-center gap-1 p-2 border rounded-md border-black">
                   <video title={file.name} width={200} height={80} controls>
                     <source src={url} type={file.type} />
                     Your browser does not support the video tag.
@@ -326,23 +276,10 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
         </div>
       )}
 
-      {/* {missingList.length > 0 && (
-        <Callout type="error">
-          You upload missing following files:
-          <div className="flex flex-wrap gap-2 text-sm">
-            {missingList.map((filemis, index) => (
-              <code key={index} className="text-xs px-2">
-                {filemis}
-              </code>
-            ))}
-          </div>
-        </Callout>
-      )} */}
-
       <div className="flex flex-col items-center">
         <div className="flex justify-start">
           <button
-            className="cursor-pointer select-none flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-neutral-800 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm  transition-all "
+            className="cursor-pointer select-none flex h-10 items-center gap-2 w-44 betterhover:hover:bg-gray-600 dark:betterhover:hover:bg-gray-300 justify-center rounded-md border border-transparent bg-neutral-800 px-4 py-2 text-base font-bold text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:bg-white dark:text-black dark:focus:ring-white sm:text-sm transition-all"
             onClick={handleUpload}
           >
             {uploadState.type === "loading" ? <CircleLoading className="w-6 h-6" /> : <></>}

@@ -259,7 +259,7 @@ export default function Page() {
                   >
                     {({ focus, hover }) => (
                       <Fragment>
-                        {Object.entries(STUDY_TYPES).map(([key, sysType]) => (
+                        {Object.entries(STUDY_TYPES).filter(([, sysType]) => sysType.key !== "seamless-humanlikeness").map(([key, sysType]) => (
                           <option
                             key={key}
                             className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"

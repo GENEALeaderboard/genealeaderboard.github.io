@@ -215,6 +215,38 @@ export default function AdminSidebar() {
                     Upload CSV Studies
                   </Link>
                 </li>
+
+                <li className="mt-4 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
+                  Seamless
+                </li>
+
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless"
+                  >
+                    <ComputerSetting className="w-5" />
+                    Seamless Input Codes
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless"
+                  >
+                    <VideoUploadIcon className="w-5" />
+                    Upload Seamless Videos
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless"
+                  >
+                    <CSVUploadIcon className="w-5" />
+                    Upload Seamless CSV Studies
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
