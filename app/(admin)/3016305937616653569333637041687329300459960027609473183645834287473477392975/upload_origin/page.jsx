@@ -16,7 +16,7 @@ export default function Page() {
     data: systems,
     error: systemsError,
     isLoading: systemsLoading,
-  } = useSWR("/api/systems", apiFetcherData, {
+  } = useSWR("/api/systems?category=origin", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,

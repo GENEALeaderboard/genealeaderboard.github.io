@@ -16,7 +16,7 @@ import VideoPreviewer from "./VideoPreviewer"
 import { apiPost } from "@/utils/fetcher"
 import { generateUUID } from "@/utils/generateUUID"
 
-export default function UploadAttetionCheck() {
+export default function UploadAttetionCheck({ category = "origin" }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
@@ -107,6 +107,7 @@ export default function UploadAttetionCheck() {
           inputCode: expectedVote,
           fileSize: fileSize,
           file: file,
+          category: category,
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -209,7 +210,7 @@ export default function UploadAttetionCheck() {
 
       console.log("videoMeta", JSON.stringify(videoMeta))
       setUploading("Uploading your videos to database, please waiting ...")
-      const resInsert = await apiPost("/api/attention-check", { videos: videoMeta })
+      const resInsert = await apiPost("/api/attention-check", { videos: videoMeta, category: category })
 
       if (resInsert.success) {
         setUploadState({ type: "info", message: resInsert.msg })

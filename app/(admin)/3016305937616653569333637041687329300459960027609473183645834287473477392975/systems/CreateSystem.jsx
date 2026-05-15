@@ -11,7 +11,7 @@ import { generateUUID } from "@/utils/generateUUID"
 import { incrementAlpha } from "./utils"
 import { apiPost } from "@/utils/fetcher"
 
-export default function CreateSystem({ submissions, systems }) {
+export default function CreateSystem({ submissions, systems, category = "origin" }) {
   const [selectedSystem, setSelectedSystem] = useState(0)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [systemType, setSystemType] = useState("system")
@@ -70,6 +70,7 @@ export default function CreateSystem({ submissions, systems }) {
         type: systemType,
         description: description,
         submissionid: systemID,
+        category: category,
       }
       console.log("data", newSystem)
 

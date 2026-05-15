@@ -34,7 +34,7 @@ export default function Page() {
     data: attentionCheckList,
     error: isError,
     isLoading,
-  } = useSWR("/api/attention-check", apiFetcherData, {
+  } = useSWR("/api/attention-check?category=origin", apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,

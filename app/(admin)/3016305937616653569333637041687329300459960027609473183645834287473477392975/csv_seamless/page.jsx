@@ -21,7 +21,7 @@ export default function Page() {
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
 
-  const { data: attentionCheckList } = useSWR("/api/attention-check", apiFetcherData, {
+  const { data: attentionCheckList } = useSWR(`/api/attention-check?category=${VIDEO_TYPE}`, apiFetcherData, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
