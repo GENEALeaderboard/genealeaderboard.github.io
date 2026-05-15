@@ -18,6 +18,7 @@ import { apiPost } from "@/utils/fetcher"
 
 export default function UploadOriginVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [videoType, setVideoType] = useState("origin")
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
   const [validMsg, setValidMsg] = useState("")
@@ -102,7 +103,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
     })
   }, [])
 
-  const simpleUploadFile = async (file, index, systemname) => {
+  const simpleUploadFile = async (file, index, systemname, videoType) => {
     const fileName = file.name
     const fileSize = file.size
 
@@ -120,6 +121,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           fileName: fileName,
           fileSize: fileSize,
           file: file,
+          videoType: videoType,
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -171,7 +173,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
 
       const videoMeta = []
       for (let index = 0; index < files.length; index++) {
-        const reponse = await simpleUploadFile(files[index], index, systemname)
+        const reponse = await simpleUploadFile(files[index], index, systemname, videoType)
         const { path, inputcode, url } = reponse
 
         if (!reponse) {
@@ -188,7 +190,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           path: meta.path,
           url: meta.url,
           systemid: systems[selectedIndex].id,
-          type: "origin",
+          type: videoType,
         }
       })
       console.log("videoDatas", videoDatas)
@@ -280,6 +282,33 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
             name="description"
             value={description}
           />
+        </div>
+      </div>
+
+      {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
+      <div className="flex flex-row items-center gap-4">
+        <label className="w-[20%] text-right">Video Type</label>
+        <div className="w-[80%] flex-grow flex items-center gap-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="videoType"
+              value="origin"
+              checked={videoType === "origin"}
+              onChange={(e) => setVideoType(e.target.value)}
+            />
+            <span>origin (Pairwise / Mismatch)</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="videoType"
+              value="seamless-origin-humanlikeness"
+              checked={videoType === "seamless-origin-humanlikeness"}
+              onChange={(e) => setVideoType(e.target.value)}
+            />
+            <span>seamless-origin-humanlikeness (Seamless Human-Likeness)</span>
+          </label>
         </div>
       </div>
 

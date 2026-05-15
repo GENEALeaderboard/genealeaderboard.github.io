@@ -22,6 +22,7 @@ export const STUDY_TYPES = {
   pairwiseEmotion: { key: "pairwise-emotion", label: "Pairwise Emotion Studies", type: "origin" },
   mismatchSpeech: { key: "mismatch-speech", label: "Mismatch Speech Studies", type: "mismatch-speech" },
   mismatchEmotion: { key: "mismatch-emotion", label: "Mismatch Emotion Studies", type: "mismatch-emotion" },
+  seamlessHumanLikeness: { key: "seamless-humanlikeness", label: "Seamless Human-Likeness Studies", type: "seamless-origin-humanlikeness" },
 }
 export const STUDY_KEYS = Object.keys(STUDY_TYPES)
 

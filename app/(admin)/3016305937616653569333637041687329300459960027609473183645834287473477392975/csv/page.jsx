@@ -19,6 +19,7 @@ import { generatePairwiseHumanlikness } from "./generatePairwiseHumanlikness"
 import { generateMismatchSpeech } from "./generateMismatchSpeech"
 import { generateMismatchEmotion } from "./generateMismatchEmotion"
 import { generatePairwiseEmotion } from "./generatePairwiseEmotion"
+import { generateSeamlessHumanlikeness } from "./generateSeamlessHumanlikeness"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -64,10 +65,10 @@ export default function Page() {
           prevList.map((item, index) =>
             index === i
               ? {
-                  ...item,
-                  state: res.success ? "success" : "error",
-                  errorMsg: res.success ? "" : res.msg,
-                }
+                ...item,
+                state: res.success ? "success" : "error",
+                errorMsg: res.success ? "" : res.msg,
+              }
               : item
           )
         )
@@ -162,6 +163,11 @@ export default function Page() {
         case "mismatch-emotion":
           console.log("generateMismatchEmotion")
           pageList = generateMismatchEmotion(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          break
+        case "seamless-humanlikeness":
+          console.log("generateSeamlessHumanlikeness")
+          const videoSeamless = videos.filter((video) => video.type === "seamless-origin-humanlikeness")
+          pageList = generateSeamlessHumanlikeness(studiesCSV, videoSeamless, studiesID, studyConfig, attentionCheckList)
           break
         default:
           break
