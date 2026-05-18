@@ -321,15 +321,6 @@ export default function AdminSidebar() {
                 <li className="flex flex-col gap-1">
                   <Link
                     className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/systems_seamless_dyadic"
-                  >
-                    <AISystem className="w-5" />
-                    Dyadic Mismatch Systems
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
                     href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_dyadic"
                   >
                     <AttentionCheck className="w-5" />
@@ -365,15 +356,6 @@ export default function AdminSidebar() {
                   >
                     <ComputerSetting className="w-5" />
                     Semantic Mismatch Input Codes
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/systems_seamless_semantic"
-                  >
-                    <AISystem className="w-5" />
-                    Semantic Mismatch Systems
                   </Link>
                 </li>
                 <li className="flex flex-col gap-1">

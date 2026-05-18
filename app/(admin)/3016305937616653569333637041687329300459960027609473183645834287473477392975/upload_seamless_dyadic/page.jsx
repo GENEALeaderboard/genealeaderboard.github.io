@@ -6,7 +6,9 @@ import useSWR from "swr"
 import { apiFetcherData } from "@/utils/fetcher"
 import CircleLoading from "@/icons/circleloading"
 
-const SYSTEMS_CATEGORY = "seamless-dyadic-mismatch"
+// All four seamless studies share one systems pool, registered under
+// the seamless-origin-humanlikeness category.
+const SYSTEMS_CATEGORY = "seamless-origin-humanlikeness"
 const POOLS = [
   { value: "seamless-dyadic-origin", label: "Origin (seamless-dyadic-origin)" },
   { value: "seamless-dyadic-mismatch", label: "Mismatch (seamless-dyadic-mismatch)" },
