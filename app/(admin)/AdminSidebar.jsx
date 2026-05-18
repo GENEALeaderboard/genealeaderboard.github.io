@@ -265,6 +265,144 @@ export default function AdminSidebar() {
                     Upload Seamless CSV Studies
                   </Link>
                 </li>
+
+                <li className="mt-3 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
+                  Speech Mismatch
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless_speech"
+                  >
+                    <ComputerSetting className="w-5" />
+                    Speech Mismatch Input Codes
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_speech"
+                  >
+                    <AttentionCheck className="w-5" />
+                    Upload Speech Mismatch Attention Check
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless_speech"
+                  >
+                    <VideoUploadIcon className="w-5" />
+                    Upload Speech Mismatch Videos
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless_speech"
+                  >
+                    <CSVUploadIcon className="w-5" />
+                    Upload Speech Mismatch CSV
+                  </Link>
+                </li>
+
+                <li className="mt-3 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
+                  Dyadic Mismatch
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless_dyadic"
+                  >
+                    <ComputerSetting className="w-5" />
+                    Dyadic Mismatch Input Codes
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/systems_seamless_dyadic"
+                  >
+                    <AISystem className="w-5" />
+                    Dyadic Mismatch Systems
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_dyadic"
+                  >
+                    <AttentionCheck className="w-5" />
+                    Upload Dyadic Mismatch Attention Check
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless_dyadic"
+                  >
+                    <VideoUploadIcon className="w-5" />
+                    Upload Dyadic Mismatch Videos
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless_dyadic"
+                  >
+                    <CSVUploadIcon className="w-5" />
+                    Upload Dyadic Mismatch CSV
+                  </Link>
+                </li>
+
+                <li className="mt-3 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
+                  Semantic Mismatch
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless_semantic"
+                  >
+                    <ComputerSetting className="w-5" />
+                    Semantic Mismatch Input Codes
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/systems_seamless_semantic"
+                  >
+                    <AISystem className="w-5" />
+                    Semantic Mismatch Systems
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_semantic"
+                  >
+                    <AttentionCheck className="w-5" />
+                    Upload Semantic Mismatch Attention Check
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless_semantic"
+                  >
+                    <VideoUploadIcon className="w-5" />
+                    Upload Semantic Mismatch Videos
+                  </Link>
+                </li>
+                <li className="flex flex-col gap-1">
+                  <Link
+                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
+                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless_semantic"
+                  >
+                    <CSVUploadIcon className="w-5" />
+                    Upload Semantic Mismatch CSV
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

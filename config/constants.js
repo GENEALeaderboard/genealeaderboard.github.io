@@ -23,6 +23,9 @@ export const STUDY_TYPES = {
   mismatchSpeech: { key: "mismatch-speech", label: "Mismatch Speech Studies", type: "mismatch-speech" },
   mismatchEmotion: { key: "mismatch-emotion", label: "Mismatch Emotion Studies", type: "mismatch-emotion" },
   seamlessHumanLikeness: { key: "seamless-humanlikeness", label: "Seamless Human-Likeness Studies", type: "seamless-origin-humanlikeness" },
+  seamlessSpeechMismatch: { key: "seamless-speech-mismatch", label: "Seamless Speech Mismatch Studies", type: "seamless-speech-mismatch" },
+  seamlessDyadicMismatch: { key: "seamless-dyadic-mismatch", label: "Seamless Dyadic Mismatch Studies", type: "seamless-dyadic-mismatch" },
+  seamlessSemanticMismatch: { key: "seamless-semantic-mismatch", label: "Seamless Semantic Mismatch Studies", type: "seamless-semantic-mismatch" },
 }
 export const STUDY_KEYS = Object.keys(STUDY_TYPES)
 

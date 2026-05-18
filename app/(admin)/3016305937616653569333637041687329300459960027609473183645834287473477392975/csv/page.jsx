@@ -20,6 +20,16 @@ import { generateMismatchSpeech } from "./generateMismatchSpeech"
 import { generateMismatchEmotion } from "./generateMismatchEmotion"
 import { generatePairwiseEmotion } from "./generatePairwiseEmotion"
 import { generateSeamlessHumanlikeness } from "./generateSeamlessHumanlikeness"
+import { generateSeamlessSpeechMismatch } from "./generateSeamlessSpeechMismatch"
+import { generateSeamlessDyadicMismatch } from "./generateSeamlessDyadicMismatch"
+import { generateSeamlessSemanticMismatch } from "./generateSeamlessSemanticMismatch"
+
+const SEAMLESS_STUDY_KEYS = new Set([
+  "seamless-humanlikeness",
+  "seamless-speech-mismatch",
+  "seamless-dyadic-mismatch",
+  "seamless-semantic-mismatch",
+])
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -169,6 +179,24 @@ export default function Page() {
           const videoSeamless = videos.filter((video) => video.type === "seamless-origin-humanlikeness")
           pageList = generateSeamlessHumanlikeness(studiesCSV, videoSeamless, studiesID, studyConfig, attentionCheckList)
           break
+        case "seamless-speech-mismatch": {
+          const videoSeamlessSpeechOrigin = videos.filter((v) => v.type === "seamless-origin-humanlikeness")
+          const videoSeamlessSpeechMismatch = videos.filter((v) => v.type === "seamless-speech-mismatch")
+          pageList = generateSeamlessSpeechMismatch(studiesCSV, videoSeamlessSpeechOrigin, videoSeamlessSpeechMismatch, studiesID, studyConfig, attentionCheckList)
+          break
+        }
+        case "seamless-dyadic-mismatch": {
+          const videoDyadicOrigin = videos.filter((v) => v.type === "seamless-dyadic-origin")
+          const videoDyadicMismatch = videos.filter((v) => v.type === "seamless-dyadic-mismatch")
+          pageList = generateSeamlessDyadicMismatch(studiesCSV, videoDyadicOrigin, videoDyadicMismatch, studiesID, studyConfig, attentionCheckList)
+          break
+        }
+        case "seamless-semantic-mismatch": {
+          const videoSemanticOrigin = videos.filter((v) => v.type === "seamless-semantic-origin")
+          const videoSemanticMismatch = videos.filter((v) => v.type === "seamless-semantic-mismatch")
+          pageList = generateSeamlessSemanticMismatch(studiesCSV, videoSemanticOrigin, videoSemanticMismatch, studiesID, studyConfig, attentionCheckList)
+          break
+        }
         default:
           break
       }
@@ -259,7 +287,7 @@ export default function Page() {
                   >
                     {({ focus, hover }) => (
                       <Fragment>
-                        {Object.entries(STUDY_TYPES).filter(([, sysType]) => sysType.key !== "seamless-humanlikeness").map(([key, sysType]) => (
+                        {Object.entries(STUDY_TYPES).filter(([, sysType]) => !SEAMLESS_STUDY_KEYS.has(sysType.key)).map(([key, sysType]) => (
                           <option
                             key={key}
                             className="text-gray-800 dark:text-gray-100 relative cursor-pointer whitespace-nowrap py-1.5 transition-colors ltr:pl-3 ltr:pr-9 rtl:pr-3 rtl:pl-9"

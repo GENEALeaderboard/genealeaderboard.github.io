@@ -10,9 +10,10 @@ import CircleLoading from "@/icons/circleloading"
 import UploadPreviewer from "../upload_origin/UploadPreviewer"
 import { apiPost } from "@/utils/fetcher"
 
-const VIDEO_TYPE = "seamless-origin-humanlikeness"
+const DEFAULT_VIDEO_TYPE = "seamless-origin-humanlikeness"
 
-export default function UploadSeamlessVideos({ systems, videosLoading }) {
+export default function UploadSeamlessVideos({ systems, videosLoading, videoType }) {
+  const VIDEO_TYPE = videoType || DEFAULT_VIDEO_TYPE
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
   const [previews, setPreviews] = useState([])
