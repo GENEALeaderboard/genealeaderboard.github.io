@@ -129,6 +129,10 @@ export default function AdminSidebar() {
                   </Link>
                 </li>
 
+                <li className="mt-4 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
+                  BEAT2
+                </li>
+
                 <li className="flex flex-col gap-1">
                   <Link
                     className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
