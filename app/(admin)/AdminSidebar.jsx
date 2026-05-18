@@ -17,20 +17,116 @@ import Participation from "@/icons/participation"
 import Mismatch from "@/icons/mismatch"
 import AttentionCheck from "@/icons/attetioncheck"
 
-// Advanced
 export const OnFocusItemContext = createContext(null)
 OnFocusItemContext.displayName = "OnFocusItem"
 
-export default function AdminSidebar() {
-  const { menu, setMenu } = useMenu()
-  const [focused, setFocused] = useState(null)
-  const [showSidebar, setSidebar] = useState(true)
-  const [showToggleAnimation, setToggleAnimation] = useState(false)
+const ADMIN_BASE = "/3016305937616653569333637041687329300459960027609473183645834287473477392975"
 
-  // const anchors = useMemo(() => toc.filter((v) => v.depth === 2), [toc])
+const LINK_CLASS =
+  "gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
+
+// Top-level (always visible) links.
+const TOP_LINKS = [
+  { href: "/getting-started", label: "Back", Icon: (props) => <ArrowRightIcon {...props} className={`${props.className || ""} ltr:rotate-180`} /> },
+  { href: `${ADMIN_BASE}/home`, label: "Home", Icon: HomeIcon },
+  { href: `${ADMIN_BASE}/storage`, label: "Storage", Icon: StorageIcon },
+]
+
+// Collapsible sections. Each entry: { key, title, items: [{href, label, Icon}] }
+const SECTIONS = [
+  {
+    key: "beat2",
+    title: "BEAT2",
+    items: [
+      { href: `${ADMIN_BASE}/input`, label: "Input Codes", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/systems`, label: "Systems", Icon: AISystem },
+      { href: `${ADMIN_BASE}/studies`, label: "Studies", Icon: UserStudy },
+      { href: `${ADMIN_BASE}/videos`, label: "Videos", Icon: VideoIcon },
+      { href: `${ADMIN_BASE}/participants`, label: "Prolific Participants", Icon: Participation },
+      { href: `${ADMIN_BASE}/attention_check`, label: "Upload Attention Check", Icon: AttentionCheck },
+      { href: `${ADMIN_BASE}/upload_origin`, label: "Upload Origin Videos", Icon: VideoUploadIcon },
+      { href: `${ADMIN_BASE}/upload_mismatch`, label: "Upload Mismatched", Icon: Mismatch },
+      { href: `${ADMIN_BASE}/csv`, label: "Upload CSV Studies", Icon: CSVUploadIcon },
+    ],
+  },
+  {
+    key: "seamless",
+    title: "Seamless",
+    items: [
+      { href: `${ADMIN_BASE}/input_seamless`, label: "Seamless Input Codes", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/systems_seamless`, label: "Seamless Systems", Icon: AISystem },
+      { href: `${ADMIN_BASE}/attention_check_seamless`, label: "Upload Seamless Attention Check", Icon: AttentionCheck },
+      { href: `${ADMIN_BASE}/upload_seamless`, label: "Upload Seamless Videos", Icon: VideoUploadIcon },
+      { href: `${ADMIN_BASE}/csv_seamless`, label: "Upload Seamless CSV Studies", Icon: CSVUploadIcon },
+    ],
+  },
+  {
+    key: "speech-mismatch",
+    title: "Speech Mismatch",
+    items: [
+      { href: `${ADMIN_BASE}/input_seamless_speech`, label: "Speech Mismatch Input Codes", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/attention_check_seamless_speech`, label: "Upload Speech Mismatch Attention Check", Icon: AttentionCheck },
+      { href: `${ADMIN_BASE}/upload_seamless_speech`, label: "Upload Speech Mismatch Videos", Icon: VideoUploadIcon },
+      { href: `${ADMIN_BASE}/csv_seamless_speech`, label: "Upload Speech Mismatch CSV", Icon: CSVUploadIcon },
+    ],
+  },
+  {
+    key: "dyadic-mismatch",
+    title: "Dyadic Mismatch",
+    items: [
+      { href: `${ADMIN_BASE}/input_seamless_dyadic`, label: "Dyadic Mismatch Input Codes", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/attention_check_seamless_dyadic`, label: "Upload Dyadic Mismatch Attention Check", Icon: AttentionCheck },
+      { href: `${ADMIN_BASE}/upload_seamless_dyadic`, label: "Upload Dyadic Mismatch Videos", Icon: VideoUploadIcon },
+      { href: `${ADMIN_BASE}/csv_seamless_dyadic`, label: "Upload Dyadic Mismatch CSV", Icon: CSVUploadIcon },
+    ],
+  },
+  {
+    key: "semantic-mismatch",
+    title: "Semantic Mismatch",
+    items: [
+      { href: `${ADMIN_BASE}/input_seamless_semantic`, label: "Semantic Mismatch Input Codes", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/attention_check_seamless_semantic`, label: "Upload Semantic Mismatch Attention Check", Icon: AttentionCheck },
+      { href: `${ADMIN_BASE}/upload_seamless_semantic`, label: "Upload Semantic Mismatch Videos", Icon: VideoUploadIcon },
+      { href: `${ADMIN_BASE}/csv_seamless_semantic`, label: "Upload Semantic Mismatch CSV", Icon: CSVUploadIcon },
+    ],
+  },
+]
+
+function SidebarSection({ title, items, defaultOpen = true }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <>
+      <li className="mt-3">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="w-full flex items-center justify-between gap-2 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-gray-50"
+          aria-expanded={open}
+        >
+          <span>{title}</span>
+          <ArrowRightIcon
+            className={`h-3 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+          />
+        </button>
+      </li>
+      {open &&
+        items.map((it) => (
+          <li key={it.href} className="flex flex-col gap-1">
+            <Link className={LINK_CLASS} href={it.href}>
+              {it.Icon ? <it.Icon className="w-5" /> : null}
+              <span>{it.label}</span>
+            </Link>
+          </li>
+        ))}
+    </>
+  )
+}
+
+export default function AdminSidebar() {
+  const { menu } = useMenu()
   const sidebarRef = useRef(null)
   const containerRef = useRef(null)
-  const mounted = useMounted()
+  useMounted()
 
   useEffect(() => {
     if (menu) {
@@ -40,355 +136,24 @@ export default function AdminSidebar() {
     }
   }, [menu])
 
-  useEffect(() => {
-    const activeElement = sidebarRef.current?.querySelector("li.active")
-
-    if (activeElement && (window.innerWidth > 767 || menu)) {
-      const scroll = () => {
-        scrollIntoView(activeElement, {
-          block: "center",
-          inline: "center",
-          scrollMode: "always",
-          boundary: containerRef.current,
-        })
-      }
-      if (menu) {
-        // needs for mobile since menu has transition transform
-        setTimeout(scroll, 300)
-      } else {
-        scroll()
-      }
-    }
-  }, [menu])
-
-  const items = [
-    {
-      title: "Title",
-      type: "file",
-    },
-  ]
-  const anchors = [
-    {
-      value: "Thanh",
-      id: "item 1",
-    },
-    {
-      value: "Thanh",
-      id: "item 1",
-    },
-  ]
-
   return (
     <ActiveAnchorProvider>
-      {/* <OnFocusItemContext.Provider
-        value={(item) => {
-          setFocused(item)
-        }}
-      >
-        <File items={items} anchors={anchors} />
-      </OnFocusItemContext.Provider> */}
       <aside className="nextra-sidebar-container flex flex-col md:top-16 md:shrink-0 motion-reduce:transform-none transform-gpu transition-all ease-in-out print:hidden md:w-64 md:sticky md:self-start max-md:[transform:translate3d(0,-100%,0)]">
-        <div className="overflow-y-auto overflow-x-hidden p-4 grow md:h-[calc(100vh-var(--nextra-navbar-height)-var(--nextra-menu-height))] nextra-scrollbar">
+        <div ref={containerRef} className="overflow-y-auto overflow-x-hidden p-4 grow md:h-[calc(100vh-var(--nextra-navbar-height)-var(--nextra-menu-height))] nextra-scrollbar">
           <div className="transform-gpu overflow-hidden transition-all ease-in-out motion-reduce:transition-none">
             <div className="transition-opacity duration-500 ease-in-out motion-reduce:transition-none opacity-100">
-              <ul className="flex flex-col gap-1 nextra-menu-desktop max-md:hidden">
-                <li className="flex gap-1 justify-start px-2 py-1 items-center cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors  [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border"
-                    href="/getting-started"
-                  >
-                    <ArrowRightIcon className="inline h-5 shrink-0 ltr:rotate-180"></ArrowRightIcon>
-                    Back
-                  </Link>
-                </li>
-
-                {/* <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/rules"
-                  >
-                    Rules
-                  </Link>
-                </li> */}
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="flex rounded gap-2 items-center px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/home"
-                  >
-                    <HomeIcon className="w-5" />
-                    <span>Home</span>
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/storage"
-                  >
-                    <StorageIcon className="w-5" />
-                    Storage
-                  </Link>
-                </li>
-
-                <li className="mt-4 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
-                  BEAT2
-                </li>
-
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input"
-                  >
-                    <ComputerSetting className="w-5" />
-                    Input Codes
-                  </Link>
-                </li>
-
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/systems"
-                  >
-                    <AISystem className="w-5" />
-                    Systems
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="flex rounded gap-2 items-center px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/studies"
-                  >
-                    <UserStudy className="w-5" />
-                    Studies
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="flex rounded gap-2 items-center px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/videos"
-                  >
-                    <VideoIcon className="w-5" />
-                    Videos
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="flex rounded gap-2 items-center px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/participants"
-                  >
-                    <Participation className="w-5" />
-                    Prolific Participants
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="flex rounded gap-2 items-center px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check"
-                  >
-                    <AttentionCheck className="w-5" />
-                    Upload Attention Check
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_origin"
-                  >
-                    <VideoUploadIcon className="w-5" />
-                    Upload Origin Videos
-                  </Link>
-                </li>
-
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_mismatch"
-                  >
-                    {/* <VideoUploadIcon className="w-5" />
-                     */}
-                    <Mismatch className="w-5" />
-                    Upload Mismatched
-                  </Link>
-                </li>
-
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv"
-                  >
-                    <CSVUploadIcon className="w-5" />
-                    Upload CSV Studies
-                  </Link>
-                </li>
-
-                <li className="mt-4 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
-                  Seamless
-                </li>
-
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless"
-                  >
-                    <ComputerSetting className="w-5" />
-                    Seamless Input Codes
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/systems_seamless"
-                  >
-                    <AISystem className="w-5" />
-                    Seamless Systems
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless"
-                  >
-                    <AttentionCheck className="w-5" />
-                    Upload Seamless Attention Check
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless"
-                  >
-                    <VideoUploadIcon className="w-5" />
-                    Upload Seamless Videos
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] contrast-more:border text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50 contrast-more:text-gray-900 contrast-more:dark:text-gray-50 contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless"
-                  >
-                    <CSVUploadIcon className="w-5" />
-                    Upload Seamless CSV Studies
-                  </Link>
-                </li>
-
-                <li className="mt-3 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
-                  Speech Mismatch
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless_speech"
-                  >
-                    <ComputerSetting className="w-5" />
-                    Speech Mismatch Input Codes
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_speech"
-                  >
-                    <AttentionCheck className="w-5" />
-                    Upload Speech Mismatch Attention Check
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless_speech"
-                  >
-                    <VideoUploadIcon className="w-5" />
-                    Upload Speech Mismatch Videos
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless_speech"
-                  >
-                    <CSVUploadIcon className="w-5" />
-                    Upload Speech Mismatch CSV
-                  </Link>
-                </li>
-
-                <li className="mt-3 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
-                  Dyadic Mismatch
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless_dyadic"
-                  >
-                    <ComputerSetting className="w-5" />
-                    Dyadic Mismatch Input Codes
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_dyadic"
-                  >
-                    <AttentionCheck className="w-5" />
-                    Upload Dyadic Mismatch Attention Check
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless_dyadic"
-                  >
-                    <VideoUploadIcon className="w-5" />
-                    Upload Dyadic Mismatch Videos
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless_dyadic"
-                  >
-                    <CSVUploadIcon className="w-5" />
-                    Upload Dyadic Mismatch CSV
-                  </Link>
-                </li>
-
-                <li className="mt-3 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">
-                  Semantic Mismatch
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/input_seamless_semantic"
-                  >
-                    <ComputerSetting className="w-5" />
-                    Semantic Mismatch Input Codes
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/attention_check_seamless_semantic"
-                  >
-                    <AttentionCheck className="w-5" />
-                    Upload Semantic Mismatch Attention Check
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/upload_seamless_semantic"
-                  >
-                    <VideoUploadIcon className="w-5" />
-                    Upload Semantic Mismatch Videos
-                  </Link>
-                </li>
-                <li className="flex flex-col gap-1">
-                  <Link
-                    className="gap-2 flex rounded px-2 py-1.5 text-sm transition-colors cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50"
-                    href="/3016305937616653569333637041687329300459960027609473183645834287473477392975/csv_seamless_semantic"
-                  >
-                    <CSVUploadIcon className="w-5" />
-                    Upload Semantic Mismatch CSV
-                  </Link>
-                </li>
+              <ul ref={sidebarRef} className="flex flex-col gap-1 nextra-menu-desktop max-md:hidden">
+                {TOP_LINKS.map((it) => (
+                  <li key={it.href} className="flex flex-col gap-1">
+                    <Link className={LINK_CLASS} href={it.href}>
+                      {it.Icon ? <it.Icon className="w-5" /> : null}
+                      <span>{it.label}</span>
+                    </Link>
+                  </li>
+                ))}
+                {SECTIONS.map((s) => (
+                  <SidebarSection key={s.key} title={s.title} items={s.items} />
+                ))}
               </ul>
             </div>
           </div>
