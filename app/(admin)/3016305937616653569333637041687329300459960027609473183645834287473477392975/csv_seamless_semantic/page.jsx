@@ -22,6 +22,7 @@ export default function Page() {
   const [isValid, setIsValid] = useState(false)
   const [genState, setGenState] = useState({ type: "", msg: null })
   const [validState, setValidState] = useState({ type: "loading", msg: null })
+  const [includeAttentionChecks, setIncludeAttentionChecks] = useState(true)
 
   const { data: attentionCheckList } = useSWR(`/api/attention-check?category=${ATTENTION_CATEGORY}`, apiFetcherData, {
     revalidateIfStale: false,
@@ -108,7 +109,7 @@ export default function Page() {
 
       const videoOrigin = videos.filter((v) => v.type === VIDEO_TYPE_ORIGIN)
       const videoMismatch = videos.filter((v) => v.type === VIDEO_TYPE_MISMATCH)
-      const pageList = generateSeamlessSemanticMismatch(studiesCSV, videoOrigin, videoMismatch, studiesID, studyConfig, attentionCheckList)
+      const pageList = generateSeamlessSemanticMismatch(studiesCSV, videoOrigin, videoMismatch, studiesID, studyConfig, attentionCheckList, includeAttentionChecks)
 
       if (!pageList || pageList.length === 0) {
         setGenState({ type: "error", msg: "Failed to generate screen study" })
@@ -181,6 +182,15 @@ export default function Page() {
                   {validState.msg}
                 </Callout>
               )}
+
+              <label className="flex items-center justify-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={includeAttentionChecks}
+                  onChange={(e) => setIncludeAttentionChecks(e.target.checked)}
+                />
+                <span>Include attention checks{!includeAttentionChecks && " — disabled (study will have no attention-check pages)"}</span>
+              </label>
 
               <div className="flex flex-col gap-8 mt-4 items-center">
                 {isValid ? (

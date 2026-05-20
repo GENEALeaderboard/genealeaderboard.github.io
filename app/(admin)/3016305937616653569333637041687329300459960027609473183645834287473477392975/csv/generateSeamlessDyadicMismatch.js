@@ -1,13 +1,15 @@
 // TODO: confirm the attention-check filter for Seamless Dyadic Mismatch.
 // Currently mirrors generateMismatchSpeech.js (Audio|Text + Unmuted).
-export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList) {
+export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList, includeAttentionChecks = true) {
   let pageList = []
-  attentionCheckList = attentionCheckList.filter((item) => ["Audio", "Text"].includes(item.type) && item.volume === "Unmuted")
-  if (attentionCheckList.length < 4) {
-    throw new Error("Not enough unmuted attention check videos: Need at least 2 Audio and 2 Text.")
+  let attentionSubset = []
+  if (includeAttentionChecks) {
+    attentionCheckList = attentionCheckList.filter((item) => ["Audio", "Text"].includes(item.type) && item.volume === "Unmuted")
+    if (attentionCheckList.length < 4) {
+      throw new Error("Not enough unmuted attention check videos: Need at least 2 Audio and 2 Text.")
+    }
+    attentionSubset = attentionCheckList
   }
-
-  const attentionSubset = attentionCheckList
   const nCheck = attentionSubset.length
 
   studiesCSV.forEach((studyData, stdIndex) => {

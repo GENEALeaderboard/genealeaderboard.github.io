@@ -1,15 +1,18 @@
 import { N_ATTENTION_CHECK_PER_STUDY } from "@/config/constants"
 import { getRandomSubset } from "@/utils/randomSubset"
 
-export function generateSeamlessHumanlikeness(studiesCSV, videoSeamless, studiesID, studyConfig, attentionCheckList) {
+export function generateSeamlessHumanlikeness(studiesCSV, videoSeamless, studiesID, studyConfig, attentionCheckList, includeAttentionChecks = true) {
   const pageList = []
-  attentionCheckList = attentionCheckList.filter((item) => item.type === "Text" && item.volume === "Muted")
+  let attentionSubset = []
+  if (includeAttentionChecks) {
+    attentionCheckList = attentionCheckList.filter((item) => item.type === "Text" && item.volume === "Muted")
 
-  if (attentionCheckList.length < N_ATTENTION_CHECK_PER_STUDY) {
-    console.log("ERROR: not enough attention checks available. Minimum ", N_ATTENTION_CHECK_PER_STUDY, " is required, but we only have ", attentionCheckList.length)
-    return []
+    if (attentionCheckList.length < N_ATTENTION_CHECK_PER_STUDY) {
+      console.log("ERROR: not enough attention checks available. Minimum ", N_ATTENTION_CHECK_PER_STUDY, " is required, but we only have ", attentionCheckList.length)
+      return []
+    }
+    attentionSubset = getRandomSubset(attentionCheckList, N_ATTENTION_CHECK_PER_STUDY)
   }
-  const attentionSubset = getRandomSubset(attentionCheckList, N_ATTENTION_CHECK_PER_STUDY)
   const nCheck = attentionSubset.length
 
   studiesCSV.forEach((studyData, stdIndex) => {
