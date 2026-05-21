@@ -39,62 +39,68 @@ are the actual study-creation path triggered from the **Upload CSV** page; the
 calls above them are the one-time prerequisites (uploading videos, attention
 checks, input codes and systems).
 
-```mermaid
-flowchart TD
-  subgraph ADMIN["Admin site (genealeaderboard)"]
-    UP_V["Upload Videos page"]
-    UP_AC["Upload Attention Check page"]
-    UP_SETUP["Input Codes and Systems pages"]
-    CSV_VAL["Upload CSV page: Validate CSV"]
-    CSV_GEN["Upload CSV page: Generate Study"]
-    GENJS["generate*.js<br/>builds the page list in the browser"]
-  end
+```text
+PREREQUISITES  (one-time setup)
+==================================================================
 
-  subgraph UPLOADW["upload worker"]
-    R2[("R2 bucket 'genea'<br/>videos/...")]
-  end
+  Upload Videos page
+       |                                |
+       | (a) .mp4 file                  | (b) video metadata
+       v                                v
+  [upload worker]                   [geneaapi]
+   POST /upload/videos               POST /api/videos
+       |                                |
+       v                                v
+  (R2) genea : videos/...           (D1) videos          INSERT
 
-  subgraph GENEAAPI["geneaapi worker — admin API"]
-    EP_VID["POST /api/videos"]
-    EP_AC["POST /api/attention-check"]
-    EP_SETUP["PATCH /api/inputcode<br/>POST /api/systems"]
-    EP_VALIDATE["PATCH /api/{study-key}"]
-    EP_READ["GET /api/configs<br/>GET /api/videos<br/>GET /api/attention-check"]
-    EP_STUDIES["POST /api/studies"]
-    EP_PAGES["POST /api/pages"]
-  end
 
-  subgraph DB["D1 database (hemvip)"]
-    T_VID[("videos")]
-    T_AC[("attentioncheck")]
-    T_IC[("inputcode")]
-    T_SYS[("systems")]
-    T_CFG[("configs")]
-    T_STD[("studies")]
-    T_PG[("pages")]
-  end
+  Upload Attention Check page
+       |                                |
+       | (a) .mp4 file                  | (b) clip metadata
+       v                                v
+  [upload worker]                   [geneaapi]
+   POST /upload/attention-check      POST /api/attention-check
+       |                                |
+       v                                +--> (D1) videos         INSERT (type='check')
+  (R2) genea : videos/...               +--> (D1) attentioncheck  INSERT
 
-  %% Prerequisites
-  UP_V -->|"upload .mp4"| R2
-  UP_V --> EP_VID -->|"INSERT"| T_VID
-  UP_AC -->|"upload .mp4"| R2
-  UP_AC --> EP_AC
-  EP_AC -->|"INSERT"| T_AC
-  EP_AC -->|"INSERT"| T_VID
-  UP_SETUP --> EP_SETUP
-  EP_SETUP -->|"UPSERT"| T_IC
-  EP_SETUP -->|"INSERT"| T_SYS
 
-  %% Study creation
-  CSV_VAL -->|"step 1: validate CSV rows"| EP_VALIDATE
-  EP_VALIDATE -->|"SELECT"| T_VID
-  CSV_GEN -->|"step 2: read config + pools"| EP_READ
-  EP_READ -->|"SELECT"| T_CFG
-  EP_READ -->|"SELECT"| T_VID
-  EP_READ -->|"SELECT"| T_AC
-  CSV_GEN -->|"step 3: create study rows"| EP_STUDIES -->|"INSERT"| T_STD
-  CSV_GEN -->|"step 4: build pages"| GENJS
-  GENJS -->|"step 5: persist pages"| EP_PAGES -->|"INSERT"| T_PG
+  Input Codes / Systems pages
+       |
+       v
+  [geneaapi]  PATCH /api/inputcode  -->  (D1) inputcode   UPSERT
+              POST  /api/systems    -->  (D1) systems     INSERT
+
+
+CREATING THE STUDY  (Upload CSV page)
+==================================================================
+
+  step 1   Validate CSV
+           -->  [geneaapi]  PATCH /api/{study-key}
+                                -->  (D1) videos              SELECT
+
+  step 2   Generate Study : read inputs
+           -->  [geneaapi]  GET /api/configs  -->  (D1) configs  SELECT
+                            GET /api/videos   -->  (D1) videos   SELECT
+           (GET /api/attention-check already ran on page load
+                            -->  (D1) attentioncheck            SELECT)
+
+  step 3   -->  [geneaapi]  POST /api/studies -->  (D1) studies  INSERT
+                            (returns the new study IDs)
+
+  step 4   generate*.js   runs IN THE BROWSER
+           in  : CSV rows + config + videos + study IDs
+                 + attention-check list
+           out : the page list
+
+  step 5   -->  [geneaapi]  POST /api/pages   -->  (D1) pages    INSERT
+
+  ================================================================
+  Study is READY. Later served to Prolific participants by the
+  separate `api` worker:
+     POST /api/start-study   claim a 'new' study, mark it 'started'
+     GET  /api/study         return study + pages + videos
+     POST /api/finish-study  record the results
 ```
 
 Once `studies` and `pages` rows exist, the study is **ready**. It is then served
@@ -104,9 +110,11 @@ with its pages and videos, and `POST /api/finish-study` records the results.
 
 **Notes**
 
-- The rounded cylinders are D1 tables (and the R2 bucket); rectangles are pages or API endpoints.
-- `geneaapi` is the admin API worker — every `/api/*` call on this diagram hits it.
-- The per-page list is assembled **client-side** by the `generate*.js` files (one per study type), then persisted in a single `POST /api/pages`.
+- `[..]` is a Cloudflare Worker, `(D1) ..` a database table, `(R2) ..` the object-storage bucket.
+- There are **two** workers: the `upload` worker handles `/upload/*` (writes the `.mp4` to R2 only — it never touches D1), and the `geneaapi` worker handles every `/api/*` call (the D1 metadata writes/reads).
+- An upload page therefore makes **two** calls: first the file to the `upload` worker, then the metadata to `geneaapi`.
+- `GET /api/attention-check` runs when the Upload CSV page **loads** (via SWR), not on the "Generate Study" click — its result is held in the browser and fed into `generate*.js` at step 4.
+- The per-page list is assembled **client-side** by the `generate*.js` files (one per study type) — it needs the study IDs returned by `POST /api/studies` — then persisted in a single `POST /api/pages`.
 - Attention-check upload writes **two** tables: each clip becomes a `videos` row (`type='check'`) and clips are paired up in `attentioncheck`.
 
 
@@ -145,67 +153,3 @@ clip_name, system, mismatch_type, mismatch_data
 12_zhao_2_17_17_segment_2, BB, emotion, bored
 13_lu_2_13_13_segment_2, NA, emotion, happy
 ```
-
-Sample study screen
-
-<Image
-  src="/study_screen.png"
-  alt="study_screen"
-  width={0}
-  height={0}
-  sizes="100vw"
-  style={{ width: "100%", height: "auto" }}
-/>
-
-- You can visit `/study` to get information about each study screen.
-- You can visit `/user` to follow all user participation our study.
-
-### Recruit partipation on Prolific to study
-
-Each Prolific partipation will be study for
-
-<Image
-  src="/prolific.png"
-  alt="prolific"
-  width={0}
-  height={0}
-  sizes="100vw"
-  style={{ width: "100%", height: "auto" }}
-/>
-
-**When partipation study, we record all action and final result**
-
-**Selection Result**
-
-<Image
-  src="/selection_result.png"
-  alt="selection_result"
-  width={0}
-  height={0}
-  sizes="100vw"
-  style={{ width: "80%", height: "auto" }}
-/>
-
-**Actions Record**
-
-<Image
-  src="/actions_record.png"
-  alt="actions_record"
-  width={0}
-  height={0}
-  sizes="100vw"
-  style={{ width: "80%", height: "auto" }}
-/>
-
-### Evalution final result
-
-Sample evalution result
-
-<Image
-  src="/eval_result.png"
-  alt="eval_result"
-  width={0}
-  height={0}
-  sizes="100vw"
-  style={{ width: "80%", height: "auto" }}
-/>
