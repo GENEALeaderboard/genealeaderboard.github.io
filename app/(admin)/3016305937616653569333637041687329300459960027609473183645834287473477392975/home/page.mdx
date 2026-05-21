@@ -4,55 +4,113 @@ import AllStage from "@/components/AllStage"
 
 # Admin Home
 
-## System naming convention
+This is the admin website for the BEAT2 Leaderboard and the 2026 GENEA Challenge.
 
-- natural mocap data (ground truth): `NA`
-- submitted systems: `SA`, `SB`, ..., `SZ`
-- baseline systems: `BA`, `BB`, `BC`, ...
+The general workflow for running an evaluation is the following:
 
-## Filename format of test-set motion clips
+# 1. Set up input codes
+Input codes are the list of possible file names for evaluation videos. Every submission must contain an .mp4 file for each of these file names. 
 
-- 12_zhao_2_2_2_segment1_sample1
-- 12_zhao_2_17_17_segment_2_sample2
+# 2. Create systems
+To add a new system to the evaluation, you first need to a new entry to the `submission` database table, either through the public interface of this site, or by manually editing the database. (TODO: Make this more user friendly.)
 
-## Evaluation Process
+Afterwards, you can go to the `Systems` tab and create a new system for the evaluation. Each system has its own folder for storing videos.
 
-<AllStage style={{ width: "100%", height: "auto" }} />
+# 3. Upload videos
+The videos are stored in a different folder for each evaluation. 
 
-<Steps>
-### Download `submission_inputs.csv` file
+For the human-likeness user study, you only need to upload one set of videos with matched motion and audio. These are called `origin` videos in the database and in the code. 
 
-```text
-input_code, video_file
-234083450345, 234083450345.npy
-346643424234, 346643424234.npy
-443646423423, 443646423423.npy
+For the speech appropriateness user study, you need to upload one mismatched video for each origin video. 
+
+For the dyadic appropriateness user study, you need o upload both the matched and the mismatched versions. Currently,
+
+It will be the same for semantic appropriateness. 
+
+
+# 4. Upload attention check videos
+Every study needs to have attention check.
+
+# 5. Upload user-study specification
+Click "Upload CSV" and upload the csv files that specify your user study -- one csv file per participant.
+
+# Workflow: creating a user study
+
+The diagram below shows the API calls and database writes involved. Steps **1–5**
+are the actual study-creation path triggered from the **Upload CSV** page; the
+calls above them are the one-time prerequisites (uploading videos, attention
+checks, input codes and systems).
+
+```mermaid
+flowchart TD
+  subgraph ADMIN["Admin site (genealeaderboard)"]
+    UP_V["Upload Videos page"]
+    UP_AC["Upload Attention Check page"]
+    UP_SETUP["Input Codes and Systems pages"]
+    CSV_VAL["Upload CSV page: Validate CSV"]
+    CSV_GEN["Upload CSV page: Generate Study"]
+    GENJS["generate*.js<br/>builds the page list in the browser"]
+  end
+
+  subgraph UPLOADW["upload worker"]
+    R2[("R2 bucket 'genea'<br/>videos/...")]
+  end
+
+  subgraph GENEAAPI["geneaapi worker — admin API"]
+    EP_VID["POST /api/videos"]
+    EP_AC["POST /api/attention-check"]
+    EP_SETUP["PATCH /api/inputcode<br/>POST /api/systems"]
+    EP_VALIDATE["PATCH /api/{study-key}"]
+    EP_READ["GET /api/configs<br/>GET /api/videos<br/>GET /api/attention-check"]
+    EP_STUDIES["POST /api/studies"]
+    EP_PAGES["POST /api/pages"]
+  end
+
+  subgraph DB["D1 database (hemvip)"]
+    T_VID[("videos")]
+    T_AC[("attentioncheck")]
+    T_IC[("inputcode")]
+    T_SYS[("systems")]
+    T_CFG[("configs")]
+    T_STD[("studies")]
+    T_PG[("pages")]
+  end
+
+  %% Prerequisites
+  UP_V -->|"upload .mp4"| R2
+  UP_V --> EP_VID -->|"INSERT"| T_VID
+  UP_AC -->|"upload .mp4"| R2
+  UP_AC --> EP_AC
+  EP_AC -->|"INSERT"| T_AC
+  EP_AC -->|"INSERT"| T_VID
+  UP_SETUP --> EP_SETUP
+  EP_SETUP -->|"UPSERT"| T_IC
+  EP_SETUP -->|"INSERT"| T_SYS
+
+  %% Study creation
+  CSV_VAL -->|"step 1: validate CSV rows"| EP_VALIDATE
+  EP_VALIDATE -->|"SELECT"| T_VID
+  CSV_GEN -->|"step 2: read config + pools"| EP_READ
+  EP_READ -->|"SELECT"| T_CFG
+  EP_READ -->|"SELECT"| T_VID
+  EP_READ -->|"SELECT"| T_AC
+  CSV_GEN -->|"step 3: create study rows"| EP_STUDIES -->|"INSERT"| T_STD
+  CSV_GEN -->|"step 4: build pages"| GENJS
+  GENJS -->|"step 5: persist pages"| EP_PAGES -->|"INSERT"| T_PG
 ```
 
-### Run your model inference
+Once `studies` and `pages` rows exist, the study is **ready**. It is then served
+to Prolific participants by the separate `api` worker: `POST /api/start-study`
+claims a `new` study and marks it `started`, `GET /api/study` returns the study
+with its pages and videos, and `POST /api/finish-study` records the results.
 
-Run your model inference to get all video file output.
+**Notes**
 
-```text
-234083450345.npy
-346643424234.npy
-443646423423.npy
-```
+- The rounded cylinders are D1 tables (and the R2 bucket); rectangles are pages or API endpoints.
+- `geneaapi` is the admin API worker — every `/api/*` call on this diagram hits it.
+- The per-page list is assembled **client-side** by the `generate*.js` files (one per study type), then persisted in a single `POST /api/pages`.
+- Attention-check upload writes **two** tables: each clip becomes a `videos` row (`type='check'`) and clips are paired up in `attentioncheck`.
 
-### Submission your model `.npy` output
-
-Go to `/submission` and upload all video of your model
-
-### Convert & Split to Video
-
-We will convert all `.npy` file to `.npy` video and split to mutiple segment video.
-
-### Generate all study pairwise compare screen
-
-`emotion mismatching studies.csv`,
-`speech appropriateness studies.csv`,
-`pairwise emotion studies.csv`,
-`pairwise human-likeness studies.csv`
 
 #### Example csv structure for pairwise human-likeness studies
 
