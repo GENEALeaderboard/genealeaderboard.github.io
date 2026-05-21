@@ -39,69 +39,11 @@ are the actual study-creation path triggered from the **Upload CSV** page; the
 calls above them are the one-time prerequisites (uploading videos, attention
 checks, input codes and systems).
 
-```text
-PREREQUISITES  (one-time setup)
-==================================================================
-
-  Upload Videos page
-       |                                |
-       | (a) .mp4 file                  | (b) video metadata
-       v                                v
-  [upload worker]                   [geneaapi]
-   POST /upload/videos               POST /api/videos
-       |                                |
-       v                                v
-  (R2) genea : videos/...           (D1) videos          INSERT
-
-
-  Upload Attention Check page
-       |                                |
-       | (a) .mp4 file                  | (b) clip metadata
-       v                                v
-  [upload worker]                   [geneaapi]
-   POST /upload/attention-check      POST /api/attention-check
-       |                                |
-       v                                +--> (D1) videos         INSERT (type='check')
-  (R2) genea : videos/...               +--> (D1) attentioncheck  INSERT
-
-
-  Input Codes / Systems pages
-       |
-       v
-  [geneaapi]  PATCH /api/inputcode  -->  (D1) inputcode   UPSERT
-              POST  /api/systems    -->  (D1) systems     INSERT
-
-
-CREATING THE STUDY  (Upload CSV page)
-==================================================================
-
-  step 1   Validate CSV
-           -->  [geneaapi]  PATCH /api/{study-key}
-                                -->  (D1) videos              SELECT
-
-  step 2   Generate Study : read inputs
-           -->  [geneaapi]  GET /api/configs  -->  (D1) configs  SELECT
-                            GET /api/videos   -->  (D1) videos   SELECT
-           (GET /api/attention-check already ran on page load
-                            -->  (D1) attentioncheck            SELECT)
-
-  step 3   -->  [geneaapi]  POST /api/studies -->  (D1) studies  INSERT
-                            (returns the new study IDs)
-
-  step 4   generate*.js   runs IN THE BROWSER
-           in  : CSV rows + config + videos + study IDs
-                 + attention-check list
-           out : the page list
-
-  step 5   -->  [geneaapi]  POST /api/pages   -->  (D1) pages    INSERT
-
-  ================================================================
-  Study is READY. Later served to Prolific participants by the
-  separate `api` worker:
-     POST /api/start-study   claim a 'new' study, mark it 'started'
-     GET  /api/study         return study + pages + videos
-     POST /api/finish-study  record the results
-```
+<img
+  src="/genea/architecture.svg"
+  alt="Study creation data flow — prerequisites then the five-step Upload CSV sequence"
+  style={{ width: "100%", maxWidth: "720px", height: "auto", display: "block", margin: "1.5rem auto" }}
+/>
 
 Once `studies` and `pages` rows exist, the study is **ready**. It is then served
 to Prolific participants by the separate `api` worker: `POST /api/start-study`
@@ -110,7 +52,7 @@ with its pages and videos, and `POST /api/finish-study` records the results.
 
 **Notes**
 
-- `[..]` is a Cloudflare Worker, `(D1) ..` a database table, `(R2) ..` the object-storage bucket.
+- In the figure: **gray** = admin pages, **purple** = the upload worker / browser code, **teal** = `geneaapi` endpoints, **amber** = R2 storage, **blue** = D1 tables.
 - There are **two** workers: the `upload` worker handles `/upload/*` (writes the `.mp4` to R2 only — it never touches D1), and the `geneaapi` worker handles every `/api/*` call (the D1 metadata writes/reads).
 - An upload page therefore makes **two** calls: first the file to the `upload` worker, then the metadata to `geneaapi`.
 - `GET /api/attention-check` runs when the Upload CSV page **loads** (via SWR), not on the "Generate Study" click — its result is held in the browser and fed into `generate*.js` at step 4.
