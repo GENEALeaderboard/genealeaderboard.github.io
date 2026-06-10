@@ -1,7 +1,13 @@
-import { API_ENDPOINT } from "@/config/constants"
+import { API_ENDPOINT, UPLOAD_API_ENDPOINT } from "@/config/constants"
 
-export const apiFetcher = (...args) => 
+export const apiFetcher = (...args) =>
   fetch(...args, { credentials: "include" }).then((res) => res.json())
+
+// Fetches from the `upload` worker (R2 storage) rather than the `geneaapi` worker.
+export const uploadFetcherData = (endpoint) =>
+  fetch(`${UPLOAD_API_ENDPOINT}${endpoint}`, { credentials: "include" })
+    .then((res) => res.json())
+    .then((data) => data.data)
 
 export const apiFetcherData = (...args) => 
   fetch(`${API_ENDPOINT}${args[0]}`, {
