@@ -36,7 +36,7 @@ const TOP_LINKS = [
 const SECTIONS = [
   {
     key: "beat2",
-    title: "BEAT2",
+    title: "[BEAT2] All studies",
     items: [
       { href: `${ADMIN_BASE}/input`, label: "Input Codes", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/systems`, label: "Systems", Icon: AISystem },
@@ -51,7 +51,7 @@ const SECTIONS = [
   },
   {
     key: "seamless",
-    title: "Seamless",
+    title: "[SI] Realism",
     items: [
       { href: `${ADMIN_BASE}/input_seamless`, label: "Seamless Input Codes", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/systems_seamless`, label: "Seamless Systems", Icon: AISystem },
@@ -62,7 +62,7 @@ const SECTIONS = [
   },
   {
     key: "speech-mismatch",
-    title: "Speech Mismatch",
+    title: "[SI] Speech Mismatch",
     items: [
       { href: `${ADMIN_BASE}/input_seamless_speech`, label: "Speech Mismatch Input Codes", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/attention_check_seamless_speech`, label: "Upload Speech Mismatch Attention Check", Icon: AttentionCheck },
@@ -72,7 +72,7 @@ const SECTIONS = [
   },
   {
     key: "dyadic-mismatch",
-    title: "Dyadic Mismatch",
+    title: "[SI] Dyadic Mismatch",
     items: [
       { href: `${ADMIN_BASE}/input_seamless_dyadic`, label: "Dyadic Mismatch Input Codes", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/attention_check_seamless_dyadic`, label: "Upload Dyadic Mismatch Attention Check", Icon: AttentionCheck },
