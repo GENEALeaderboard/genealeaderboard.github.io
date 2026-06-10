@@ -82,7 +82,7 @@ const SECTIONS = [
   },
   {
     key: "semantic-mismatch",
-    title: "Semantic Mismatch",
+    title: "[SI] Semantic Mismatch",
     items: [
       { href: `${ADMIN_BASE}/input_seamless_semantic`, label: "Semantic Mismatch Input Codes", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/attention_check_seamless_semantic`, label: "Upload Semantic Mismatch Attention Check", Icon: AttentionCheck },
