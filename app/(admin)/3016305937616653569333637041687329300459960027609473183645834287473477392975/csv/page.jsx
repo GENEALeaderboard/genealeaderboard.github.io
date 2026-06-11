@@ -40,12 +40,21 @@ export default function Page() {
   const [validState, setValidState] = useState({ type: "loading", msg: null })
 
   // ******************************************************
+  // Attention checks live in a per-study category. Seamless studies each have
+  // their own pool; everything else uses "origin". Hardcoding "origin" here made
+  // seamless study generation report "no attention checks".
+  const SEAMLESS_ATTENTION_CATEGORY = {
+    seamlessHumanLikeness: "seamless-origin-humanlikeness",
+    seamlessSpeechMismatch: "seamless-speech-mismatch",
+    seamlessDyadicMismatch: "seamless-dyadic-mismatch",
+    seamlessSemanticMismatch: "seamless-semantic-mismatch",
+  }
+  const attentionCategory = SEAMLESS_ATTENTION_CATEGORY[keyStd] || "origin"
   const {
     data: attentionCheckList,
     error: isError,
     isLoading,
-  } = useSWR("/api/attention-check?category=origin", apiFetcherData, {
-    revalidateIfStale: false,
+  } = useSWR(`/api/attention-check?category=${attentionCategory}`, apiFetcherData, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })

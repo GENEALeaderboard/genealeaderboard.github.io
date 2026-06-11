@@ -23,8 +23,9 @@ export default function Page() {
   const [validState, setValidState] = useState({ type: "loading", msg: null })
   const [includeAttentionChecks, setIncludeAttentionChecks] = useState(true)
 
+  // Revalidate on mount so attention checks uploaded just before generating are
+  // picked up (otherwise a stale empty cache makes generation report "no checks").
   const { data: attentionCheckList } = useSWR(`/api/attention-check?category=${ATTENTION_CATEGORY}`, apiFetcherData, {
-    revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })

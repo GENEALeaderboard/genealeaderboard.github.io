@@ -24,12 +24,16 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
   const pageList = []
   let attentionSubset = []
   if (includeAttentionChecks) {
+    const total = Array.isArray(attentionCheckList) ? attentionCheckList.length : 0
     // Text-based semantic checks carry their own expected + distractor descriptions.
-    attentionCheckList = attentionCheckList.filter((item) => item.correct_text && item.distractor_text)
-    if (attentionCheckList.length < 1) {
-      throw new Error("No semantic attention checks found. Upload at least one (video + expected text + distractor text).")
+    attentionSubset = (attentionCheckList || []).filter((item) => item.correct_text && item.distractor_text)
+    if (attentionSubset.length < 1) {
+      throw new Error(
+        total > 0
+          ? `Found ${total} attention-check row(s), but none have expected/distractor text. The attentioncheck.correct_text/distractor_text columns are likely missing from D1 — apply the migration and re-upload the checks.`
+          : "No semantic attention checks found for this study. Upload at least one (video + expected text + distractor text)."
+      )
     }
-    attentionSubset = attentionCheckList
   }
   const nCheck = attentionSubset.length
 
