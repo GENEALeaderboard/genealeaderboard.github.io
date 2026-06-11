@@ -59,6 +59,7 @@ const SECTIONS = [
       { href: `${ADMIN_BASE}/attention_check_seamless`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless`, label: "Upload study csv files", Icon: CSVUploadIcon },
+      { href: `${ADMIN_BASE}/storage_seamless`, label: "Storage", Icon: StorageIcon },
     ],
   },
   {
@@ -69,6 +70,7 @@ const SECTIONS = [
       { href: `${ADMIN_BASE}/attention_check_seamless_speech`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless_speech`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless_speech`, label: "Upload study csv files", Icon: CSVUploadIcon },
+      { href: `${ADMIN_BASE}/storage_seamless_speech`, label: "Storage", Icon: StorageIcon },
     ],
   },
   {
@@ -79,6 +81,7 @@ const SECTIONS = [
       { href: `${ADMIN_BASE}/attention_check_seamless_dyadic`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless_dyadic`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless_dyadic`, label: "Upload study csv files", Icon: CSVUploadIcon },
+      { href: `${ADMIN_BASE}/storage_seamless_dyadic`, label: "Storage", Icon: StorageIcon },
     ],
   },
   {
@@ -89,6 +92,7 @@ const SECTIONS = [
       { href: `${ADMIN_BASE}/attention_check_seamless_semantic`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless_semantic`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless_semantic`, label: "Upload study csv files", Icon: CSVUploadIcon },
+      { href: `${ADMIN_BASE}/storage_seamless_semantic`, label: "Storage", Icon: StorageIcon },
     ],
   },
 ]
