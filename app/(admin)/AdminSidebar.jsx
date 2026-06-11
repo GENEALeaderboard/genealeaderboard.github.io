@@ -30,6 +30,7 @@ const TOP_LINKS = [
   { href: "/getting-started", label: "Back", Icon: (props) => <ArrowRightIcon {...props} className={`${props.className || ""} ltr:rotate-180`} /> },
   { href: `${ADMIN_BASE}/home`, label: "Home", Icon: HomeIcon },
   { href: `${ADMIN_BASE}/storage`, label: "Storage", Icon: StorageIcon },
+  { href: `${ADMIN_BASE}/systems_seamless_all`, label: "Seamless Systems", Icon: AISystem },
 ]
 
 // Collapsible sections. Each entry: { key, title, items: [{href, label, Icon}] }
@@ -54,7 +55,7 @@ const SECTIONS = [
     title: "[SI] Realism",
     items: [
       { href: `${ADMIN_BASE}/input_seamless`, label: "Seamless Input Codes", Icon: ComputerSetting },
-      { href: `${ADMIN_BASE}/systems_seamless`, label: "Seamless Systems", Icon: AISystem },
+      // { href: `${ADMIN_BASE}/systems_seamless`, label: "Seamless Systems", Icon: AISystem },
       { href: `${ADMIN_BASE}/attention_check_seamless`, label: "Upload Seamless Attention Check", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless`, label: "Upload Seamless Videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless`, label: "Upload Seamless CSV Studies", Icon: CSVUploadIcon },
