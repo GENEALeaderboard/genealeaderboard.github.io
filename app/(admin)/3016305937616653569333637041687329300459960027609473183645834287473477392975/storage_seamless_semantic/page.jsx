@@ -7,10 +7,9 @@ export default function Page() {
   return (
     <SeamlessStorage
       title="Storage · Seamless Semantic Mismatch"
-      description="Videos in R2 used by the Seamless Semantic Mismatch study (matched and mismatched sides)."
+      description="Videos and their .txt text descriptions for the Seamless Semantic Mismatch study. There is no separate mismatched video pool — the correct and mismatched descriptions live in the study CSV."
       folders={[
-        { label: "Origin", folder: "seamless-semantic-origin" },
-        { label: "Mismatch", folder: "seamless-semantic-mismatch" },
+        { label: "Videos & text descriptions", folder: "seamless-semantic-origin" },
         { label: "Attention check", folder: "attentioncheck/seamless-semantic-mismatch" },
       ]}
     />

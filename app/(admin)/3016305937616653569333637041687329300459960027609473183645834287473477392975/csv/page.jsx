@@ -153,7 +153,7 @@ export default function Page() {
         return
       }
 
-      const pageList = []
+      let pageList = []
       const videoOrigins = videos.filter((video) => video.type === "origin")
 
       switch (studyKey) {
@@ -192,9 +192,10 @@ export default function Page() {
           break
         }
         case "seamless-semantic-mismatch": {
-          const videoSemanticOrigin = videos.filter((v) => v.type === "seamless-semantic-origin")
-          const videoSemanticMismatch = videos.filter((v) => v.type === "seamless-semantic-mismatch")
-          pageList = generateSeamlessSemanticMismatch(studiesCSV, videoSemanticOrigin, videoSemanticMismatch, studiesID, studyConfig, attentionCheckList)
+          // Single video pool. The correct description comes from each video's .txt
+          // (fetched inside the generator); the CSV supplies the mismatched text.
+          const videoSemantic = videos.filter((v) => v.type === "seamless-semantic-origin")
+          pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, studiesID, studyConfig, attentionCheckList)
           break
         }
         default:

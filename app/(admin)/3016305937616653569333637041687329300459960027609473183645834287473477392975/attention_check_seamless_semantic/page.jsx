@@ -1,6 +1,6 @@
 "use client"
 
-import UploadAttetionCheck from "../attention_check/UploadAttentionCheck"
+import UploadSemanticAttentionCheck from "./UploadSemanticAttentionCheck"
 
 const CATEGORY = "seamless-semantic-mismatch"
 
@@ -11,18 +11,14 @@ export default function Page() {
         Seamless Semantic Mismatch Attention Check Videos
       </h2>
       <p className="mt-3 text-sm text-gray-500">
-        Attention checks for the <code>{CATEGORY}</code> pool. File naming convention is the same as origin.
+        Attention checks for the <code>{CATEGORY}</code> pool. Each check is one video shown with two descriptions — the
+        <strong> expected</strong> (correct) one and a <strong>distractor</strong>. At study generation the two are shown in random
+        left/right order and the rater must select the expected one. Upload one check at a time.
       </p>
-      <ul className="mt-6 list-disc first:mt-0 ltr:ml-6 rtl:mr-6">
-        <li className="my-2"><code>LeftClearlyBetter_Type_Volume</code> | <code>LeftSlightlyBetter_Type_Volume</code> | <code>TheyAreEqual_Type_Volume</code> | <code>RightSlightlyBetter_Type_Volume</code> | <code>RightClearlyBetter_Type_Volume</code></li>
-        <li className="my-2"><code>Reference</code></li>
-        <li className="my-2"><code>Type = Audio or Text</code></li>
-        <li className="my-2"><code>Volume = Muted or Unmuted</code></li>
-      </ul>
 
-      <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Upload Seamless Semantic Mismatch Attention Check Video</h4>
+      <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Upload Seamless Semantic Mismatch Attention Check</h4>
       <div className="mt-6 mb-32">
-        <UploadAttetionCheck category={CATEGORY} />
+        <UploadSemanticAttentionCheck category={CATEGORY} />
       </div>
     </>
   )

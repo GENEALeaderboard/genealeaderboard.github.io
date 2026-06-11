@@ -13,8 +13,7 @@ import { generateSeamlessSemanticMismatch } from "../csv/generateSeamlessSemanti
 
 const STUDY_KEY = "seamless-semantic-mismatch"
 const ATTENTION_CATEGORY = "seamless-semantic-mismatch"
-const VIDEO_TYPE_ORIGIN = "seamless-semantic-origin"
-const VIDEO_TYPE_MISMATCH = "seamless-semantic-mismatch"
+const VIDEO_TYPE = "seamless-semantic-origin"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -107,9 +106,8 @@ export default function Page() {
         return
       }
 
-      const videoOrigin = videos.filter((v) => v.type === VIDEO_TYPE_ORIGIN)
-      const videoMismatch = videos.filter((v) => v.type === VIDEO_TYPE_MISMATCH)
-      const pageList = generateSeamlessSemanticMismatch(studiesCSV, videoOrigin, videoMismatch, studiesID, studyConfig, attentionCheckList, includeAttentionChecks)
+      const videoSemantic = videos.filter((v) => v.type === VIDEO_TYPE)
+      const pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, studiesID, studyConfig, attentionCheckList, includeAttentionChecks)
 
       if (!pageList || pageList.length === 0) {
         setGenState({ type: "error", msg: "Failed to generate screen study" })
@@ -163,7 +161,7 @@ export default function Page() {
         Upload Seamless Semantic Mismatch CSV Studies
       </h2>
       <p className="mt-3 text-sm text-gray-500">
-        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip_origin, system, clip_mismatch]</code>. Origin videos: <code>{VIDEO_TYPE_ORIGIN}</code>; mismatch: <code>{VIDEO_TYPE_MISMATCH}</code>.
+        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[model, clip_name, mismatched_text]</code>. Each page shows one video from <code>{VIDEO_TYPE}</code> with two descriptions: the correct one from the video&apos;s uploaded <code>.txt</code> and the mismatched one from the CSV.
       </p>
 
       <div className="mt-6 mb-32">

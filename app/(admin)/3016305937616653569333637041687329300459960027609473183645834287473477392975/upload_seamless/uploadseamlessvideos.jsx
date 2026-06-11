@@ -12,7 +12,7 @@ import { apiPost } from "@/utils/fetcher"
 
 const DEFAULT_VIDEO_TYPE = "seamless-origin-humanlikeness"
 
-export default function UploadSeamlessVideos({ systems, videosLoading, videoType }) {
+export default function UploadSeamlessVideos({ systems, videosLoading, videoType, allowText = false }) {
   const VIDEO_TYPE = videoType || DEFAULT_VIDEO_TYPE
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
@@ -27,13 +27,15 @@ export default function UploadSeamlessVideos({ systems, videosLoading, videoType
     setValidMsg("")
     setUploading("")
 
-    for (let mp4File of acceptedFiles) {
-      if (!mp4File.name.endsWith(".mp4")) {
-        setValidMsg("Please upload only .mp4 files")
+    for (let droppedFile of acceptedFiles) {
+      const isMp4 = droppedFile.name.toLowerCase().endsWith(".mp4")
+      const isTxt = droppedFile.name.toLowerCase().endsWith(".txt")
+      if (!isMp4 && !(allowText && isTxt)) {
+        setValidMsg(allowText ? "Please upload only .mp4 or .txt files" : "Please upload only .mp4 files")
         return
       }
 
-      if (mp4File.size > 100 * 1024 * 1024) {
+      if (droppedFile.size > 100 * 1024 * 1024) {
         setValidMsg("File size is too large, please upload file less than 100MB")
         return
       }
@@ -53,7 +55,7 @@ export default function UploadSeamlessVideos({ systems, videosLoading, videoType
     }))
     setPreviews(selectedFiles)
     setUploading("")
-  }, [])
+  }, [allowText])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
@@ -138,17 +140,28 @@ export default function UploadSeamlessVideos({ systems, videosLoading, videoType
           setUploadState({ type: "error", message: reponse.msg })
           return
         }
-        videoMeta.push({ path, inputcode, url })
+        // Only .mp4 files become `videos` rows; .txt descriptions are stored in
+        // R2 only (the CSV is the source of truth for the text shown to raters).
+        const isVideo = files[index].name.toLowerCase().endsWith(".mp4")
+        videoMeta.push({ path, inputcode, url, isVideo })
       }
 
-      const videoDatas = videoMeta.map((meta) => ({
-        inputcode: meta.inputcode,
-        systemname: systems[selectedIndex].name,
-        path: meta.path,
-        url: meta.url,
-        systemid: systems[selectedIndex].id,
-        type: VIDEO_TYPE,
-      }))
+      const videoDatas = videoMeta
+        .filter((meta) => meta.isVideo)
+        .map((meta) => ({
+          inputcode: meta.inputcode,
+          systemname: systems[selectedIndex].name,
+          path: meta.path,
+          url: meta.url,
+          systemid: systems[selectedIndex].id,
+          type: VIDEO_TYPE,
+        }))
+
+      if (videoDatas.length === 0) {
+        // Text-only upload: nothing to record in the videos table.
+        setUploadState({ type: "info", message: "Text description files uploaded successfully." })
+        return
+      }
 
       setUploading("Uploading your videos to database, please waiting ...")
       const resInsert = await apiPost("/api/videos", { videos: videoDatas })
@@ -249,15 +262,21 @@ export default function UploadSeamlessVideos({ systems, videosLoading, videoType
           style={{ border: "2px dashed #666666" }}
           className="w-full p-4 cursor-pointer rounded-lg min-h-36 flex flex-col items-center justify-center text-center appearance-none border border-[#666666] bg-white text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
         >
-          <input id="upload" {...getInputProps()} accept="video/*" />
+          <input id="upload" {...getInputProps()} accept={allowText ? "video/*,.txt,text/plain" : "video/*"} />
           {previews.length > 0 && (
             <ul className="w-full flex flex-wrap gap-2 justify-center">
               {previews.map(({ file, url }, index) => (
                 <li title={file.name} key={index} className="min-w-24 max-w-40 flex flex-col justify-center items-center gap-1 p-2 border rounded-md border-black">
-                  <video title={file.name} width={200} height={80} controls>
-                    <source src={url} type={file.type} />
-                    Your browser does not support the video tag.
-                  </video>
+                  {file.name.toLowerCase().endsWith(".txt") ? (
+                    <div title={file.name} className="flex h-20 w-full items-center justify-center text-3xl">
+                      📄
+                    </div>
+                  ) : (
+                    <video title={file.name} width={200} height={80} controls>
+                      <source src={url} type={file.type} />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
                   <p title={file.name} className="w-32 overflow-hidden text-ellipsis whitespace-nowrap">
                     {file.name}
                   </p>
@@ -265,7 +284,11 @@ export default function UploadSeamlessVideos({ systems, videosLoading, videoType
               ))}
             </ul>
           )}
-          {isDragActive ? <p>Drop the files here...</p> : <p>Drag and drop some files here, or click to select files</p>}
+          {isDragActive ? (
+            <p>Drop the files here...</p>
+          ) : (
+            <p>Drag and drop some files here, or click to select files{allowText ? " (.mp4 videos and .txt descriptions)" : ""}</p>
+          )}
         </div>
       </div>
 
