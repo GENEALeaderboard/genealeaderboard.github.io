@@ -62,3 +62,13 @@ export const apiPost = (endpoint, data, ...args) =>
     credentials: "include",
     ...args,
   }).then((res) => res.json())
+
+export const apiDelete = (endpoint, data) =>
+  fetch(`${API_ENDPOINT}${endpoint}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+    credentials: "include",
+  }).then((res) => res.json())

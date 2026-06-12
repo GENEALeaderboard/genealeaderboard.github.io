@@ -130,81 +130,48 @@ export default function Page() {
         return
       }
 
-      const studies = csvList.map((item) => {
-        return {
-          status: "new",
-          name: studyConfig.name,
-          time_start: new Date(),
-          type: studyKey,
-          global_actions: JSON.stringify([]),
-          file_created: item.filename,
-          prolific_sessionid: "",
-          prolific_studyid: "",
-          prolific_userid: "",
-          completion_code: studyConfig.completion_code,
-          fail_code: studyConfig.fail_code,
-        }
-      })
-      console.log("studies", studies)
-
-      const respStudies = await apiPost(`/api/studies`, { studies: studies })
-      if (!respStudies.success) {
-        console.log("respStudies", respStudies)
-        setGenState({ type: "error", msg: respStudies.msg })
-        return
-      }
-
-      const studiesID = respStudies.data
       const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
-      if (studiesCSV.length !== studiesID.length) {
-        console.log("studiesCSV", studiesCSV, "studiesID", studiesID)
-        setGenState({ type: "error", msg: "Studies result not match" })
-        return
-      }
+      const videoOrigins = videos.filter((video) => video.type === "origin")
+      // Use array indices as temporary study IDs; real IDs are patched in after
+      // study insertion so that a generation failure never touches the DB.
+      const tempIds = studiesCSV.map((_, i) => i)
 
       let pageList = []
-      const videoOrigins = videos.filter((video) => video.type === "origin")
-
       switch (studyKey) {
         case "pairwise-humanlikeness":
-          console.log("generatePairwiseHumanlikness")
-          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, studiesID, studyConfig, attentionCheckList)
+          pageList = generatePairwiseHumanlikness(studiesCSV, videoOrigins, tempIds, studyConfig, attentionCheckList)
           break
         case "pairwise-emotion":
-          console.log("generatePairwiseEmotion")
-          pageList = generatePairwiseEmotion(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          pageList = generatePairwiseEmotion(studiesCSV, videos, tempIds, studyConfig, attentionCheckList)
           break
-        case "mismatch-speech":
-          console.log("generateMismatchSpeech")
+        case "mismatch-speech": {
           const videoMismatch = videos.filter((video) => video.type === "mismatch-speech")
-          pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList)
+          pageList = generateMismatchSpeech(studiesCSV, videoOrigins, videoMismatch, tempIds, studyConfig, attentionCheckList)
           break
+        }
         case "mismatch-emotion":
-          console.log("generateMismatchEmotion")
-          pageList = generateMismatchEmotion(studiesCSV, videos, studiesID, studyConfig, attentionCheckList)
+          pageList = generateMismatchEmotion(studiesCSV, videos, tempIds, studyConfig, attentionCheckList)
           break
-        case "seamless-humanlikeness":
-          console.log("generateSeamlessHumanlikeness")
+        case "seamless-humanlikeness": {
           const videoSeamless = videos.filter((video) => video.type === "seamless-origin-humanlikeness")
-          pageList = generateSeamlessHumanlikeness(studiesCSV, videoSeamless, studiesID, studyConfig, attentionCheckList)
+          pageList = generateSeamlessHumanlikeness(studiesCSV, videoSeamless, tempIds, studyConfig, attentionCheckList)
           break
+        }
         case "seamless-speech-mismatch": {
           const videoSeamlessSpeechOrigin = videos.filter((v) => v.type === "seamless-origin-humanlikeness")
           const videoSeamlessSpeechMismatch = videos.filter((v) => v.type === "seamless-speech-mismatch")
-          pageList = generateSeamlessSpeechMismatch(studiesCSV, videoSeamlessSpeechOrigin, videoSeamlessSpeechMismatch, studiesID, studyConfig, attentionCheckList)
+          pageList = generateSeamlessSpeechMismatch(studiesCSV, videoSeamlessSpeechOrigin, videoSeamlessSpeechMismatch, tempIds, studyConfig, attentionCheckList)
           break
         }
         case "seamless-dyadic-mismatch": {
           const videoDyadicOrigin = videos.filter((v) => v.type === "seamless-dyadic-origin")
           const videoDyadicMismatch = videos.filter((v) => v.type === "seamless-dyadic-mismatch")
-          pageList = generateSeamlessDyadicMismatch(studiesCSV, videoDyadicOrigin, videoDyadicMismatch, studiesID, studyConfig, attentionCheckList)
+          pageList = generateSeamlessDyadicMismatch(studiesCSV, videoDyadicOrigin, videoDyadicMismatch, tempIds, studyConfig, attentionCheckList)
           break
         }
         case "seamless-semantic-mismatch": {
-          // Single video pool. The correct description comes from each video's .txt
-          // (fetched inside the generator); the CSV supplies the mismatched text.
           const videoSemantic = videos.filter((v) => v.type === "seamless-semantic-origin")
-          pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, studiesID, studyConfig, attentionCheckList)
+          pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, tempIds, studyConfig, attentionCheckList)
           break
         }
         default:
@@ -212,19 +179,45 @@ export default function Page() {
       }
 
       if (!pageList || pageList.length === 0) {
-        console.log("pageList", pageList)
         setGenState({ type: "error", msg: "Failed to generate screen study" })
         return
       }
-      const respPages = await apiPost(`/api/pages`, { pages: pageList })
 
-      if (!respPages.success) {
-        console.log("respPages", respPages)
-        setGenState({ type: "error", msg: respPages.msg })
+      // Generation succeeded — now persist studies and get real IDs.
+      const studies = csvList.map((item) => ({
+        status: "new",
+        name: studyConfig.name,
+        time_start: new Date(),
+        type: studyKey,
+        global_actions: JSON.stringify([]),
+        file_created: item.filename,
+        prolific_sessionid: "",
+        prolific_studyid: "",
+        prolific_userid: "",
+        completion_code: studyConfig.completion_code,
+        fail_code: studyConfig.fail_code,
+      }))
+
+      const respStudies = await apiPost(`/api/studies`, { studies })
+      if (!respStudies.success) {
+        setGenState({ type: "error", msg: respStudies.msg })
         return
       }
 
-      console.log("respPages", respPages)
+      const studiesID = respStudies.data
+      if (studiesCSV.length !== studiesID.length) {
+        setGenState({ type: "error", msg: "Studies result not match" })
+        return
+      }
+
+      // Swap temp indices for real DB IDs before inserting pages.
+      const patchedPageList = pageList.map((page) => ({ ...page, studyid: studiesID[page.studyid] }))
+
+      const respPages = await apiPost(`/api/pages`, { pages: patchedPageList })
+      if (!respPages.success) {
+        setGenState({ type: "error", msg: respPages.msg })
+        return
+      }
 
       setGenState({ type: "info", msg: respPages.msg })
     } catch (error) {

@@ -80,6 +80,20 @@ export default function Page() {
         return
       }
 
+      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
+      const videoSemantic = videos.filter((v) => v.type === VIDEO_TYPE)
+
+      // Generate pages first using array indices as temporary study IDs.
+      // If this throws (bad .txt, missing video, etc.) nothing has been written to the DB.
+      const tempIds = studiesCSV.map((_, i) => i)
+      const pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, tempIds, studyConfig, attentionCheckList, includeAttentionChecks)
+
+      if (!pageList || pageList.length === 0) {
+        setGenState({ type: "error", msg: "Failed to generate screen study" })
+        return
+      }
+
+      // Generation succeeded — now persist the studies and get real IDs.
       const studies = csvList.map((item) => ({
         status: "new",
         name: studyConfig.name,
@@ -101,21 +115,15 @@ export default function Page() {
       }
 
       const studiesID = respStudies.data
-      const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
       if (studiesCSV.length !== studiesID.length) {
         setGenState({ type: "error", msg: "Studies result not match" })
         return
       }
 
-      const videoSemantic = videos.filter((v) => v.type === VIDEO_TYPE)
-      const pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, studiesID, studyConfig, attentionCheckList, includeAttentionChecks)
+      // Swap temp indices for real DB IDs before inserting pages.
+      const patchedPageList = pageList.map((page) => ({ ...page, studyid: studiesID[page.studyid] }))
 
-      if (!pageList || pageList.length === 0) {
-        setGenState({ type: "error", msg: "Failed to generate screen study" })
-        return
-      }
-
-      const respPages = await apiPost(`/api/pages`, { pages: pageList })
+      const respPages = await apiPost(`/api/pages`, { pages: patchedPageList })
       if (!respPages.success) {
         setGenState({ type: "error", msg: respPages.msg })
         return
