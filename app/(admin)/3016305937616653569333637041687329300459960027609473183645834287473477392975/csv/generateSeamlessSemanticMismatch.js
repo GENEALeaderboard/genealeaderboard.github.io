@@ -12,7 +12,15 @@ async function fetchCorrectText(systemname, inputcode) {
   if (!res.ok || !json || !json.success || !json.data || typeof json.data.text !== "string") {
     throw new Error(`Missing text description (${key}). Upload a .txt for system ${systemname}, segment ${inputcode}.`)
   }
-  return json.data.text.trim()
+  const text = json.data.text.trim()
+  const lines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 0)
+  if (lines.length !== 1) {
+    throw new Error(
+      `Text description for system ${systemname}, segment ${inputcode} must be a single line but contains ${lines.length} line(s). ` +
+      `Found:\n${text}\n\nPlease re-upload a corrected .txt file with exactly one line of text.`
+    )
+  }
+  return lines[0]
 }
 
 // Semantic mismatch: one video per page, shown with two text descriptions — the
