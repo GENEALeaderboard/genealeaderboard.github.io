@@ -158,8 +158,8 @@ export default function Page() {
           break
         }
         case "seamless-speech-mismatch": {
-          const videoSeamlessSpeechOrigin = videos.filter((v) => v.type === "seamless-origin-humanlikeness")
-          const videoSeamlessSpeechMismatch = videos.filter((v) => v.type === "seamless-speech-mismatch")
+          const videoSeamlessSpeechOrigin = videos.filter((v) => v.type === "seamless-speech-mismatch/matched")
+          const videoSeamlessSpeechMismatch = videos.filter((v) => v.type === "seamless-speech-mismatch/mismatched")
           pageList = generateSeamlessSpeechMismatch(studiesCSV, videoSeamlessSpeechOrigin, videoSeamlessSpeechMismatch, tempIds, studyConfig, attentionCheckList)
           break
         }

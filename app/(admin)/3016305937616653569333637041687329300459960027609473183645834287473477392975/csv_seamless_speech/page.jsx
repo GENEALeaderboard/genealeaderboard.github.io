@@ -13,8 +13,9 @@ import { generateSeamlessSpeechMismatch } from "../csv/generateSeamlessSpeechMis
 
 const STUDY_KEY = "seamless-speech-mismatch"
 const ATTENTION_CATEGORY = "seamless-speech-mismatch"
-const VIDEO_TYPE_ORIGIN = "seamless-origin-humanlikeness"
-const VIDEO_TYPE_MISMATCH = "seamless-speech-mismatch"
+// Dedicated speech-mismatch video pools (no longer reuses the realism origin pool).
+const VIDEO_TYPE_ORIGIN = "seamless-speech-mismatch/matched"
+const VIDEO_TYPE_MISMATCH = "seamless-speech-mismatch/mismatched"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
