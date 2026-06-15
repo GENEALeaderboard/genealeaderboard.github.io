@@ -18,26 +18,28 @@ export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMi
     let attentionCheckIdx = 0
     const totalPageIdx = studyData.length + nCheck
     studyData.forEach((row, rowIndex) => {
-      const inputcode1 = String(row[0]).replace(/\s+/g, "")
+      // CSV columns: [clip, system]. Matched and mismatched videos share the same
+      // filename (one per input code), so a single code resolves both sides — the
+      // matched clip from videoOrigins, the mismatched clip from videoMismatch.
+      const inputcode = String(row[0]).replace(/\s+/g, "")
       const systemname = String(row[1]).replace(/\s+/g, "")
-      const inputcode2 = String(row[2]).replace(/\s+/g, "")
 
-      let sysA, sysB, videoFilteredA, videoFilteredB, videoA, videoB
+      const matchedVideo = Array.from(videoOrigins).find((v) => v.inputcode === inputcode && v.systemname === systemname)
+      const mismatchedVideo = Array.from(videoMismatch).find((v) => v.inputcode === inputcode && v.systemname === systemname)
 
+      let sysA, sysB, videoA, videoB
       if (Math.random() < 0.5) {
+        // Matched on the left
         sysA = systemname
         sysB = systemname + "_Mismatched"
-        videoFilteredA = Array.from(videoOrigins).filter((v) => v.inputcode === inputcode1 && v.systemname === systemname)
-        videoFilteredB = Array.from(videoMismatch).filter((v) => v.inputcode === inputcode2 && v.systemname === systemname)
-        videoA = videoFilteredA[0]
-        videoB = videoFilteredB[0]
+        videoA = matchedVideo
+        videoB = mismatchedVideo
       } else {
+        // Matched on the right
         sysA = systemname + "_Mismatched"
         sysB = systemname
-        videoFilteredA = Array.from(videoMismatch).filter((v) => v.inputcode === inputcode1 && v.systemname === systemname)
-        videoFilteredB = Array.from(videoOrigins).filter((v) => v.inputcode === inputcode2 && v.systemname === systemname)
-        videoA = videoFilteredA[0]
-        videoB = videoFilteredB[0]
+        videoA = mismatchedVideo
+        videoB = matchedVideo
       }
 
       if (!videoA || !videoB) {

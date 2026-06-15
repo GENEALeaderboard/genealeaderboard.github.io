@@ -13,8 +13,9 @@ import { generateSeamlessDyadicMismatch } from "../csv/generateSeamlessDyadicMis
 
 const STUDY_KEY = "seamless-dyadic-mismatch"
 const ATTENTION_CATEGORY = "seamless-dyadic-mismatch"
-const VIDEO_TYPE_ORIGIN = "seamless-dyadic-origin"
-const VIDEO_TYPE_MISMATCH = "seamless-dyadic-mismatch"
+// Dedicated dyadic-mismatch video pools (matched and mismatched share filenames).
+const VIDEO_TYPE_ORIGIN = "seamless-dyadic-mismatch/matched"
+const VIDEO_TYPE_MISMATCH = "seamless-dyadic-mismatch/mismatched"
 
 export default function Page() {
   const [csvList, setCsvList] = useState([])
@@ -163,7 +164,7 @@ export default function Page() {
         Upload Seamless Dyadic Mismatch CSV Studies
       </h2>
       <p className="mt-3 text-sm text-gray-500">
-        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip_origin, system, clip_mismatch]</code>. Origin videos: <code>{VIDEO_TYPE_ORIGIN}</code>; mismatch: <code>{VIDEO_TYPE_MISMATCH}</code>.
+        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip, system]</code>. Each clip code resolves to a matched video from <code>{VIDEO_TYPE_ORIGIN}</code> and a mismatched video from <code>{VIDEO_TYPE_MISMATCH}</code> (same filename in both).
       </p>
 
       <div className="mt-6 mb-32">

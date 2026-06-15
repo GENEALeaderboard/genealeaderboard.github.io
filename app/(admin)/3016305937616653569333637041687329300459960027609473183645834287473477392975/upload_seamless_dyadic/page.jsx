@@ -9,9 +9,11 @@ import CircleLoading from "@/icons/circleloading"
 // All four seamless studies share one systems pool, registered under
 // the seamless-origin-humanlikeness category.
 const SYSTEMS_CATEGORY = "seamless-origin-humanlikeness"
+// Dedicated dyadic pools. Matched and mismatched videos share filenames (one per
+// input code) and live in sibling R2 folders under videos/seamless-dyadic-mismatch/.
 const POOLS = [
-  { value: "seamless-dyadic-origin", label: "Origin (seamless-dyadic-origin)" },
-  { value: "seamless-dyadic-mismatch", label: "Mismatch (seamless-dyadic-mismatch)" },
+  { value: "seamless-dyadic-mismatch/matched", label: "Matched" },
+  { value: "seamless-dyadic-mismatch/mismatched", label: "Mismatched" },
 ]
 
 export default function Page() {

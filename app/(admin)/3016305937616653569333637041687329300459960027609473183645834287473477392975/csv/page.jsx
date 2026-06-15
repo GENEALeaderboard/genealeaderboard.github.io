@@ -164,8 +164,8 @@ export default function Page() {
           break
         }
         case "seamless-dyadic-mismatch": {
-          const videoDyadicOrigin = videos.filter((v) => v.type === "seamless-dyadic-origin")
-          const videoDyadicMismatch = videos.filter((v) => v.type === "seamless-dyadic-mismatch")
+          const videoDyadicOrigin = videos.filter((v) => v.type === "seamless-dyadic-mismatch/matched")
+          const videoDyadicMismatch = videos.filter((v) => v.type === "seamless-dyadic-mismatch/mismatched")
           pageList = generateSeamlessDyadicMismatch(studiesCSV, videoDyadicOrigin, videoDyadicMismatch, tempIds, studyConfig, attentionCheckList)
           break
         }

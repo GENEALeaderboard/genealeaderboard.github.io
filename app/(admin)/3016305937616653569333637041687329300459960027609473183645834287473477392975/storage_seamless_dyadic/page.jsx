@@ -9,8 +9,8 @@ export default function Page() {
       title="Storage · Seamless Dyadic Mismatch"
       description="Videos in R2 used by the Seamless Dyadic Mismatch study (matched and mismatched sides)."
       folders={[
-        { label: "Origin", folder: "seamless-dyadic-origin" },
-        { label: "Mismatch", folder: "seamless-dyadic-mismatch" },
+        { label: "Matched", folder: "seamless-dyadic-mismatch/matched" },
+        { label: "Mismatched", folder: "seamless-dyadic-mismatch/mismatched" },
         { label: "Attention check", folder: "attentioncheck/seamless-dyadic-mismatch" },
       ]}
     />

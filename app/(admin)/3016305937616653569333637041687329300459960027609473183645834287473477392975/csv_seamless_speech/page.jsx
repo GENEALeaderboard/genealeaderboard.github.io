@@ -164,7 +164,7 @@ export default function Page() {
         Upload Seamless Speech Mismatch CSV Studies
       </h2>
       <p className="mt-3 text-sm text-gray-500">
-        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip_origin, system, clip_mismatch]</code>. Origin videos are pulled from <code>{VIDEO_TYPE_ORIGIN}</code>; mismatch videos from <code>{VIDEO_TYPE_MISMATCH}</code>.
+        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip, system]</code>. Each clip code resolves to a matched video from <code>{VIDEO_TYPE_ORIGIN}</code> and a mismatched video from <code>{VIDEO_TYPE_MISMATCH}</code> (same filename in both).
       </p>
 
       <div className="mt-6 mb-32">

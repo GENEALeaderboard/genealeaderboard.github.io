@@ -84,7 +84,7 @@ function TreeNode({ node, depth }) {
 }
 
 // Renders a collapsible file tree from a flat list of R2 objects ({ key, size, uploaded }).
-// `stripPrefix` removes a leading path (e.g. "videos/seamless-dyadic-origin/") from each
+// `stripPrefix` removes a leading path (e.g. "videos/seamless-dyadic-mismatch/matched/") from each
 // key before building the tree, so the tree roots at the meaningful folders.
 export default function StorageTree({ objects, stripPrefix = "", emptyLabel = "No files found." }) {
   const tree = useMemo(() => {
