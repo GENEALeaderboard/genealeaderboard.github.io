@@ -9,9 +9,15 @@ export const uploadFetcherData = (endpoint) =>
     .then((res) => res.json())
     .then((data) => data.data)
 
-export const apiFetcherData = (...args) => 
-  fetch(`${API_ENDPOINT}${args[0]}`, {
-    credentials: "include" }, ...args).then((res) => res.json().then((data) => data.data))
+export const apiFetcherData = (endpoint) =>
+  fetch(`${API_ENDPOINT}${endpoint}`, { credentials: "include" }).then((res) => {
+    if (!res.ok) {
+      const err = new Error(`Request to ${endpoint} failed with status ${res.status}`)
+      err.status = res.status
+      throw err
+    }
+    return res.json().then((data) => data.data)
+  })
 
 // export const apiFetcher = (endpoint, options = {}) => 
 //   fetch(`${API_ENDPOINT}${args[0]}`, { 

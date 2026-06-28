@@ -14,9 +14,10 @@ export default function Page() {
     error,
     isLoading: loading,
   } = useSWR(`/api/inputcode?type=${INPUTCODE_TYPE}`, apiFetcherData, {
-    revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    shouldRetryOnError: true,
+    errorRetryCount: 3,
   })
   const [inputCodes, setInputCodes] = useState("")
   const [state, setState] = useState({ type: "", message: null })
@@ -43,6 +44,14 @@ export default function Page() {
     return <Loading></Loading>
   }
 
+  if (error) {
+    return (
+      <Callout type="error">
+        Failed to load input codes{error.status ? ` (status ${error.status})` : ""}. Please refresh to try again.
+      </Callout>
+    )
+  }
+
   if (state.message) {
     return <Callout type={state.type}>{state.message}</Callout>
   }
@@ -60,21 +69,21 @@ export default function Page() {
           Update Database
         </button>
       </div>
-      {inputCodes && (
-        <div className="flex flex-row items-center gap-4">
-          <label htmlFor="codes" className="flex justify-end w-[15%]">
-            Inputs Codes
-          </label>
-          <textarea
-            className="flex-grow min-w-0 appearance-none rounded-md border border-[#666666] bg-white px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
-            id="codes"
-            rows="7"
-            name="codes"
-            value={inputCodes}
-            onChange={(e) => setInputCodes(e.target.value)}
-          />
-        </div>
-      )}
+      {!inputCodes && <Callout type="warning">No input codes yet — add them below and click Update Database.</Callout>}
+
+      <div className="flex flex-row items-center gap-4">
+        <label htmlFor="codes" className="flex justify-end w-[15%]">
+          Inputs Codes
+        </label>
+        <textarea
+          className="flex-grow min-w-0 appearance-none rounded-md border border-[#666666] bg-white px-4 py-2 text-base text-gray-900 placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:border-[#888888] dark:bg-transparent dark:text-white dark:focus:border-white sm:text-sm"
+          id="codes"
+          rows="7"
+          name="codes"
+          value={inputCodes}
+          onChange={(e) => setInputCodes(e.target.value)}
+        />
+      </div>
     </div>
   )
 }
