@@ -29,7 +29,11 @@ export default function Page() {
   }, [codes])
 
   const handleChangeCodes = async () => {
-    const codeList = inputCodes.replace(/\n/g, "")
+    const codeList = inputCodes
+      .split(/[\n,]+/)
+      .map((c) => c.trim())
+      .filter(Boolean)
+      .join(",")
     const res = await apiPatch("/api/inputcode", { codes: codeList, type: INPUTCODE_TYPE })
 
     if (res.success) {
