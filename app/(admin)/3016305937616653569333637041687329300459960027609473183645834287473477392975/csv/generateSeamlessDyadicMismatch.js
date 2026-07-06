@@ -1,6 +1,12 @@
 // TODO: confirm the attention-check filter for Seamless Dyadic Mismatch.
 // Currently mirrors generateMismatchSpeech.js (Audio|Text + Unmuted).
-export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList, includeAttentionChecks = true) {
+import { buildPairMap, normalizeCode } from "./pairsLookup"
+
+export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMismatch, studiesID, studyConfig, attentionCheckList, pairs, includeAttentionChecks = true) {
+  const pairMap = buildPairMap(pairs)
+  if (pairMap.size === 0) {
+    throw new Error("No matched/mismatched input-code pairs found. Upload the pairs list before generating the study.")
+  }
   let pageList = []
   let attentionSubset = []
   if (includeAttentionChecks) {
@@ -18,14 +24,20 @@ export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMi
     let attentionCheckIdx = 0
     const totalPageIdx = studyData.length + nCheck
     studyData.forEach((row, rowIndex) => {
-      // CSV columns: [clip, system]. Matched and mismatched videos share the same
-      // filename (one per input code), so a single code resolves both sides — the
-      // matched clip from videoOrigins, the mismatched clip from videoMismatch.
-      const inputcode = String(row[0]).replace(/\s+/g, "")
+      // CSV columns: [clip, system]. The clip is the MATCHED code; its mismatched
+      // partner has a different filename, resolved through the 1:1, system-
+      // independent pairs map. The matched clip comes from videoOrigins, the
+      // mismatched clip (keyed by the partner code) from videoMismatch.
+      const inputcode = normalizeCode(row[0])
       const systemname = String(row[1]).replace(/\s+/g, "")
 
-      const matchedVideo = Array.from(videoOrigins).find((v) => v.inputcode === inputcode && v.systemname === systemname)
-      const mismatchedVideo = Array.from(videoMismatch).find((v) => v.inputcode === inputcode && v.systemname === systemname)
+      const mismatchedCode = pairMap.get(inputcode)
+      if (!mismatchedCode) {
+        throw new Error(`Matched code '${inputcode}' (line ${rowIndex + 1}) has no mismatched pair. Update the pairs list.`)
+      }
+
+      const matchedVideo = Array.from(videoOrigins).find((v) => normalizeCode(v.inputcode) === inputcode && v.systemname === systemname)
+      const mismatchedVideo = Array.from(videoMismatch).find((v) => normalizeCode(v.inputcode) === mismatchedCode && v.systemname === systemname)
 
       let sysA, sysB, videoA, videoB
       if (Math.random() < 0.5) {
@@ -43,8 +55,9 @@ export function generateSeamlessDyadicMismatch(studiesCSV, videoOrigins, videoMi
       }
 
       if (!videoA || !videoB) {
-        console.log("videoA", videoA, "videoB", videoB)
-        return []
+        throw new Error(
+          `Missing video for system '${systemname}' on line ${rowIndex + 1}: matched '${inputcode}' or mismatched '${mismatchedCode}' not found in the uploaded pools.`
+        )
       }
 
       pageList.push({

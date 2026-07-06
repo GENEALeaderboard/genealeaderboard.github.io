@@ -81,6 +81,12 @@ export default function Page() {
         return
       }
 
+      const pairs = await apiFetcherData(`/api/inputcode-pairs?type=${STUDY_KEY}`)
+      if (!pairs || pairs.length === 0) {
+        setGenState({ type: "error", msg: "Matched/mismatched input-code pairs not found. Upload the pairs list first." })
+        return
+      }
+
       const studies = csvList.map((item) => ({
         status: "new",
         name: studyConfig.name,
@@ -110,7 +116,7 @@ export default function Page() {
 
       const videoOrigin = videos.filter((v) => v.type === VIDEO_TYPE_ORIGIN)
       const videoMismatch = videos.filter((v) => v.type === VIDEO_TYPE_MISMATCH)
-      const pageList = generateSeamlessDyadicMismatch(studiesCSV, videoOrigin, videoMismatch, studiesID, studyConfig, attentionCheckList, includeAttentionChecks)
+      const pageList = generateSeamlessDyadicMismatch(studiesCSV, videoOrigin, videoMismatch, studiesID, studyConfig, attentionCheckList, pairs, includeAttentionChecks)
 
       if (!pageList || pageList.length === 0) {
         setGenState({ type: "error", msg: "Failed to generate screen study" })
@@ -164,7 +170,7 @@ export default function Page() {
         Upload Seamless Dyadic Mismatch CSV Studies
       </h2>
       <p className="mt-3 text-sm text-gray-500">
-        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip, system]</code>. Each clip code resolves to a matched video from <code>{VIDEO_TYPE_ORIGIN}</code> and a mismatched video from <code>{VIDEO_TYPE_MISMATCH}</code> (same filename in both).
+        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[clip, system]</code>. The clip is the matched code, resolving a video from <code>{VIDEO_TYPE_ORIGIN}</code>; its mismatched partner is looked up from the uploaded pairs list and resolves a video from <code>{VIDEO_TYPE_MISMATCH}</code>.
       </p>
 
       <div className="mt-6 mb-32">
