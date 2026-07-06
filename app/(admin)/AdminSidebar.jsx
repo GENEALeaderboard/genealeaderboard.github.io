@@ -67,6 +67,7 @@ const SECTIONS = [
     title: "[SI] Speech Mismatch",
     items: [
       { href: `${ADMIN_BASE}/input_seamless_speech`, label: "Segment filenames", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/input_seamless_speech_pairs`, label: "Matched/mismatched pairs", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/attention_check_seamless_speech`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless_speech`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless_speech`, label: "Upload study csv files", Icon: CSVUploadIcon },
@@ -78,6 +79,7 @@ const SECTIONS = [
     title: "[SI] Dyadic Mismatch",
     items: [
       { href: `${ADMIN_BASE}/input_seamless_dyadic`, label: "Segment filenames", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/input_seamless_dyadic_pairs`, label: "Matched/mismatched pairs", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/attention_check_seamless_dyadic`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless_dyadic`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless_dyadic`, label: "Upload study csv files", Icon: CSVUploadIcon },
