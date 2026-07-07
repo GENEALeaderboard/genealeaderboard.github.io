@@ -160,18 +160,21 @@ export default function Page() {
         case "seamless-speech-mismatch": {
           const videoSeamlessSpeechOrigin = videos.filter((v) => v.type === "seamless-speech-mismatch/matched")
           const videoSeamlessSpeechMismatch = videos.filter((v) => v.type === "seamless-speech-mismatch/mismatched")
-          pageList = generateSeamlessSpeechMismatch(studiesCSV, videoSeamlessSpeechOrigin, videoSeamlessSpeechMismatch, tempIds, studyConfig, attentionCheckList)
+          const pairs = await apiFetcherData(`/api/inputcode-pairs?type=${studyKey}`)
+          pageList = generateSeamlessSpeechMismatch(studiesCSV, videoSeamlessSpeechOrigin, videoSeamlessSpeechMismatch, tempIds, studyConfig, attentionCheckList, pairs)
           break
         }
         case "seamless-dyadic-mismatch": {
           const videoDyadicOrigin = videos.filter((v) => v.type === "seamless-dyadic-mismatch/matched")
           const videoDyadicMismatch = videos.filter((v) => v.type === "seamless-dyadic-mismatch/mismatched")
-          pageList = generateSeamlessDyadicMismatch(studiesCSV, videoDyadicOrigin, videoDyadicMismatch, tempIds, studyConfig, attentionCheckList)
+          const pairs = await apiFetcherData(`/api/inputcode-pairs?type=${studyKey}`)
+          pageList = generateSeamlessDyadicMismatch(studiesCSV, videoDyadicOrigin, videoDyadicMismatch, tempIds, studyConfig, attentionCheckList, pairs)
           break
         }
         case "seamless-semantic-mismatch": {
           const videoSemantic = videos.filter((v) => v.type === "seamless-semantic-origin")
-          pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, tempIds, studyConfig, attentionCheckList)
+          const pairs = await apiFetcherData(`/api/inputcode-pairs?type=${studyKey}`)
+          pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, tempIds, studyConfig, attentionCheckList, pairs)
           break
         }
         default:

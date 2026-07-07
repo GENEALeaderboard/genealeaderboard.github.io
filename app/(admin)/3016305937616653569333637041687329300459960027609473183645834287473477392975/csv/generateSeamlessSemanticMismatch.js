@@ -1,34 +1,49 @@
 import { UPLOAD_API_ENDPOINT } from "@/config/constants"
+import { buildPairMap, normalizeCode } from "./pairsLookup"
 
 const VIDEO_TYPE = "seamless-semantic-origin"
 
-// The correct text description for a video lives in a .txt next to it in R2,
-// at a deterministic key. We read it through the upload worker (which sets the
-// right CORS headers) rather than hitting the public R2 URL directly.
-async function fetchCorrectText(systemname, inputcode) {
-  const key = `videos/${VIDEO_TYPE}/${systemname}/${inputcode}.txt`
+// The correct-text descriptions are system-independent (one per input code) and
+// uploaded on the Input Codes page, so they live in a shared `_texts` folder in
+// R2 keyed by input code. Read through the upload worker (correct CORS headers)
+// rather than hitting the public R2 URL directly. Results are cached per input
+// code so a code shared across systems is only fetched once.
+const correctTextCache = new Map()
+
+async function fetchCorrectText(inputcode) {
+  if (correctTextCache.has(inputcode)) return correctTextCache.get(inputcode)
+
+  const key = `videos/${VIDEO_TYPE}/_texts/${inputcode}.txt`
   const res = await fetch(`${UPLOAD_API_ENDPOINT}/api/text?key=${encodeURIComponent(key)}`, { credentials: "include" })
   const json = await res.json().catch(() => null)
   if (!res.ok || !json || !json.success || !json.data || typeof json.data.text !== "string") {
-    throw new Error(`Missing text description (${key}). Upload a .txt for system ${systemname}, segment ${inputcode}.`)
+    throw new Error(`Missing text description for input code '${inputcode}'. Upload its .txt on the Input Codes page.`)
   }
   const text = json.data.text.trim()
   const lines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 0)
   if (lines.length !== 1) {
     throw new Error(
-      `Text description for system ${systemname}, segment ${inputcode} must be a single line but contains ${lines.length} line(s). ` +
+      `Text description for input code '${inputcode}' must be a single line but contains ${lines.length} line(s). ` +
       `Found:\n${text}\n\nPlease re-upload a corrected .txt file with exactly one line of text.`
     )
   }
+  correctTextCache.set(inputcode, lines[0])
   return lines[0]
 }
 
 // Semantic mismatch: one video per page, shown with two text descriptions — the
-// correct one (from the video's .txt) and the mismatched one (from the CSV). The
-// rater picks which description matches; `expected_vote` marks the correct side.
+// correct one (the clip's own .txt) and a distractor. The distractor is the text
+// description of the clip's paired code, from the matched-mismatched pairs list
+// (uploaded on the Descriptions & pairs page). The rater picks which description
+// matches; `expected_vote` marks the correct side.
 //
-// CSV columns: [model, clip_name (inputcode), mismatched_text].
-export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, studiesID, studyConfig, attentionCheckList, includeAttentionChecks = true) {
+// CSV columns: [model, clip_name (inputcode)]. The mismatched/distractor clip is
+// resolved from the pairs map, not the CSV.
+export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, studiesID, studyConfig, attentionCheckList, pairs, includeAttentionChecks = true) {
+  const pairMap = buildPairMap(pairs)
+  if (pairMap.size === 0) {
+    throw new Error("No matched/mismatched pairs found. Upload the pairs list on the Descriptions & pairs page before generating the study.")
+  }
   const pageList = []
   let attentionSubset = []
   if (includeAttentionChecks) {
@@ -55,15 +70,21 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
     for (let rowIndex = 0; rowIndex < studyData.length; rowIndex++) {
       const row = studyData[rowIndex]
       const systemname = String(row[0]).replace(/\s+/g, "")
-      const inputcode = String(row[1]).replace(/\s+/g, "")
-      const mismatchedText = String(row[2] ?? "").trim()
+      const inputcode = normalizeCode(row[1])
 
-      const video = Array.from(videoSemantic).find((v) => v.inputcode === inputcode && v.systemname === systemname)
+      const mismatchedCode = pairMap.get(inputcode)
+      if (!mismatchedCode) {
+        throw new Error(`Clip '${inputcode}' (line ${rowIndex + 1}) has no mismatched pair. Update the pairs list.`)
+      }
+
+      const video = Array.from(videoSemantic).find((v) => normalizeCode(v.inputcode) === inputcode && v.systemname === systemname)
       if (!video) {
         throw new Error(`No video found for system ${systemname}, segment ${inputcode} (line ${rowIndex + 1}).`)
       }
 
-      const correctText = await fetchCorrectText(systemname, inputcode)
+      // Correct = the clip's own description; distractor = the paired clip's description.
+      const correctText = await fetchCorrectText(inputcode)
+      const mismatchedText = await fetchCorrectText(mismatchedCode)
 
       // Randomize which side holds the correct description.
       const correctOnLeft = Math.random() < 0.5

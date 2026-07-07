@@ -91,6 +91,7 @@ const SECTIONS = [
     title: "[SI] Semantic Mismatch",
     items: [
       { href: `${ADMIN_BASE}/input_seamless_semantic`, label: "Segment filenames", Icon: ComputerSetting },
+      { href: `${ADMIN_BASE}/input_seamless_semantic_pairs`, label: "Descriptions & pairs", Icon: ComputerSetting },
       { href: `${ADMIN_BASE}/attention_check_seamless_semantic`, label: "Upload attention check videos", Icon: AttentionCheck },
       { href: `${ADMIN_BASE}/upload_seamless_semantic`, label: "Upload videos", Icon: VideoUploadIcon },
       { href: `${ADMIN_BASE}/csv_seamless_semantic`, label: "Upload study csv files", Icon: CSVUploadIcon },

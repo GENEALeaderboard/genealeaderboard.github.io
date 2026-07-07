@@ -80,13 +80,19 @@ export default function Page() {
         return
       }
 
+      const pairs = await apiFetcherData(`/api/inputcode-pairs?type=${STUDY_KEY}`)
+      if (!pairs || pairs.length === 0) {
+        setGenState({ type: "error", msg: "Matched/mismatched pairs not found. Upload the pairs list on the Descriptions & pairs page first." })
+        return
+      }
+
       const studiesCSV = Array.from(csvList).map((csv) => csv.data.slice(1))
       const videoSemantic = videos.filter((v) => v.type === VIDEO_TYPE)
 
       // Generate pages first using array indices as temporary study IDs.
       // If this throws (bad .txt, missing video, etc.) nothing has been written to the DB.
       const tempIds = studiesCSV.map((_, i) => i)
-      const pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, tempIds, studyConfig, attentionCheckList, includeAttentionChecks)
+      const pageList = await generateSeamlessSemanticMismatch(studiesCSV, videoSemantic, tempIds, studyConfig, attentionCheckList, pairs, includeAttentionChecks)
 
       if (!pageList || pageList.length === 0) {
         setGenState({ type: "error", msg: "Failed to generate screen study" })
@@ -170,7 +176,7 @@ export default function Page() {
         Upload Seamless Semantic Mismatch CSV Studies
       </h2>
       <p className="mt-3 text-sm text-gray-500">
-        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[model, clip_name, mismatched_text]</code>. Each page shows one video from <code>{VIDEO_TYPE}</code> with two descriptions: the correct one from the video&apos;s uploaded <code>.txt</code> and the mismatched one from the CSV.
+        Study type is fixed to <code>{STUDY_KEY}</code>. CSV columns: <code>[model, clip_name]</code>. Each page shows one video from <code>{VIDEO_TYPE}</code> with two descriptions: the correct one is the clip&apos;s own <code>.txt</code>, and the distractor is the paired clip&apos;s <code>.txt</code> (from the matched/mismatched pairs list). Both are managed on the <strong>Descriptions &amp; pairs</strong> page.
       </p>
 
       <div className="mt-6 mb-32">

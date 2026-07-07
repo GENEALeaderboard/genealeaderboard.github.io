@@ -7,10 +7,15 @@ import { apiFetcherData, apiPatch } from "@/utils/fetcher"
 import { Callout } from "@/nextra"
 
 // Admin editor for matched-mismatched input-code pairs of a mismatching-seamless
-// study (dyadic or speech). Pairs are uploaded as a text file — one
-// "(matched, mismatched)" per line — or pasted/edited directly. On save the
-// geneaapi endpoint validates every code against its video pool before storing.
-export default function InputCodePairs({ type, title, description }) {
+// study. Pairs are uploaded as a text file — one pair per line — or pasted/edited
+// directly. On save the geneaapi endpoint validates every code before storing.
+//
+// Two conventions, selected with `positional`:
+//   - suffix (dyadic/speech, default): the mismatched clip is the one ending in
+//     "_M"; order on the line does not matter.
+//   - positional (semantic): the first code is matched, the second is the
+//     mismatched/distractor clip.
+export default function InputCodePairs({ type, title, description, positional = false }) {
   const {
     data: pairs,
     isLoading: loading,
@@ -48,13 +53,23 @@ export default function InputCodePairs({ type, title, description }) {
     <div className="flex flex-col gap-3">
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{title}</h1>
       <p className="text-sm text-gray-500">{description}</p>
-      <p className="text-sm text-gray-500">
-        Upload a text file with one pair per line, each with two codes (e.g.{" "}
-        <code>(clip, clip_M)</code>). Order does not matter — the code ending in{" "}
-        <code>_M</code> is treated as the mismatched clip and the other as the matched
-        clip. Exactly one code per line must end with <code>_M</code>. Every code is
-        validated against the database before saving.
-      </p>
+      {positional ? (
+        <p className="text-sm text-gray-500">
+          Upload a text file with one pair per line, each with two codes (e.g.{" "}
+          <code>(matched_clip, mismatched_clip)</code>). Order matters — the first code is the
+          matched clip (its own description is the correct answer) and the second is the
+          mismatched clip (its description is shown as the distractor). Every code is validated
+          against the database before saving.
+        </p>
+      ) : (
+        <p className="text-sm text-gray-500">
+          Upload a text file with one pair per line, each with two codes (e.g.{" "}
+          <code>(clip, clip_M)</code>). Order does not matter — the code ending in{" "}
+          <code>_M</code> is treated as the mismatched clip and the other as the matched
+          clip. Exactly one code per line must end with <code>_M</code>. Every code is
+          validated against the database before saving.
+        </p>
+      )}
 
       <div className="mt-3 flex gap-3 justify-center items-center">
         <input ref={fileRef} type="file" accept=".txt,text/plain" onChange={handleFile} className="text-sm" />
@@ -73,7 +88,7 @@ export default function InputCodePairs({ type, title, description }) {
           id="pairs"
           rows="10"
           name="pairs"
-          placeholder={"(clip_1, clip_1_M)\n(clip_2, clip_2_M)"}
+          placeholder={positional ? "(matched_1, mismatched_1)\n(matched_2, mismatched_2)" : "(clip_1, clip_1_M)\n(clip_2, clip_2_M)"}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
