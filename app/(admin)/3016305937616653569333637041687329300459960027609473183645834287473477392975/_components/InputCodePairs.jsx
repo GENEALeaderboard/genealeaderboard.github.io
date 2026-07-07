@@ -49,8 +49,11 @@ export default function InputCodePairs({ type, title, description }) {
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{title}</h1>
       <p className="text-sm text-gray-500">{description}</p>
       <p className="text-sm text-gray-500">
-        Upload a text file with one pair per line, in the form{" "}
-        <code>(matched, mismatched)</code>. Every code is validated against the database before saving.
+        Upload a text file with one pair per line, each with two codes (e.g.{" "}
+        <code>(clip, clip_M)</code>). Order does not matter — the code ending in{" "}
+        <code>_M</code> is treated as the mismatched clip and the other as the matched
+        clip. Exactly one code per line must end with <code>_M</code>. Every code is
+        validated against the database before saving.
       </p>
 
       <div className="mt-3 flex gap-3 justify-center items-center">
@@ -70,7 +73,7 @@ export default function InputCodePairs({ type, title, description }) {
           id="pairs"
           rows="10"
           name="pairs"
-          placeholder={"(matched_1, mismatched_1)\n(matched_2, mismatched_2)"}
+          placeholder={"(clip_1, clip_1_M)\n(clip_2, clip_2_M)"}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
