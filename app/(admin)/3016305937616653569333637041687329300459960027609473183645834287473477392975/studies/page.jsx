@@ -22,11 +22,13 @@ export default function Page() {
   const [disabling, setDisabling] = useState(false)
   const [disableMsg, setDisableMsg] = useState(null)
 
-  const newCount = Array.isArray(studies) ? studies.filter((s) => s.status === "new").length : 0
+  // Best-effort count for display only — the button does not depend on it, so a
+  // slow/failed /api/studies fetch never leaves the action stuck disabled. The
+  // backend is the source of truth for how many studies actually get disabled.
+  const newCount = Array.isArray(studies) ? studies.filter((s) => s.status === "new").length : null
 
   const handleDisableNew = async () => {
-    if (newCount === 0) return
-    if (!window.confirm(`Disable ${newCount} study screen(s) with status "new"? They will be marked "failed" and no longer served to participants. This does not delete them.`)) {
+    if (!window.confirm('Disable all study screens with status "new"? They will be marked "failed" and no longer served to participants. This does not delete them.')) {
       return
     }
     setDisabling(true)
@@ -53,7 +55,7 @@ export default function Page() {
         <button
           type="button"
           onClick={handleDisableNew}
-          disabled={disabling || newCount === 0}
+          disabled={disabling}
           className="cursor-pointer select-none flex h-10 items-center gap-2 justify-center rounded-md border border-red-600 bg-red-600 px-4 py-2 text-xs font-bold text-white transition-all disabled:cursor-not-allowed disabled:opacity-50 betterhover:hover:bg-red-700"
         >
           {disabling ? "Disabling..." : `Disable all new studies${newCount ? ` (${newCount})` : ""}`}
