@@ -44,6 +44,30 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
   if (pairMap.size === 0) {
     throw new Error("No matched/mismatched pairs found. Upload the pairs list on the Descriptions & pairs page before generating the study.")
   }
+
+  // Index videos once by `systemname|inputcode` so the per-row lookup below is a
+  // Map hit instead of a linear scan of the whole pool on every row.
+  const videoByKey = new Map()
+  for (const v of Array.from(videoSemantic)) {
+    videoByKey.set(`${v.systemname}|${normalizeCode(v.inputcode)}`, v)
+  }
+
+  // Warm the correct-text cache for every code we'll need — the clip's own code
+  // plus its paired (distractor) code — in one parallel batch. Without this the
+  // loop awaits each `.txt` fetch serially, so generation cost was one R2
+  // round-trip per unique code, in series. Fetch concurrently up front; the
+  // in-loop fetchCorrectText calls then hit the cache instantly.
+  const codesToPrefetch = new Set()
+  for (let stdIndex = 0; stdIndex < studiesCSV.length; stdIndex++) {
+    for (const row of Array.from(studiesCSV[stdIndex])) {
+      const code = normalizeCode(row[1])
+      codesToPrefetch.add(code)
+      const paired = pairMap.get(code)
+      if (paired) codesToPrefetch.add(paired)
+    }
+  }
+  await Promise.all(Array.from(codesToPrefetch).map((code) => fetchCorrectText(code)))
+
   const pageList = []
   let attentionSubset = []
   if (includeAttentionChecks) {
@@ -77,7 +101,7 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
         throw new Error(`Clip '${inputcode}' (line ${rowIndex + 1}) has no mismatched pair. Update the pairs list.`)
       }
 
-      const video = Array.from(videoSemantic).find((v) => normalizeCode(v.inputcode) === inputcode && v.systemname === systemname)
+      const video = videoByKey.get(`${systemname}|${inputcode}`)
       if (!video) {
         throw new Error(`No video found for system ${systemname}, segment ${inputcode} (line ${rowIndex + 1}).`)
       }
