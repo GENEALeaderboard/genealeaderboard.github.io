@@ -78,7 +78,7 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
   if (pairMap.size === 0) {
     throw new Error("No matched/mismatched pairs found. Upload the pairs list on the Descriptions & pairs page before generating the study.")
   }
-
+ 
   // Index videos once by `systemname|inputcode` so the per-row lookup below is a
   // Map hit instead of a linear scan of the whole pool on every row.
   const videoByKey = new Map()
