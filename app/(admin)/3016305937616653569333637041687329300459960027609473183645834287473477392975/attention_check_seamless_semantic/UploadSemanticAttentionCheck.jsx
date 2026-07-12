@@ -9,14 +9,26 @@ import { UPLOAD_API_ENDPOINT } from "@/config/constants"
 import { apiPost } from "@/utils/fetcher"
 import { generateUUID } from "@/utils/generateUUID"
 
-// Authors one text-based semantic attention check at a time: a single video plus
-// the expected (correct) description and a distractor. The video is uploaded to
-// R2; the two texts are stored on the attentioncheck row via geneaapi.
+// The four votes a rater can cast on a semantic page: the left sentence, the
+// right sentence, both equally, or neither. An attention check pins the correct
+// one so the study app can flag raters who answer against it.
+const VOTE_OPTIONS = [
+  { value: "left", label: "Left sentence (Sentence 1)" },
+  { value: "right", label: "Right sentence (Sentence 2)" },
+  { value: "both", label: "Both sentences equally" },
+  { value: "neither", label: "Neither sentence" },
+]
+
+// Authors one semantic attention check at a time: a single video shown with two
+// fixed descriptions (left and right) plus the expected vote — left, right, both
+// or neither. The video is uploaded to R2; the two texts and the expected vote
+// are stored on the attentioncheck row via geneaapi.
 export default function UploadSemanticAttentionCheck({ category = "seamless-semantic-mismatch" }) {
   const [file, setFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState("")
-  const [expectedText, setExpectedText] = useState("")
-  const [distractorText, setDistractorText] = useState("")
+  const [leftText, setLeftText] = useState("")
+  const [rightText, setRightText] = useState("")
+  const [expectedVote, setExpectedVote] = useState("left")
   const [validMsg, setValidMsg] = useState("")
   const [uploading, setUploading] = useState(false)
   const [state, setState] = useState({ type: "", message: "" })
@@ -42,8 +54,9 @@ export default function UploadSemanticAttentionCheck({ category = "seamless-sema
   const resetForm = () => {
     setFile(null)
     setPreviewUrl("")
-    setExpectedText("")
-    setDistractorText("")
+    setLeftText("")
+    setRightText("")
+    setExpectedVote("left")
   }
 
   const handleUpload = async (e) => {
@@ -54,8 +67,12 @@ export default function UploadSemanticAttentionCheck({ category = "seamless-sema
       setValidMsg("Please upload a video")
       return
     }
-    if (!expectedText.trim() || !distractorText.trim()) {
-      setValidMsg("Both the expected and distractor text are required")
+    if (!leftText.trim() || !rightText.trim()) {
+      setValidMsg("Both the left and right descriptions are required")
+      return
+    }
+    if (!VOTE_OPTIONS.some((o) => o.value === expectedVote)) {
+      setValidMsg("Please choose an expected vote")
       return
     }
 
@@ -75,11 +92,12 @@ export default function UploadSemanticAttentionCheck({ category = "seamless-sema
         return
       }
 
-      // 2) Store the check + its two texts.
+      // 2) Store the check: its two texts and the expected vote.
       const res = await apiPost("/api/attention-check/semantic", {
         video: { inputcode: videoMeta.inputcode, path: videoMeta.path, url: videoMeta.url },
-        correctText: expectedText,
-        distractorText,
+        leftText,
+        rightText,
+        expectedVote,
         category,
       })
 
@@ -123,29 +141,48 @@ export default function UploadSemanticAttentionCheck({ category = "seamless-sema
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="font-semibold" htmlFor="expectedText">
-          Expected (correct) description
+        <label className="font-semibold" htmlFor="leftText">
+          Left description (Sentence 1)
         </label>
         <textarea
-          id="expectedText"
+          id="leftText"
           className="w-full p-3 rounded-md border border-[#666666] bg-white text-base text-gray-900 dark:border-[#888888] dark:bg-transparent dark:text-white sm:text-sm min-h-24"
-          value={expectedText}
-          onChange={(e) => setExpectedText(e.target.value)}
-          placeholder="The description that matches the video — the rater should select this."
+          value={leftText}
+          onChange={(e) => setLeftText(e.target.value)}
+          placeholder="The description shown on the left / as Sentence 1."
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="font-semibold" htmlFor="distractorText">
-          Distractor description
+        <label className="font-semibold" htmlFor="rightText">
+          Right description (Sentence 2)
         </label>
         <textarea
-          id="distractorText"
+          id="rightText"
           className="w-full p-3 rounded-md border border-[#666666] bg-white text-base text-gray-900 dark:border-[#888888] dark:bg-transparent dark:text-white sm:text-sm min-h-24"
-          value={distractorText}
-          onChange={(e) => setDistractorText(e.target.value)}
-          placeholder="The incorrect description shown alongside the expected one."
+          value={rightText}
+          onChange={(e) => setRightText(e.target.value)}
+          placeholder="The description shown on the right / as Sentence 2."
         />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="font-semibold" htmlFor="expectedVote">
+          Expected vote
+        </label>
+        <select
+          id="expectedVote"
+          className="w-full p-3 rounded-md border border-[#666666] bg-white text-base text-gray-900 dark:border-[#888888] dark:bg-transparent dark:text-white sm:text-sm"
+          value={expectedVote}
+          onChange={(e) => setExpectedVote(e.target.value)}
+        >
+          {VOTE_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-gray-500">The vote a careful rater should cast. Raters who answer otherwise fail the check.</p>
       </div>
 
       {validMsg && (

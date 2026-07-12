@@ -3,6 +3,40 @@ import { buildPairMap, normalizeCode } from "./pairsLookup"
 
 const VIDEO_TYPE = "seamless-semantic-origin"
 
+// The four real votes a semantic attention check can expect. Rows authored with
+// the current upload page store one of these in `expected_vote`; older rows
+// stored the sentinel "TextChoice" and encoded the answer purely by which side
+// held `correct_text`.
+const SEMANTIC_VOTES = new Set(["LeftClearlyBetter", "RightClearlyBetter", "BothExpressed", "NeitherExpressed"])
+
+// Turns one stored attentioncheck row into the {leftText, rightText, expectedVote}
+// shown on a check page. The left/right texts are randomly swapped to avoid a
+// fixed layout; a Left/Right expected vote is flipped to follow the swap, while
+// Both/Neither are position-independent.
+function resolveSemanticCheck(item) {
+  const swap = Math.random() < 0.5
+
+  if (SEMANTIC_VOTES.has(item.expected_vote)) {
+    // New model: correct_text = authored left, distractor_text = authored right.
+    let expectedVote = item.expected_vote
+    if (swap && expectedVote === "LeftClearlyBetter") expectedVote = "RightClearlyBetter"
+    else if (swap && expectedVote === "RightClearlyBetter") expectedVote = "LeftClearlyBetter"
+    return {
+      leftText: swap ? item.distractor_text : item.correct_text,
+      rightText: swap ? item.correct_text : item.distractor_text,
+      expectedVote,
+    }
+  }
+
+  // Legacy model: correct_text is the right answer, distractor_text is the decoy;
+  // the expected vote is whichever side the correct description lands on.
+  return {
+    leftText: swap ? item.distractor_text : item.correct_text,
+    rightText: swap ? item.correct_text : item.distractor_text,
+    expectedVote: swap ? "RightClearlyBetter" : "LeftClearlyBetter",
+  }
+}
+
 // The correct-text descriptions are system-independent (one per input code) and
 // uploaded on the Input Codes page, so they live in a shared `_texts` folder in
 // R2 keyed by input code. Read through the upload worker (correct CORS headers)
@@ -72,13 +106,14 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
   let attentionSubset = []
   if (includeAttentionChecks) {
     const total = Array.isArray(attentionCheckList) ? attentionCheckList.length : 0
-    // Text-based semantic checks carry their own expected + distractor descriptions.
+    // Text-based semantic checks carry their two descriptions in correct_text
+    // (left) and distractor_text (right) columns.
     attentionSubset = (attentionCheckList || []).filter((item) => item.correct_text && item.distractor_text)
     if (attentionSubset.length < 1) {
       throw new Error(
         total > 0
-          ? `Found ${total} attention-check row(s), but none have expected/distractor text. The attentioncheck.correct_text/distractor_text columns are likely missing from D1 — apply the migration and re-upload the checks.`
-          : "No semantic attention checks found for this study. Upload at least one (video + expected text + distractor text)."
+          ? `Found ${total} attention-check row(s), but none have both descriptions. The attentioncheck.correct_text/distractor_text columns are likely missing from D1 — apply the migration and re-upload the checks.`
+          : "No semantic attention checks found for this study. Upload at least one (video + two descriptions + expected vote)."
       )
     }
   }
@@ -135,8 +170,7 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
 
       if (step > 0 && (rowIndex + 1) % step === 0 && attentionCheckIdx < nCheck) {
         const item = attentionSubset[attentionCheckIdx]
-        // Expected (correct) description vs the authored distractor, random side.
-        const correctOnLeftCheck = Math.random() < 0.5
+        const { leftText: checkLeft, rightText: checkRight, expectedVote: checkVote } = resolveSemanticCheck(item)
         pageList.push({
           type: "check",
           studyid: studiesID[stdIndex],
@@ -147,15 +181,15 @@ export async function generateSeamlessSemanticMismatch(studiesCSV, videoSemantic
           // Same one-video + two-description shape as a task page.
           options: JSON.stringify({
             kind: "semantic-choice",
-            leftText: correctOnLeftCheck ? item.correct_text : item.distractor_text,
-            rightText: correctOnLeftCheck ? item.distractor_text : item.correct_text,
+            leftText: checkLeft,
+            rightText: checkRight,
           }),
           system1: "AttentionCheck",
           system2: "AttentionCheck",
           // One video is shown; both slots point to it so fetchStudy resolves it.
           video1: item.videoid1,
           video2: item.videoid1,
-          expected_vote: correctOnLeftCheck ? "LeftClearlyBetter" : "RightClearlyBetter",
+          expected_vote: checkVote,
         })
         attentionCheckIdx++
         pageIdx++
