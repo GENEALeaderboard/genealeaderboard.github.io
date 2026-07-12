@@ -10,30 +10,26 @@ const VIDEO_TYPE = "seamless-semantic-origin"
 const SEMANTIC_VOTES = new Set(["LeftClearlyBetter", "RightClearlyBetter", "BothExpressed", "NeitherExpressed"])
 
 // Turns one stored attentioncheck row into the {leftText, rightText, expectedVote}
-// shown on a check page. The left/right texts are randomly swapped to avoid a
-// fixed layout; a Left/Right expected vote is flipped to follow the swap, while
-// Both/Neither are position-independent.
+// shown on a check page. The authored left/right order is kept fixed (no
+// randomization) so the expected vote always lines up with the side it was
+// authored for.
 function resolveSemanticCheck(item) {
-  const swap = Math.random() < 0.5
-
   if (SEMANTIC_VOTES.has(item.expected_vote)) {
-    // New model: correct_text = authored left, distractor_text = authored right.
-    let expectedVote = item.expected_vote
-    if (swap && expectedVote === "LeftClearlyBetter") expectedVote = "RightClearlyBetter"
-    else if (swap && expectedVote === "RightClearlyBetter") expectedVote = "LeftClearlyBetter"
+    // New model: correct_text = authored left, distractor_text = authored right,
+    // expected_vote already stores the intended vote.
     return {
-      leftText: swap ? item.distractor_text : item.correct_text,
-      rightText: swap ? item.correct_text : item.distractor_text,
-      expectedVote,
+      leftText: item.correct_text,
+      rightText: item.distractor_text,
+      expectedVote: item.expected_vote,
     }
   }
 
-  // Legacy model: correct_text is the right answer, distractor_text is the decoy;
-  // the expected vote is whichever side the correct description lands on.
+  // Legacy model: correct_text is the right answer, distractor_text is the decoy.
+  // Keep the correct description on the left, so the expected vote is Left.
   return {
-    leftText: swap ? item.distractor_text : item.correct_text,
-    rightText: swap ? item.correct_text : item.distractor_text,
-    expectedVote: swap ? "RightClearlyBetter" : "LeftClearlyBetter",
+    leftText: item.correct_text,
+    rightText: item.distractor_text,
+    expectedVote: "LeftClearlyBetter",
   }
 }
 
