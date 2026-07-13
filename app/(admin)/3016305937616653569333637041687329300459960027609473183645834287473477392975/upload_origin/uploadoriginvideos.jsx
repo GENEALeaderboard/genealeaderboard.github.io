@@ -16,6 +16,10 @@ import Mp4Icon from "@/icons/mp4"
 import UploadPreviewer from "./UploadPreviewer"
 import { apiPost } from "@/utils/fetcher"
 
+// Only render the first few selected files as <video> elements; the rest are
+// shown as a plain filename list so selecting hundreds of clips stays fast.
+const MAX_VIDEO_PREVIEWS = 5
+
 export default function UploadOriginVideos({ systems, videosLoading }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [files, setFiles] = useState([])
@@ -301,7 +305,7 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
           <input id="upload" {...getInputProps()} accept="video/*" />
           {previews.length > 0 && (
             <ul className="w-full flex flex-wrap gap-2 justify-center">
-              {previews.map(({ file, url }, index) => (
+              {previews.slice(0, MAX_VIDEO_PREVIEWS).map(({ file, url }, index) => (
                 <li title={file.name} key={index} className="min-w-24 max-w-40  flex flex-col justify-center items-center gap-1 p-2 border rounded-md border-black">
                   <video title={file.name} width={200} height={80} controls>
                     <source src={url} type={file.type} />
@@ -313,6 +317,20 @@ export default function UploadOriginVideos({ systems, videosLoading }) {
                 </li>
               ))}
             </ul>
+          )}
+          {previews.length > MAX_VIDEO_PREVIEWS && (
+            <div className="w-full mt-3">
+              <p className="text-sm text-gray-500 mb-1">
+                + {previews.length - MAX_VIDEO_PREVIEWS} more file{previews.length - MAX_VIDEO_PREVIEWS > 1 ? "s" : ""} (not previewed to save loading time):
+              </p>
+              <ul className="w-full flex flex-col gap-0.5 text-sm text-left">
+                {previews.slice(MAX_VIDEO_PREVIEWS).map(({ file }, index) => (
+                  <li title={file.name} key={index} className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {file.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           {isDragActive ? <p>Drop the files here...</p> : <p>Drag and drop some files here, or click to select files</p>}
         </div>
