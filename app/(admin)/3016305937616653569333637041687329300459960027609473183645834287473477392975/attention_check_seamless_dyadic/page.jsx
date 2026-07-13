@@ -1,8 +1,13 @@
 "use client"
 
 import UploadAttetionCheck from "../attention_check/UploadAttentionCheck"
+import UploadPairedAttentionCheck from "../attention_check/UploadPairedAttentionCheck"
 
 const CATEGORY = "seamless-dyadic-mismatch"
+const DISTRACTOR_POOLS = [
+  { value: `${CATEGORY}/matched`, label: "Matched pool" },
+  { value: `${CATEGORY}/mismatched`, label: "Mismatched pool" },
+]
 
 export default function Page() {
   return (
@@ -21,8 +26,20 @@ export default function Page() {
       </ul>
 
       <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Upload Seamless Dyadic Mismatch Attention Check Video</h4>
-      <div className="mt-6 mb-32">
+      <div className="mt-6">
         <UploadAttetionCheck category={CATEGORY} />
+      </div>
+
+      <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-12 border-b pb-1 text-xl border-neutral-200/70">
+        Add a single check against an existing video
+      </h4>
+      <p className="mt-3 text-sm text-gray-500">
+        Upload one AC video, set the expected vote, and choose the real clip it is compared against by giving that clip&apos;s
+        systemname + inputcode, and which pool (matched or mismatched) it lives in. The distractor must already exist in the chosen
+        pool.
+      </p>
+      <div className="mt-6 mb-32">
+        <UploadPairedAttentionCheck category={CATEGORY} pools={DISTRACTOR_POOLS} defaultType="Text" defaultVolume="Unmuted" />
       </div>
     </>
   )

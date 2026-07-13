@@ -1,6 +1,7 @@
 "use client"
 
 import UploadAttetionCheck from "../attention_check/UploadAttentionCheck"
+import UploadPairedAttentionCheck from "../attention_check/UploadPairedAttentionCheck"
 
 const CATEGORY = "seamless-origin-humanlikeness"
 
@@ -39,8 +40,20 @@ export default function Page() {
       </div>
 
       <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-8 text-xl">Upload Seamless Attention Check Video</h4>
-      <div className="mt-6 mb-32">
+      <div className="mt-6">
         <UploadAttetionCheck category={CATEGORY} />
+      </div>
+
+      <h4 className="font-semibold tracking-tight text-slate-900 dark:text-slate-100 mt-12 border-b pb-1 text-xl border-neutral-200/70">
+        Add a single check against an existing video
+      </h4>
+      <p className="mt-3 text-sm text-gray-500">
+        Upload one AC video, set the expected vote, and choose the real clip it is compared against by giving that clip&apos;s
+        systemname + inputcode (the distractor). No file-naming convention and no second upload — the distractor must already exist in
+        the <code>{CATEGORY}</code> pool.
+      </p>
+      <div className="mt-6 mb-32">
+        <UploadPairedAttentionCheck category={CATEGORY} />
       </div>
     </>
   )
